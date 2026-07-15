@@ -1,0 +1,2 @@
+# Tkinter is built-in with Python - no external packages required
+# All functionality uses Python standard library only

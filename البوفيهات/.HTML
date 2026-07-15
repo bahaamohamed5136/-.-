@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام إدارة مخزون البوفيهات</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --hdr: #1B2A4A; --hdr2: #2E5090; --accent: #C9A84C; --green: #1E6B3C;
+            --lgr: #D4EDDA; --red: #C0392B; --lred: #FADBD8; --orange: #E67E22;
+            --lgold: #FFF3CD; --lblue: #D6EAF0; --white: #FFFFFF; --bg: #F0F4F8;
+            --lgray: #F5F5F5; --dgray: #555555; --odd: #FFFFFF; --even: #EBF5FB;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
+            background: var(--bg); color: var(--hdr); line-height: 1.6;
+        }
+        .header {
+            background: var(--hdr); color: var(--white); padding: 15px 30px;
+            display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 3px solid var(--accent);
+        }
+        .header h1 { font-size: 24px; }
+        .header .date { color: var(--accent); font-size: 14px; }
+        .nav {
+            background: var(--hdr2); display: flex; flex-wrap: wrap; padding: 0 20px;
+        }
+        .nav button {
+            color: var(--white); background: none; border: none;
+            padding: 12px 20px; font-weight: bold; font-size: 14px;
+            cursor: pointer; transition: background 0.3s;
+            border-left: 1px solid rgba(255,255,255,0.1); font-family: inherit;
+        }
+        .nav button:hover, .nav button.active {
+            background: var(--accent); color: var(--hdr);
+        }
+        .nav .export-btn {
+            background: var(--green) !important; margin-right: auto; border-left: none !important;
+        }
+        .nav .export-btn:hover { background: #145a2e !important; color: var(--white) !important; }
+        .container { max-width: 1400px; margin: 20px auto; padding: 0 20px; }
+        .card {
+            background: var(--white); border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08); padding: 20px; margin-bottom: 20px;
+        }
+        .card-header {
+            background: var(--hdr); color: var(--white); padding: 15px 20px;
+            margin: -20px -20px 20px -20px; border-radius: 8px 8px 0 0;
+        }
+        .card-header h2 { font-size: 18px; }
+        .card-header p { color: var(--accent); font-size: 12px; margin-top: 4px; }
+        .btn {
+            display: inline-block; padding: 8px 16px; border: none; border-radius: 4px;
+            cursor: pointer; font-weight: bold; font-size: 14px; text-decoration: none;
+            transition: opacity 0.2s; font-family: inherit;
+        }
+        .btn:hover { opacity: 0.85; }
+        .btn-primary { background: var(--hdr2); color: var(--white); }
+        .btn-success { background: var(--green); color: var(--white); }
+        .btn-danger { background: var(--red); color: var(--white); }
+        .btn-warning { background: var(--orange); color: var(--white); }
+        .btn-secondary { background: var(--dgray); color: var(--white); }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 14px; }
+        th, td { padding: 10px 8px; text-align: center; border: 1px solid #ddd; }
+        th { background: var(--hdr); color: var(--white); font-weight: bold; }
+        th.sub { background: var(--hdr2); }
+        tr:nth-child(even) { background: var(--even); }
+        tr:hover { background: var(--lblue); }
+        .form-group {
+            margin-bottom: 15px; display: flex; align-items: center;
+            gap: 10px; flex-wrap: wrap;
+        }
+        .form-group label { min-width: 120px; font-weight: bold; color: var(--hdr); }
+        input, select, textarea {
+            padding: 8px 12px; border: 1px solid #ccc; border-radius: 4px;
+            font-size: 14px; font-family: inherit;
+        }
+        input:focus, select:focus { outline: none; border-color: var(--hdr2); }
+        .alert {
+            padding: 12px 16px; border-radius: 4px; margin-bottom: 15px;
+            font-weight: bold; display: none;
+        }
+        .alert.show { display: block; }
+        .alert-success { background: var(--lgr); color: var(--green); border: 1px solid var(--green); }
+        .alert-error { background: var(--lred); color: var(--red); border: 1px solid var(--red); }
+        .alert-warning { background: var(--lgold); color: var(--orange); border: 1px solid var(--orange); }
+        .low-stock { background: var(--lgold) !important; color: var(--orange) !important; font-weight: bold; }
+        .neg-stock { background: var(--lred) !important; color: var(--red) !important; font-weight: bold; }
+        .status-bar {
+            background: var(--hdr); color: var(--accent); text-align: center;
+            padding: 10px; font-size: 13px; margin-top: 40px;
+        }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
+        @media (max-width: 900px) {
+            .grid-2, .grid-3 { grid-template-columns: 1fr; }
+            .header { flex-direction: column; text-align: center; }
+            .nav { justify-content: center; }
+        }
+        .chart-container {
+            background: var(--white); border-radius: 8px; padding: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08); margin-bottom: 20px;
+        }
+        .chart-title { text-align: center; font-weight: bold; color: var(--hdr); margin-bottom: 10px; font-size: 16px; }
+        .section-title {
+            background: var(--hdr2); color: var(--white); padding: 8px 15px;
+            margin: 15px 0 10px 0; border-radius: 4px; font-weight: bold;
+        }
+        .calc-box {
+            background: var(--lgr); color: var(--green); padding: 12px;
+            border-radius: 4px; font-weight: bold; text-align: center; margin: 10px 0;
+        }
+        .actions { margin: 15px 0; display: flex; gap: 10px; flex-wrap: wrap; }
+        .scroll-x { overflow-x: auto; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .delete-btn { padding: 4px 10px; font-size: 12px; }
+    </style>
+<base target="_blank">
+</head>
+<body>
+    <div class="header">
+        <div style="display:flex;align-items:center;gap:15px;">
+            <img src="../namaa%20logo.png" alt="Namaa Logo" style="height:45px;">
+            <h1>نظام إدارة مخزون البوفيهات</h1>
+        </div>
+        <div class="date" id="headerDate"></div>
+    </div>
+    <div class="nav">
+        <button onclick="showTab('dashboard')" class="active" id="btn-dashboard">لوحة التحكم</button>
+        <button onclick="showTab('opening')" id="btn-opening">الرصيد الافتتاحى</button>
+        <button onclick="showTab('additions')" id="btn-additions">الإضافات</button>
+        <button onclick="showTab('dispensing')" id="btn-dispensing">الصرف</button>
+        <button onclick="showTab('summary')" id="btn-summary">ملخص المخزون</button>
+        <button onclick="showTab('analytics')" id="btn-analytics">التحليلات</button>
+        <button onclick="exportToExcel()" class="export-btn">📥 تصدير Excel</button>
+    </div>
+    <div class="container">
+        <div id="alertBox" class="alert"></div>
+
+        <!-- DASHBOARD -->
+        <div id="tab-dashboard" class="tab-content active">
+            <div class="card">
+                <div class="card-header"><h2>لوحة التحكم</h2><p>نظرة عامة على المخزون لجميع البوفيهات</p></div>
+                <div class="scroll-x" id="dashboardTable"></div>
+                <div style="margin-top:15px;display:flex;gap:15px;flex-wrap:wrap;font-size:13px;">
+                    <span style="background:var(--lgold);color:var(--orange);padding:4px 10px;border-radius:4px;">رصيد منخفض</span>
+                    <span style="background:var(--lred);color:var(--red);padding:4px 10px;border-radius:4px;">رصيد سالب</span>
+                    <span style="color:var(--dgray);">حد التنبيه: الجرامية &lt; 500 جم | الوحدية &lt; 5 وحدات</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- OPENING BALANCE -->
+        <div id="tab-opening" class="tab-content">
+            <div class="card">
+                <div class="card-header"><h2>الرصيد الافتتاحى</h2><p>الأصناف الجرامية بالكيلوجرام (تُحوَّل للجرام تلقائيًا)، الباقى بالوحدة</p></div>
+                <form id="openingForm" onsubmit="saveOpening(event)">
+                    <div class="scroll-x" id="openingTable"></div>
+                    <div class="actions"><button type="submit" class="btn btn-success">حفظ الرصيد الافتتاحى</button></div>
+                </form>
+            </div>
+        </div>
+
+        <!-- ADDITIONS -->
+        <div id="tab-additions" class="tab-content">
+            <div class="card">
+                <div class="card-header"><h2>الإضافات</h2><p>سجل إضافة أصناف للمخزون مع التاريخ والبوفيه</p></div>
+                <form id="additionForm" onsubmit="addAddition(event)">
+                    <input type="hidden" name="action" value="add">
+                    <div class="grid-3">
+                        <div class="form-group"><label>التاريخ:</label><input type="date" id="addDate" required></div>
+                        <div class="form-group"><label>البوفيه:</label><select id="addBuffet" required></select></div>
+                        <div class="form-group"><label>الصنف:</label><select id="addItem" required onchange="updateAddUnit()"></select></div>
+                        <div class="form-group"><label>الكمية:</label><input type="number" step="0.001" id="addQty" required style="width:120px;"><span id="addUnitLabel" style="color:var(--dgray);font-size:13px;">كيلوجرام</span></div>
+                        <div class="form-group" style="grid-column:span 2;"><label>ملاحظات:</label><input type="text" id="addNotes" style="flex:1;"></div>
+                    </div>
+                    <div class="actions"><button type="submit" class="btn btn-success">إضافة للمخزون</button></div>
+                </form>
+                <div class="scroll-x" id="additionsTable"></div>
+            </div>
+        </div>
+
+        <!-- DISPENSING -->
+        <div id="tab-dispensing" class="tab-content">
+            <div class="card">
+                <div class="card-header"><h2>سجل الصرف</h2><p>أدخل الكوبايات والوحدات — الجرامات والسكر تُحسب تلقائيًا</p></div>
+                <form id="dispenseForm" onsubmit="addDispensing(event)">
+                    <div class="grid-3">
+                        <div class="form-group"><label>التاريخ:</label><input type="date" id="dispDate" required></div>
+                        <div class="form-group" style="grid-column:span 2;"><label>البوفيه:</label><select id="dispBuffet" required style="flex:1;"></select></div>
+                    </div>
+                    <div style="background:var(--lblue);padding:10px;border-radius:4px;margin:10px 0;font-weight:bold;color:var(--hdr);">─── الكوبايات والوحدات المصروفة ───</div>
+                    <div class="grid-3">
+                        <div class="form-group"><label>كوبايات شاى:</label><input type="number" id="tea" value="0" min="0" style="width:80px;" oninput="updateCalc()"><span style="color:var(--dgray);font-size:12px;">(2 جم/كوب)</span></div>
+                        <div class="form-group"><label>كوبايات قهوه:</label><input type="number" id="coffee" value="0" min="0" style="width:80px;" oninput="updateCalc()"><span style="color:var(--dgray);font-size:12px;">(10 جم/كوب)</span></div>
+                        <div class="form-group"><label>ينسون (وحدة):</label><input type="number" id="anise" value="0" min="0" style="width:80px;" oninput="updateCalc()"></div>
+                        <div class="form-group"><label>نعناع (وحدة):</label><input type="number" id="mint" value="0" min="0" style="width:80px;" oninput="updateCalc()"></div>
+                        <div class="form-group"><label>مياه معدنية (وحدة):</label><input type="number" id="water" value="0" min="0" style="width:80px;" oninput="updateCalc()"></div>
+                        <div class="form-group"><label>لبن (وحدة):</label><input type="number" id="milk" value="0" min="0" style="width:80px;" oninput="updateCalc()"></div>
+                    </div>
+                    <div class="form-group" style="margin-top:10px;"><label>ملاحظات:</label><input type="text" id="dispNotes" style="flex:1;"></div>
+                    <div class="calc-box" id="calcBox">الاستهلاك المحسوب: شاى=0جم | قهوه=0جم | سكر=0جم | ينسون=0وحدة | نعناع=0وحدة | مياه=0وحدة | لبن=0وحدة</div>
+                    <div class="actions"><button type="submit" class="btn btn-danger">تسجيل الصرف</button></div>
+                </form>
+                <div class="scroll-x" id="dispensingTable"></div>
+            </div>
+        </div>
+
+        <!-- SUMMARY -->
+        <div id="tab-summary" class="tab-content">
+            <div class="card">
+                <div class="card-header"><h2>ملخص المخزون</h2><p>رصيد افتتاحى + إضافات − منصرف = متبقى</p></div>
+                <div class="scroll-x" id="summaryTable"></div>
+            </div>
+        </div>
+
+        <!-- ANALYTICS -->
+        <div id="tab-analytics" class="tab-content">
+            <div class="card">
+                <div class="card-header"><h2>التحليلات والإحصاءات</h2><p>رسوم بيانية للاستهلاك</p></div>
+                <div class="grid-2">
+                    <div class="chart-container"><div class="chart-title">استهلاك الشاى والقهوه والسكر (جم)</div><canvas id="barChart1" height="250"></canvas></div>
+                    <div class="chart-container"><div class="chart-title">استهلاك الوحدات (نعناع/ينسون/لبن/مياه)</div><canvas id="barChart2" height="250"></canvas></div>
+                </div>
+                <div class="grid-2">
+                    <div class="chart-container"><div class="chart-title">توزيع الاستهلاك الإجمالى حسب الصنف</div><canvas id="pieChart" height="280"></canvas></div>
+                    <div class="chart-container"><div class="chart-title">إجمالى الاستهلاك لكل بوفيه</div><canvas id="hbarChart" height="280"></canvas></div>
+                </div>
+                <div class="card" style="margin-top:20px;">
+                    <h3 style="color:var(--hdr);margin-bottom:15px;text-align:center;">جدول إجمالى الاستهلاك</h3>
+                    <div class="scroll-x" id="analyticsTable"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="status-bar">معدلات الاستهلاك: شاى=2جم | قهوه=10جم | سكر=10جم/كوب | ينسون/نعناع/لبن/مياه=وحدة</div>
+    <div style="background:var(--hdr);color:var(--accent);text-align:center;padding:5px;font-size:12px;border-top:1px solid var(--accent);">by: eng.bahaa</div>
+
+<script>
+// ═════════════════════════════════════════════════════════════════════════════
+// CONSTANTS & DATA
+// ═════════════════════════════════════════════════════════════════════════════
+const BUFFETS = [
+    "بوفيه الاستراحة",
+    "بوفيه الدور الأرضى المبنى الإدارى القديم",
+    "بوفيه الدور الأول المبنى الإدارى القديم",
+    "بوفيه الدور الثانى المبنى الإدارى القديم",
+    "بوفيه الدور الثانى المبنى الإدارى الجديد",
+];
+const ITEMS_GRAM = ["شاى", "قهوه", "سكر"];
+const ITEMS_UNIT = ["نعناع", "ينسون", "لبن", "مياه معدنية"];
+const ITEMS_ALL = ITEMS_GRAM.concat(ITEMS_UNIT);
+const TEA_GRAMS = 2, COFFEE_GRAMS = 10, SUGAR_GRAMS = 10;
+const CHART_COLORS = ["#2E5090","#C9A84C","#1E6B3C","#8E44AD","#C0392B","#E67E22","#2980B9","#16A085"];
+
+// Load data from server (fallback to localStorage)
+async function loadData() {
+    try {
+        const res = await fetch('/api/data');
+        if (res.ok) return await res.json();
+    } catch {}
+    const data = localStorage.getItem('buffetData');
+    if (data) return JSON.parse(data);
+    return {
+        opening: {},
+        additions: [],
+        dispensing: [],
+        nextAddId: 1,
+        nextDispId: 1
+    };
+}
+
+async function saveData(data) {
+    localStorage.setItem('buffetData', JSON.stringify(data));
+    try {
+        await fetch('/api/data', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        });
+    } catch {}
+}
+
+let db;
+
+// Initialize opening balance if empty
+(async function init() {
+    db = await loadData();
+    BUFFETS.forEach(b => {
+        ITEMS_ALL.forEach(i => {
+            const key = b + "::" + i;
+            if (!(key in db.opening)) db.opening[key] = 0;
+        });
+    });
+    await saveData(db);
+    document.getElementById('headerDate').textContent = new Date().toLocaleDateString('ar-EG');
+    showTab('dashboard');
+})();
+
+// ═════════════════════════════════════════════════════════════════════════════
+// HELPERS
+// ═════════════════════════════════════════════════════════════════════════════
+function showAlert(msg, type) {
+    const box = document.getElementById('alertBox');
+    box.textContent = msg;
+    box.className = 'alert alert-' + type + ' show';
+    setTimeout(() => box.classList.remove('show'), 3000);
+}
+
+function showTab(tab) {
+    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.nav button').forEach(b => b.classList.remove('active'));
+    document.getElementById('tab-' + tab).classList.add('active');
+    document.getElementById('btn-' + tab).classList.add('active');
+    if (tab === 'dashboard') renderDashboard();
+    if (tab === 'opening') renderOpening();
+    if (tab === 'additions') { renderAdditionsForm(); renderAdditionsTable(); }
+    if (tab === 'dispensing') { renderDispensingForm(); renderDispensingTable(); }
+    if (tab === 'summary') renderSummary();
+    if (tab === 'analytics') renderAnalytics();
+}
+
+function formatNum(n) {
+    return Math.round(n).toLocaleString('ar-EG');
+}
+
+function getStock(buffet, item) {
+    const key = buffet + "::" + item;
+    const op = db.opening[key] || 0;
+    const added = db.additions.filter(a => a.buffet === buffet && a.item === item).reduce((s, a) => s + a.qty, 0);
+    let dispensed = 0;
+    const colMap = {"شاى":"teaGrams","قهوه":"coffeeGrams","سكر":"sugarGrams",
+                    "ينسون":"anise","نعناع":"mint","لبن":"milk","مياه معدنية":"water"};
+    const col = colMap[item];
+    if (col) {
+        dispensed = db.dispensing.filter(d => d.buffet === buffet).reduce((s, d) => s + (d[col] || 0), 0);
+    }
+    return op + added - dispensed;
+}
+
+function totalAdded(buffet, item) {
+    return db.additions.filter(a => a.buffet === buffet && a.item === item).reduce((s, a) => s + a.qty, 0);
+}
+
+function totalDispensed(buffet, item) {
+    const colMap = {"شاى":"teaGrams","قهوه":"coffeeGrams","سكر":"sugarGrams",
+                    "ينسون":"anise","نعناع":"mint","لبن":"milk","مياه معدنية":"water"};
+    const col = colMap[item];
+    if (!col) return 0;
+    return db.dispensing.filter(d => d.buffet === buffet).reduce((s, d) => s + (d[col] || 0), 0);
+}
+
+function analyticsByBuffet() {
+    const result = {};
+    BUFFETS.forEach(b => {
+        result[b] = {};
+        ITEMS_ALL.forEach(i => result[b][i] = totalDispensed(b, i));
+    });
+    return result;
+}
+
+// ═════════════════════════════════════════════════════════════════════════════
+// DASHBOARD
+// ═════════════════════════════════════════════════════════════════════════════
+function renderDashboard() {
+    let html = '<table><tr><th>البوفيه</th>';
+    ITEMS_ALL.forEach(i => html += '<th>' + i + '</th>');
+    html += '</tr><tr><th></th>';
+    ITEMS_ALL.forEach(i => html += '<th class="sub">' + (ITEMS_GRAM.includes(i) ? 'جم' : 'وحدة') + '</th>');
+    html += '</tr>';
+
+    BUFFETS.forEach((buffet, ri) => {
+        const bg = ri % 2 === 0 ? 'var(--odd)' : 'var(--even)';
+        html += '<tr><td style="background:var(--lblue);font-weight:bold;text-align:right;padding-right:15px;">' + buffet + '</td>';
+        ITEMS_ALL.forEach(item => {
+            const qty = getStock(buffet, item);
+            const isG = ITEMS_GRAM.includes(item);
+            const thr = isG ? 500 : 5;
+            const low = qty >= 0 && qty < thr;
+            const neg = qty < 0;
+            let cls = '';
+            if (neg) cls = 'neg-stock';
+            else if (low) cls = 'low-stock';
+            html += '<td class="' + cls + '" style="background:' + bg + '">' + formatNum(qty) + (neg ? ' ⚠' : '') + '</td>';
+        });
+        html += '</tr>';
+    });
+    html += '</table>';
+    document.getElementById('dashboardTable').innerHTML = html;
+}
+
+// ═════════════════════════════════════════════════════════════════════════════
+// OPENING BALANCE
+// ═════════════════════════════════════════════════════════════════════════════
+function renderOpening() {
+    let html = '<table><tr><th>الصنف</th>';
+    BUFFETS.forEach(b => html += '<th>' + b.replace('بوفيه ', '').substring(0, 18) + '</th>');
+    html += '<th>الوحدة</th></tr>';
+
+    html += '<tr><td colspan="' + (BUFFETS.length + 2) + '" class="section-title">الأصناف المقاسة بالكيلوجرام</td></tr>';
+    ITEMS_GRAM.forEach((item, ri) => {
+        html += '<tr><td style="background:var(--lblue);font-weight:bold;text-align:right;padding-right:15px;">' + item + '</td>';
+        BUFFETS.forEach(b => {
+            const val = (db.opening[b + '::' + item] || 0) / 1000;
+            html += '<td><input type="number" step="0.001" name="' + b + '__' + item + '" value="' + val.toFixed(3) + '" style="width:90px;text-align:center;"></td>';
+        });
+        html += '<td>كجم</td></tr>';
+    });
+
+    html += '<tr><td colspan="' + (BUFFETS.length + 2) + '" class="section-title">الأصناف المقاسة بالوحدة</td></tr>';
+    ITEMS_UNIT.forEach((item, ri) => {
+        html += '<tr><td style="background:var(--lgr);font-weight:bold;text-align:right;padding-right:15px;">' + item + '</td>';
+        BUFFETS.forEach(b => {
+            const val = db.opening[b + '::' + item] || 0;
+            html += '<td><input type="number" step="1" name="' + b + '__' + item + '" value="' + Math.round(val) + '" style="width:90px;text-align:center;"></td>';
+        });
+        html += '<td>وحدة</td></tr>';
+    });
+    html += '</table>';
+    document.getElementById('openingTable').innerHTML = html;
+}
+
+async function saveOpening(e) {
+    e.preventDefault();
+    const form = document.getElementById('openingForm');
+    const inputs = form.querySelectorAll('input[type="number"]');
+    inputs.forEach(inp => {
+        const parts = inp.name.split('__');
+        const buffet = parts[0];
+        const item = parts[1];
+        const val = parseFloat(inp.value) || 0;
+        db.opening[buffet + '::' + item] = ITEMS_GRAM.includes(item) ? val * 1000 : val;
+    });
+    await saveData(db);
+    showAlert('تم حفظ الرصيد الافتتاحى بنجاح', 'success');
+}
+
+// ═════════════════════════════════════════════════════════════════════════════
+// ADDITIONS
+// ═════════════════════════════════════════════════════════════════════════════
+function renderAdditionsForm() {
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('addDate').value = today;
+
+    let bufOpts = '';
+    BUFFETS.forEach(b => bufOpts += '<option value="' + b + '">' + b + '</option>');
+    document.getElementById('addBuffet').innerHTML = bufOpts;
+
+    let itemOpts = '';
+    ITEMS_ALL.forEach(i => itemOpts += '<option value="' + i + '">' + i + '</option>');
+    document.getElementById('addItem').innerHTML = itemOpts;
+    updateAddUnit();
+}
+
+function updateAddUnit() {
+    const item = document.getElementById('addItem').value;
+    document.getElementById('addUnitLabel').textContent = ITEMS_GRAM.includes(item) ? 'كيلوجرام' : 'وحدة';
+}
+
+async function addAddition(e) {
+    e.preventDefault();
+    const qty = parseFloat(document.getElementById('addQty').value) || 0;
+    if (qty <= 0) { showAlert('الكمية يجب أن تكون أكبر من صفر', 'warning'); return; }
+
+    const item = document.getElementById('addItem').value;
+    db.additions.push({
+        id: db.nextAddId++,
+        date: document.getElementById('addDate').value,
+        buffet: document.getElementById('addBuffet').value,
+        item: item,
+        qty: ITEMS_GRAM.includes(item) ? qty * 1000 : qty,
+        notes: document.getElementById('addNotes').value
+    });
+    await saveData(db);
+    document.getElementById('addQty').value = '';
+    document.getElementById('addNotes').value = '';
+    renderAdditionsTable();
+    showAlert('تم إضافة ' + item + ' للمخزون', 'success');
+}
+
+async function deleteAddition(id) {
+    if (!confirm('حذف السجل المحدد؟')) return;
+    db.additions = db.additions.filter(a => a.id !== id);
+    await saveData(db);
+    renderAdditionsTable();
+    showAlert('تم حذف السجل', 'success');
+}
+
+function renderAdditionsTable() {
+    let html = '<table><tr><th>رقم</th><th>التاريخ</th><th>البوفيه</th><th>الصنف</th><th>الكمية</th><th>ملاحظات</th><th>إجراء</th></tr>';
+    const sorted = [...db.additions].sort((a, b) => b.id - a.id);
+    sorted.forEach((r, i) => {
+        const disp = ITEMS_GRAM.includes(r.item) ? (r.qty / 1000).toFixed(3) + ' كجم' : Math.round(r.qty) + ' وحدة';
+        html += '<tr><td>' + r.id + '</td><td>' + r.date + '</td><td>' + r.buffet + '</td><td>' + r.item + '</td><td>' + disp + '</td><td>' + (r.notes || '') + '</td>';
+        html += '<td><button class="btn btn-danger delete-btn" onclick="deleteAddition(' + r.id + ')">حذف</button></td></tr>';
+    });
+    html += '</table>';
+    document.getElementById('additionsTable').innerHTML = html;
+}
+
+// ═════════════════════════════════════════════════════════════════════════════
+// DISPENSING
+// ═════════════════════════════════════════════════════════════════════════════
+function renderDispensingForm() {
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('dispDate').value = today;
+
+    let bufOpts = '';
+    BUFFETS.forEach(b => bufOpts += '<option value="' + b + '">' + b + '</option>');
+    document.getElementById('dispBuffet').innerHTML = bufOpts;
+}
+
+function updateCalc() {
+    const t = parseInt(document.getElementById('tea').value) || 0;
+    const c = parseInt(document.getElementById('coffee').value) || 0;
+    const a = parseInt(document.getElementById('anise').value) || 0;
+    const m = parseInt(document.getElementById('mint').value) || 0;
+    const w = parseInt(document.getElementById('water').value) || 0;
+    const lk = parseInt(document.getElementById('milk').value) || 0;
+    document.getElementById('calcBox').textContent =
+        'الاستهلاك المحسوب:  شاى=' + (t * TEA_GRAMS) + 'جم  |  قهوه=' + (c * COFFEE_GRAMS) + 'جم  |  ' +
+        'سكر=' + ((t + c + a + m) * SUGAR_GRAMS) + 'جم  |  ينسون=' + a + 'وحدة  |  ' +
+        'نعناع=' + m + 'وحدة  |  مياه=' + w + 'وحدة  |  لبن=' + lk + 'وحدة';
+}
+
+async function addDispensing(e) {
+    e.preventDefault();
+    const t = parseInt(document.getElementById('tea').value) || 0;
+    const c = parseInt(document.getElementById('coffee').value) || 0;
+    const a = parseInt(document.getElementById('anise').value) || 0;
+    const m = parseInt(document.getElementById('mint').value) || 0;
+    const w = parseInt(document.getElementById('water').value) || 0;
+    const lk = parseInt(document.getElementById('milk').value) || 0;
+
+    if ([t, c, a, m, w, lk].every(x => x === 0)) {
+        showAlert('أدخل قيمة واحدة على الأقل', 'warning'); return;
+    }
+
+    db.dispensing.push({
+        id: db.nextDispId++,
+        date: document.getElementById('dispDate').value,
+        buffet: document.getElementById('dispBuffet').value,
+        teaCups: t, coffeeCups: c, anise: a, mint: m, water: w, milk: lk,
+        teaGrams: t * TEA_GRAMS,
+        coffeeGrams: c * COFFEE_GRAMS,
+        sugarGrams: (t + c + a + m) * SUGAR_GRAMS,
+        notes: document.getElementById('dispNotes').value
+    });
+    await saveData(db);
+    ['tea', 'coffee', 'anise', 'mint', 'water', 'milk'].forEach(id => document.getElementById(id).value = '0');
+    document.getElementById('dispNotes').value = '';
+    updateCalc();
+    renderDispensingTable();
+    showAlert('تم تسجيل الصرف بنجاح', 'success');
+}
+
+async function deleteDispensing(id) {
+    if (!confirm('حذف السجل المحدد؟')) return;
+    db.dispensing = db.dispensing.filter(d => d.id !== id);
+    await saveData(db);
+    renderDispensingTable();
+    showAlert('تم حذف السجل', 'success');
+}
+
+function renderDispensingTable() {
+    let html = '<table><tr><th>رقم</th><th>التاريخ</th><th>البوفيه</th><th>شاى<br>كوب</th><th>قهوه<br>كوب</th><th>ينسون<br>وحدة</th><th>نعناع<br>وحدة</th><th>مياه<br>وحدة</th><th>لبن<br>وحدة</th><th>شاى<br>جم</th><th>قهوه<br>جم</th><th>سكر<br>جم</th><th>إجراء</th></tr>';
+    const sorted = [...db.dispensing].sort((a, b) => b.id - a.id);
+    sorted.forEach(r => {
+        html += '<tr><td>' + r.id + '</td><td>' + r.date + '</td><td>' + r.buffet + '</td>';
+        html += '<td>' + r.teaCups + '</td><td>' + r.coffeeCups + '</td><td>' + r.anise + '</td><td>' + r.mint + '</td><td>' + r.water + '</td><td>' + r.milk + '</td>';
+        html += '<td>' + Math.round(r.teaGrams) + '</td><td>' + Math.round(r.coffeeGrams) + '</td><td>' + Math.round(r.sugarGrams) + '</td>';
+        html += '<td><button class="btn btn-secondary delete-btn" onclick="deleteDispensing(' + r.id + ')">حذف</button></td></tr>';
+    });
+    html += '</table>';
+    document.getElementById('dispensingTable').innerHTML = html;
+}
+
+// ═════════════════════════════════════════════════════════════════════════════
+// SUMMARY
+// ═════════════════════════════════════════════════════════════════════════════
+function renderSummary() {
+    let html = '<table><tr><th>البيان</th>';
+    BUFFETS.forEach(b => html += '<th>' + b.replace('بوفيه ', '').substring(0, 18) + '</th>');
+    html += '<th>الوحدة</th></tr>';
+
+    ITEMS_ALL.forEach(item => {
+        const isG = ITEMS_GRAM.includes(item);
+        const unit = isG ? 'جم' : 'وحدة';
+        html += '<tr><td colspan="' + (BUFFETS.length + 2) + '" class="section-title">' + item + ' (' + unit + ')</td></tr>';
+
+        const rows = [
+            { label: 'الرصيد الافتتاحى', key: 'opening', bg: 'var(--lblue)', bold: false },
+            { label: 'الإضافات', key: 'added', bg: 'var(--lgr)', bold: false },
+            { label: 'المنصرف', key: 'dispensed', bg: 'var(--lred)', bold: false },
+            { label: 'المتبقى', key: 'remaining', bg: 'var(--lgold)', bold: true }
+        ];
+
+        rows.forEach(row => {
+            html += '<tr><td style="background:' + row.bg + ';font-weight:' + (row.bold ? 'bold' : 'normal') + ';text-align:right;padding-right:15px;">' + row.label + '</td>';
+            BUFFETS.forEach(b => {
+                const op = db.opening[b + '::' + item] || 0;
+                const ad = totalAdded(b, item);
+                const di = totalDispensed(b, item);
+                const rem = op + ad - di;
+                const v = { opening: op, added: ad, dispensed: di, remaining: rem }[row.key];
+                const low = rem < (isG ? 500 : 5);
+                const neg = rem < 0;
+                let cls = '';
+                if (neg && row.key === 'remaining') cls = 'neg-stock';
+                else if (low && row.key === 'remaining') cls = 'low-stock';
+                html += '<td style="background:' + row.bg + ';" class="' + cls + '">' + formatNum(v) + '</td>';
+            });
+            html += '<td style="background:' + row.bg + ';color:var(--dgray);font-size:12px;">' + unit + '</td></tr>';
+        });
+        html += '<tr><td colspan="' + (BUFFETS.length + 2) + '" style="height:8px;background:var(--bg);"></td></tr>';
+    });
+    html += '</table>';
+    document.getElementById('summaryTable').innerHTML = html;
+}
+
+// ═════════════════════════════════════════════════════════════════════════════
+// ANALYTICS
+// ═════════════════════════════════════════════════════════════════════════════
+let charts = {};
+
+function renderAnalytics() {
+    const data = analyticsByBuffet();
+    const bnames = BUFFETS.map(b => b.replace('بوفيه ', '').substring(0, 20));
+
+    // Destroy old charts
+    Object.values(charts).forEach(c => c.destroy());
+    charts = {};
+
+    // Bar Chart 1 - Gram items
+    charts.bar1 = new Chart(document.getElementById('barChart1'), {
+        type: 'bar',
+        data: {
+            labels: bnames,
+            datasets: [
+                { label: 'شاى', data: BUFFETS.map(b => data[b]['شاى']), backgroundColor: CHART_COLORS[0] },
+                { label: 'قهوه', data: BUFFETS.map(b => data[b]['قهوه']), backgroundColor: CHART_COLORS[1] },
+                { label: 'سكر', data: BUFFETS.map(b => data[b]['سكر']), backgroundColor: CHART_COLORS[2] }
+            ]
+        },
+        options: { responsive: true, plugins: { legend: { position: 'top' } }, scales: { y: { beginAtZero: true } } }
+    });
+
+    // Bar Chart 2 - Unit items
+    charts.bar2 = new Chart(document.getElementById('barChart2'), {
+        type: 'bar',
+        data: {
+            labels: bnames,
+            datasets: [
+                { label: 'نعناع', data: BUFFETS.map(b => data[b]['نعناع']), backgroundColor: CHART_COLORS[2] },
+                { label: 'ينسون', data: BUFFETS.map(b => data[b]['ينسون']), backgroundColor: CHART_COLORS[3] },
+                { label: 'لبن', data: BUFFETS.map(b => data[b]['لبن']), backgroundColor: CHART_COLORS[4] },
+                { label: 'مياه معدنية', data: BUFFETS.map(b => data[b]['مياه معدنية']), backgroundColor: CHART_COLORS[6] }
+            ]
+        },
+        options: { responsive: true, plugins: { legend: { position: 'top' } }, scales: { y: { beginAtZero: true } } }
+    });
+
+    // Pie Chart
+    const itemTotals = {};
+    ITEMS_ALL.forEach(i => itemTotals[i] = BUFFETS.reduce((s, b) => s + data[b][i], 0));
+    const pieLabels = Object.keys(itemTotals).filter(k => itemTotals[k] > 0);
+    const pieValues = pieLabels.map(k => itemTotals[k]);
+
+    charts.pie = new Chart(document.getElementById('pieChart'), {
+        type: 'doughnut',
+        data: {
+            labels: pieLabels,
+            datasets: [{ data: pieValues, backgroundColor: CHART_COLORS }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { position: 'bottom' },
+                tooltip: {
+                    callbacks: {
+                        label: function(ctx) {
+                            const sum = ctx.dataset.data.reduce((a, b) => a + b, 0);
+                            const pct = ((ctx.raw / sum) * 100).toFixed(1);
+                            return ctx.label + ': ' + ctx.raw.toLocaleString('ar-EG') + ' (' + pct + '%)';
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    // Horizontal Bar Chart
+    const totals = BUFFETS.map(b => ITEMS_ALL.reduce((s, i) => s + data[b][i], 0));
+    charts.hbar = new Chart(document.getElementById('hbarChart'), {
+        type: 'bar',
+        data: { labels: bnames, datasets: [{ label: 'إجمالى الاستهلاك', data: totals, backgroundColor: CHART_COLORS }] },
+        options: { indexAxis: 'y', responsive: true, plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true } } }
+    });
+
+    // Summary table
+    let html = '<table><tr><th>البوفيه</th>';
+    ITEMS_ALL.forEach(i => html += '<th>' + i + '</th>');
+    html += '<th>الإجمالى</th></tr>';
+
+    BUFFETS.forEach((b, ri) => {
+        const bg = ri % 2 === 0 ? 'var(--odd)' : 'var(--even)';
+        html += '<tr><td style="background:var(--lblue);font-weight:bold;text-align:right;padding-right:15px;">' + b.replace('بوفيه ', '').substring(0, 22) + '</td>';
+        let tot = 0;
+        ITEMS_ALL.forEach(item => {
+            const v = data[b][item];
+            tot += v;
+            html += '<td style="background:' + bg + '">' + formatNum(v) + '</td>';
+        });
+        html += '<td style="background:var(--hdr2);color:var(--white);font-weight:bold;">' + formatNum(tot) + '</td></tr>';
+    });
+    html += '</table>';
+    document.getElementById('analyticsTable').innerHTML = html;
+}
+
+// ═════════════════════════════════════════════════════════════════════════════
+// EXCEL EXPORT
+// ═════════════════════════════════════════════════════════════════════════════
+function exportToExcel() {
+    const wb = XLSX.utils.book_new();
+    const data = analyticsByBuffet();
+
+    // Sheet 1: Dashboard
+    const dashRows = [];
+    const dashHeader = ['البوفيه'].concat(ITEMS_ALL);
+    const dashUnit = [''].concat(ITEMS_ALL.map(i => ITEMS_GRAM.includes(i) ? 'جم' : 'وحدة'));
+    dashRows.push(dashHeader);
+    dashRows.push(dashUnit);
+    BUFFETS.forEach(b => {
+        const row = [b];
+        ITEMS_ALL.forEach(i => row.push(Math.round(getStock(b, i))));
+        dashRows.push(row);
+    });
+    const ws1 = XLSX.utils.aoa_to_sheet(dashRows);
+    XLSX.utils.book_append_sheet(wb, ws1, 'لوحة التحكم');
+
+    // Sheet 2: Summary
+    const sumRows = [];
+    sumRows.push(['البيان'].concat(BUFFETS.map(b => b.replace('بوفيه ', '').substring(0, 18))).concat(['الوحدة']));
+    ITEMS_ALL.forEach(item => {
+        const isG = ITEMS_GRAM.includes(item);
+        const unit = isG ? 'جم' : 'وحدة';
+        sumRows.push([item + ' (' + unit + ')']);
+        ['الرصيد الافتتاحى', 'الإضافات', 'المنصرف', 'المتبقى'].forEach(label => {
+            const row = [label];
+            BUFFETS.forEach(b => {
+                const op = db.opening[b + '::' + item] || 0;
+                const ad = totalAdded(b, item);
+                const di = totalDispensed(b, item);
+                const rem = op + ad - di;
+                const v = { 'الرصيد الافتتاحى': op, 'الإضافات': ad, 'المنصرف': di, 'المتبقى': rem }[label];
+                row.push(Math.round(v));
+            });
+            row.push(unit);
+            sumRows.push(row);
+        });
+        sumRows.push(['']);
+    });
+    const ws2 = XLSX.utils.aoa_to_sheet(sumRows);
+    XLSX.utils.book_append_sheet(wb, ws2, 'ملخص المخزون');
+
+    // Sheet 3: Additions
+    const addRows = [['رقم', 'التاريخ', 'البوفيه', 'الصنف', 'الكمية', 'ملاحظات']];
+    const sortedAdd = [...db.additions].sort((a, b) => b.id - a.id);
+    sortedAdd.forEach(r => {
+        const disp = ITEMS_GRAM.includes(r.item) ? (r.qty / 1000).toFixed(3) + ' كجم' : Math.round(r.qty) + ' وحدة';
+        addRows.push([r.id, r.date, r.buffet, r.item, disp, r.notes || '']);
+    });
+    const ws3 = XLSX.utils.aoa_to_sheet(addRows);
+    XLSX.utils.book_append_sheet(wb, ws3, 'سجل الإضافات');
+
+    // Sheet 4: Dispensing
+    const dispRows = [['رقم', 'التاريخ', 'البوفيه', 'شاى كوب', 'قهوه كوب', 'ينسون وحدة', 'نعناع وحدة', 'مياه وحدة', 'لبن وحدة', 'شاى جم', 'قهوه جم', 'سكر جم']];
+    const sortedDisp = [...db.dispensing].sort((a, b) => b.id - a.id);
+    sortedDisp.forEach(r => {
+        dispRows.push([r.id, r.date, r.buffet, r.teaCups, r.coffeeCups, r.anise, r.mint, r.water, r.milk, Math.round(r.teaGrams), Math.round(r.coffeeGrams), Math.round(r.sugarGrams)]);
+    });
+    const ws4 = XLSX.utils.aoa_to_sheet(dispRows);
+    XLSX.utils.book_append_sheet(wb, ws4, 'سجل الصرف');
+
+    // Sheet 5: Analytics
+    const anRows = [['البوفيه'].concat(ITEMS_ALL).concat(['الإجمالى'])];
+    BUFFETS.forEach(b => {
+        const row = [b.replace('بوفيه ', '').substring(0, 22)];
+        let tot = 0;
+        ITEMS_ALL.forEach(i => { const v = data[b][i]; tot += v; row.push(Math.round(v)); });
+        row.push(Math.round(tot));
+        anRows.push(row);
+    });
+    const ws5 = XLSX.utils.aoa_to_sheet(anRows);
+    XLSX.utils.book_append_sheet(wb, ws5, 'التحليلات');
+
+    // Download
+    const now = new Date();
+    const filename = 'buffet_report_' + now.getFullYear() + String(now.getMonth()+1).padStart(2,'0') + String(now.getDate()).padStart(2,'0') + '_' +
+                     String(now.getHours()).padStart(2,'0') + String(now.getMinutes()).padStart(2,'0') + String(now.getSeconds()).padStart(2,'0') + '.xlsx';
+    XLSX.writeFile(wb, filename);
+    showAlert('تم تصدير ملف Excel بنجاح', 'success');
+}
+
+// ═════════════════════════════════════════════════════════════════════════════
+// INIT
+// ═════════════════════════════════════════════════════════════════════════════
+// (initialization moved to async IIFE above)
+</script>
+</body>
+</html>

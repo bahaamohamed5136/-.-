@@ -1,0 +1,1647 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الداش بورد الاحترافي - شركة نماء لصناعة الأعلاف</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap');
+        :root { --primary:#0d9488; --primary-dark:#0f766e; --primary-light:#99f6e4; --secondary:#f59e0b; --danger:#ef4444; --success:#22c55e; --warning:#f59e0b; --info:#3b82f6; --dark:#1e293b; --darker:#0f172a; --light:#f8fafc; --sidebar-bg:#0f172a; --sidebar-width:280px; --transition:all 0.3s cubic-bezier(0.4,0,0.2,1); }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family:'Cairo',sans-serif; background:linear-gradient(135deg,#0f172a 0%,#1e293b 50%,#0f172a 100%); min-height:100vh; overflow-x:hidden; color:#fff; }
+        .app-container { display:flex; min-height:100vh; }
+        .sidebar { width:var(--sidebar-width); background:var(--sidebar-bg); position:fixed; right:0; top:0; height:100vh; z-index:1000; transition:var(--transition); border-left:1px solid rgba(255,255,255,0.05); overflow-y:auto; }
+        .sidebar-header { padding:25px 20px; text-align:center; border-bottom:1px solid rgba(255,255,255,0.05); background:linear-gradient(180deg,rgba(13,148,136,0.1),transparent); }
+        .logo-icon { width:60px; height:60px; background:linear-gradient(135deg,var(--primary),var(--primary-dark)); border-radius:16px; display:flex; align-items:center; justify-content:center; margin:0 auto 15px; font-size:28px; box-shadow:0 0 20px rgba(13,148,136,0.3); animation:pulse 2s infinite; }
+        @keyframes pulse { 0%,100%{box-shadow:0 0 20px rgba(13,148,136,0.3);} 50%{box-shadow:0 0 30px rgba(13,148,136,0.5);} }
+        .sidebar-header h1 { font-size:18px; font-weight:800; margin-bottom:5px; }
+        .sidebar-header p { font-size:12px; color:#94a3b8; }
+        .sidebar-header .designer { margin-top:8px; font-size:11px; color:#0d9488; font-weight:600; }
+        .nav-menu { padding:20px 15px; }
+        .nav-item { display:flex; align-items:center; padding:14px 18px; margin-bottom:8px; border-radius:12px; cursor:pointer; transition:var(--transition); color:#94a3b8; text-decoration:none; position:relative; overflow:hidden; }
+        .nav-item::before { content:''; position:absolute; right:0; top:0; width:3px; height:100%; background:var(--primary); transform:scaleY(0); transition:var(--transition); }
+        .nav-item:hover, .nav-item.active { background:rgba(13,148,136,0.1); color:#fff; }
+        .nav-item:hover::before, .nav-item.active::before { transform:scaleY(1); }
+        .nav-item .icon { width:36px; height:36px; background:rgba(255,255,255,0.05); border-radius:10px; display:flex; align-items:center; justify-content:center; margin-left:12px; font-size:18px; transition:var(--transition); }
+        .nav-item:hover .icon, .nav-item.active .icon { background:var(--primary); transform:scale(1.1); }
+        .nav-item .label { font-size:14px; font-weight:600; }
+        .nav-item .badge { margin-right:auto; background:var(--danger); color:#fff; padding:2px 8px; border-radius:10px; font-size:11px; font-weight:700; }
+        .main-content { flex:1; margin-right:var(--sidebar-width); padding:20px 30px; transition:var(--transition); }
+        .top-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:30px; padding:15px 25px; background:rgba(30,41,59,0.8); backdrop-filter:blur(10px); border-radius:16px; border:1px solid rgba(255,255,255,0.05); flex-wrap:wrap; gap:15px; }
+        .header-title h2 { font-size:24px; font-weight:800; background:linear-gradient(135deg,#fff,var(--primary-light)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+        .header-title p { color:#94a3b8; font-size:13px; margin-top:4px; }
+        .header-actions { display:flex; gap:12px; align-items:center; flex-wrap:wrap; }
+        .btn { padding:10px 20px; border-radius:12px; border:none; cursor:pointer; font-family:'Cairo',sans-serif; font-weight:600; font-size:13px; transition:var(--transition); display:flex; align-items:center; gap:8px; }
+        .btn-primary { background:linear-gradient(135deg,var(--primary),var(--primary-dark)); color:#fff; box-shadow:0 4px 15px rgba(13,148,136,0.3); }
+        .btn-primary:hover { transform:translateY(-2px); box-shadow:0 6px 20px rgba(13,148,136,0.4); }
+        .btn-secondary { background:rgba(255,255,255,0.05); color:#fff; border:1px solid rgba(255,255,255,0.1); }
+        .btn-secondary:hover { background:rgba(255,255,255,0.1); }
+        .date-filter select { background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); color:#ef4444; padding:8px 15px; border-radius:10px; font-family:'Cairo',sans-serif; cursor:pointer; font-weight:700; }
+        select option { background:#1e293b; color:#ef4444; font-weight:600; }
+        .kpi-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:20px; margin-bottom:30px; }
+        .kpi-card { background:rgba(30,41,59,0.6); backdrop-filter:blur(10px); border-radius:20px; padding:25px; border:1px solid rgba(255,255,255,0.05); transition:var(--transition); position:relative; overflow:hidden; }
+        .kpi-card:hover { transform:translateY(-5px); box-shadow:0 10px 40px rgba(0,0,0,0.3); }
+        .kpi-card::after { content:''; position:absolute; top:0; left:0; width:100%; height:3px; background:linear-gradient(90deg,var(--primary),var(--primary-light)); transform:scaleX(0); transition:var(--transition); }
+        .kpi-card:hover::after { transform:scaleX(1); }
+        .kpi-header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:15px; }
+        .kpi-icon { width:50px; height:50px; border-radius:14px; display:flex; align-items:center; justify-content:center; font-size:24px; }
+        .kpi-icon.red { background:rgba(239,68,68,0.15); color:var(--danger); }
+        .kpi-icon.green { background:rgba(34,197,94,0.15); color:var(--success); }
+        .kpi-icon.yellow { background:rgba(245,158,11,0.15); color:var(--warning); }
+        .kpi-icon.blue { background:rgba(59,130,246,0.15); color:var(--info); }
+        .kpi-icon.teal { background:rgba(13,148,136,0.15); color:var(--primary); }
+        .kpi-trend { display:flex; align-items:center; gap:4px; font-size:12px; font-weight:700; padding:4px 10px; border-radius:8px; }
+        .trend-up { background:rgba(34,197,94,0.15); color:var(--success); }
+        .trend-down { background:rgba(239,68,68,0.15); color:var(--danger); }
+        .kpi-value { font-size:32px; font-weight:800; color:#fff; margin:10px 0; }
+        .kpi-label { font-size:14px; color:#94a3b8; font-weight:500; }
+        .kpi-progress { margin-top:15px; }
+        .progress-bar { height:6px; background:rgba(255,255,255,0.05); border-radius:3px; overflow:hidden; }
+        .progress-fill { height:100%; border-radius:3px; transition:width 1s ease; position:relative; }
+        .progress-fill::after { content:''; position:absolute; top:0; right:0; width:20px; height:100%; background:linear-gradient(90deg,transparent,rgba(255,255,255,0.3)); animation:shimmer 2s infinite; }
+        @keyframes shimmer { 0%{transform:translateX(0);} 100%{transform:translateX(-100px);} }
+        .charts-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(400px,1fr)); gap:20px; margin-bottom:30px; }
+        .chart-card { background:rgba(30,41,59,0.6); backdrop-filter:blur(10px); border-radius:20px; padding:25px; border:1px solid rgba(255,255,255,0.05); transition:var(--transition); }
+        .chart-card:hover { border-color:rgba(13,148,136,0.2); box-shadow:0 10px 40px rgba(0,0,0,0.3); }
+        .chart-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; }
+        .chart-title { font-size:16px; font-weight:700; color:#fff; }
+        .chart-actions { display:flex; gap:8px; }
+        .chart-action-btn { width:32px; height:32px; border-radius:8px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); color:#94a3b8; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:var(--transition); }
+        .chart-action-btn:hover { background:var(--primary); color:#fff; border-color:var(--primary); }
+        .chart-container { position:relative; height:300px; }
+        .table-card { background:rgba(30,41,59,0.6); backdrop-filter:blur(10px); border-radius:20px; padding:25px; border:1px solid rgba(255,255,255,0.05); margin-bottom:20px; overflow:hidden; }
+        .table-responsive { overflow-x:auto; }
+        table { width:100%; border-collapse:collapse; }
+        th { background:rgba(13,148,136,0.1); color:var(--primary-light); font-weight:700; font-size:13px; padding:15px; text-align:right; white-space:nowrap; }
+        td { padding:15px; border-bottom:1px solid rgba(255,255,255,0.03); font-size:13px; color:#cbd5e1; }
+        tr:hover td { background:rgba(13,148,136,0.03); }
+        .status-badge { padding:4px 12px; border-radius:20px; font-size:12px; font-weight:700; display:inline-block; }
+        .status-completed { background:rgba(34,197,94,0.15); color:var(--success); }
+        .status-pending { background:rgba(245,158,11,0.15); color:var(--warning); }
+        .status-overdue { background:rgba(239,68,68,0.15); color:var(--danger); }
+        .status-inprogress { background:rgba(59,130,246,0.15); color:var(--info); }
+        .alerts-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:20px; margin-bottom:30px; }
+        .alert-card { background:rgba(30,41,59,0.6); backdrop-filter:blur(10px); border-radius:16px; padding:20px; border-right:4px solid var(--danger); display:flex; align-items:flex-start; gap:15px; transition:var(--transition); }
+        .alert-card:hover { transform:translateX(-5px); box-shadow:0 10px 40px rgba(0,0,0,0.3); }
+        .alert-card.warning { border-right-color:var(--warning); }
+        .alert-card.info { border-right-color:var(--info); }
+        .alert-card.success { border-right-color:var(--success); }
+        .alert-icon { width:40px; height:40px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:20px; flex-shrink:0; }
+        .alert-card.danger .alert-icon { background:rgba(239,68,68,0.15); color:var(--danger); }
+        .alert-card.warning .alert-icon { background:rgba(245,158,11,0.15); color:var(--warning); }
+        .alert-card.info .alert-icon { background:rgba(59,130,246,0.15); color:var(--info); }
+        .alert-card.success .alert-icon { background:rgba(34,197,94,0.15); color:var(--success); }
+        .alert-content h4 { font-size:14px; font-weight:700; margin-bottom:5px; color:#fff; }
+        .alert-content p { font-size:13px; color:#94a3b8; line-height:1.6; }
+        .alert-time { font-size:11px; color:#64748b; margin-top:8px; }
+        .section-title { display:flex; align-items:center; gap:12px; margin-bottom:25px; margin-top:40px; }
+        .section-title h3 { font-size:20px; font-weight:800; color:#fff; }
+        .section-title .line { flex:1; height:1px; background:linear-gradient(90deg,rgba(13,148,136,0.5),transparent); }
+        .modal-overlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); backdrop-filter:blur(5px); z-index:2000; justify-content:center; align-items:center; }
+        .modal-overlay.active { display:flex; }
+        .modal { background:var(--dark); border-radius:24px; padding:30px; max-width:600px; width:90%; max-height:80vh; overflow-y:auto; border:1px solid rgba(255,255,255,0.1); box-shadow:0 25px 50px -12px rgba(0,0,0,0.5); }
+        .modal-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:25px; }
+        .modal-header h3 { font-size:20px; font-weight:800; }
+        .modal-close { width:36px; height:36px; border-radius:10px; background:rgba(255,255,255,0.05); border:none; color:#94a3b8; cursor:pointer; font-size:20px; display:flex; align-items:center; justify-content:center; transition:var(--transition); }
+        .modal-close:hover { background:var(--danger); color:#fff; }
+        .form-group { margin-bottom:20px; }
+        .form-group label { display:block; margin-bottom:8px; font-size:14px; font-weight:600; color:#cbd5e1; }
+        .form-group input, .form-group select, .form-group textarea { width:100%; padding:12px 15px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:12px; color:#ef4444; font-family:'Cairo',sans-serif; font-size:14px; transition:var(--transition); font-weight:600; }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline:none; border-color:var(--primary); box-shadow:0 0 0 3px rgba(13,148,136,0.1); }
+        .form-row { display:grid; grid-template-columns:1fr 1fr; gap:15px; }
+        .data-entry-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(350px,1fr)); gap:20px; margin-bottom:30px; }
+        .entry-card { background:rgba(30,41,59,0.6); backdrop-filter:blur(10px); border-radius:20px; padding:25px; border:1px solid rgba(255,255,255,0.05); }
+        .entry-card h4 { font-size:16px; font-weight:700; margin-bottom:20px; color:#fff; display:flex; align-items:center; gap:10px; }
+        .risk-matrix { display:grid; grid-template-columns:repeat(5,1fr); gap:4px; margin-top:15px; }
+        .risk-cell { aspect-ratio:1; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; cursor:pointer; transition:var(--transition); }
+        .risk-cell:hover { transform:scale(1.1); z-index:10; }
+        .risk-low { background:rgba(34,197,94,0.3); color:#fff; }
+        .risk-medium { background:rgba(245,158,11,0.3); color:#fff; }
+        .risk-high { background:rgba(239,68,68,0.3); color:#fff; }
+        .risk-critical { background:rgba(239,68,68,0.6); color:#fff; }
+        .section-content { display:none; }
+        .section-content.active { display:block; }
+        .slide-up { animation:slideUp 0.5s ease forwards; opacity:0; transform:translateY(20px); }
+        @keyframes slideUp { to { opacity:1; transform:translateY(0); } }
+        .toast-container { position:fixed; top:20px; left:20px; z-index:3000; display:flex; flex-direction:column; gap:10px; }
+        .toast { background:var(--dark); border-radius:12px; padding:15px 20px; border-right:4px solid var(--primary); box-shadow:0 10px 40px rgba(0,0,0,0.3); display:flex; align-items:center; gap:12px; animation:slideInLeft 0.3s ease; min-width:300px; }
+        .toast.success { border-right-color:var(--success); }
+        .toast.error { border-right-color:var(--danger); }
+        @keyframes slideInLeft { from { transform:translateX(-100%); opacity:0; } to { transform:translateX(0); opacity:1; } }
+        ::-webkit-scrollbar { width:8px; height:8px; }
+        ::-webkit-scrollbar-track { background:var(--darker); }
+        ::-webkit-scrollbar-thumb { background:var(--primary); border-radius:4px; }
+        @media (max-width:1024px) { .sidebar { transform:translateX(100%); } .sidebar.open { transform:translateX(0); } .main-content { margin-right:0; } .charts-grid { grid-template-columns:1fr; } }
+        @media print { .sidebar, .top-header, .header-actions, .chart-actions { display:none !important; } .main-content { margin-right:0; } body { background:#fff; color:#000; } .kpi-card, .chart-card, .table-card { background:#fff; border:1px solid #ddd; color:#000; } }
+    </style>
+<base target="_blank">
+</head>
+<body>
+    <div class="toast-container" id="toastContainer"></div>
+    <div class="app-container">
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo-icon"><img src="../namaa%20logo.png" alt="Namaa Logo" style="width:50px;height:50px;border-radius:12px;"></div>
+                <h1>شركة نماء لصناعة الأعلاف</h1>
+                <p>إدارة السلامة والصحة المهنية والبيئة</p>
+                <p class="designer">تصميم: م. بهاء محمد</p>
+                <p style="margin-top:4px;font-size:11px;color:#0d9488;font-weight:600;">by: eng.bahaa</p>
+            </div>
+            <nav class="nav-menu">
+                <a class="nav-item active" onclick="showSection('dashboard')"><div class="icon">📊</div><span class="label">لوحة الملخص العام</span></a>
+                <a class="nav-item" onclick="showSection('safety')"><div class="icon">🛡️</div><span class="label">إدارة السلامة</span><span class="badge">3</span></a>
+                <a class="nav-item" onclick="showSection('health')"><div class="icon">🩺</div><span class="label">الصحة المهنية</span></a>
+                <a class="nav-item" onclick="showSection('environment')"><div class="icon">🌱</div><span class="label">إدارة البيئة</span></a>
+                <a class="nav-item" onclick="showSection('compliance')"><div class="icon">✅</div><span class="label">الامتثال والقانونيات</span></a>
+                <a class="nav-item" onclick="showSection('training')"><div class="icon">📚</div><span class="label">التدريب والكفاءة</span></a>
+                <a class="nav-item" onclick="showSection('actions')"><div class="icon">📝</div><span class="label">الإجراءات والتحسين</span><span class="badge">5</span></a>
+                <a class="nav-item" onclick="showSection('dataentry')"><div class="icon">⚙️</div><span class="label">إدخال البيانات والتحليل</span></a>
+            </nav>
+        </aside>
+        <main class="main-content">
+            <div class="top-header">
+                <div class="header-title">
+                    <h2 id="pageTitle">لوحة الملخص العام</h2>
+                    <p id="pageSubtitle">نظرة شاملة فورية على أداء النظام</p>
+                </div>
+                <div class="header-actions">
+                    <div class="date-filter">
+                        <select id="periodFilter" onchange="updateDashboard()">
+                            <option value="week">هذا الأسبوع</option>
+                            <option value="month" selected>هذا الشهر</option>
+                            <option value="quarter">هذا الربع</option>
+                            <option value="year">هذه السنة</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-secondary" onclick="exportToExcel()">📥 Excel</button>
+                    <button class="btn btn-secondary" onclick="exportToPDF()">📄 PDF</button>
+                    <button class="btn btn-primary" onclick="openModal()">➕ إضافة حادث</button>
+                </div>
+            </div>
+            <!-- DASHBOARD SECTION -->
+            <div id="dashboard" class="section-content active">
+                <div class="kpi-grid">
+                    <div class="kpi-card slide-up" style="animation-delay:0.1s">
+                        <div class="kpi-header">
+                            <div class="kpi-icon red">⚠️</div>
+                            <div class="kpi-trend trend-down"><span>↓</span> 12%</div>
+                        </div>
+                        <div class="kpi-value" id="kpiAccidents">24</div>
+                        <div class="kpi-label">إجمالي الحوادث</div>
+                        <div class="kpi-progress"><div class="progress-bar"><div class="progress-fill" style="width:65%;background:linear-gradient(90deg,var(--danger),var(--warning))"></div></div></div>
+                    </div>
+                    <div class="kpi-card slide-up" style="animation-delay:0.2s">
+                        <div class="kpi-header">
+                            <div class="kpi-icon green">✅</div>
+                            <div class="kpi-trend trend-up"><span>↑</span> 8%</div>
+                        </div>
+                        <div class="kpi-value" id="kpiCompliance">87%</div>
+                        <div class="kpi-label">نسبة الامتثال</div>
+                        <div class="kpi-progress"><div class="progress-bar"><div class="progress-fill" style="width:87%;background:linear-gradient(90deg,var(--success),var(--primary))"></div></div></div>
+                    </div>
+                    <div class="kpi-card slide-up" style="animation-delay:0.3s">
+                        <div class="kpi-header">
+                            <div class="kpi-icon yellow">📋</div>
+                            <div class="kpi-trend trend-up"><span>↑</span> 15%</div>
+                        </div>
+                        <div class="kpi-value" id="kpiActions">156</div>
+                        <div class="kpi-label">الإجراءات المغلقة</div>
+                        <div class="kpi-progress"><div class="progress-bar"><div class="progress-fill" style="width:78%;background:linear-gradient(90deg,var(--warning),var(--success))"></div></div></div>
+                    </div>
+                    <div class="kpi-card slide-up" style="animation-delay:0.4s">
+                        <div class="kpi-header">
+                            <div class="kpi-icon blue">🌱</div>
+                            <div class="kpi-trend trend-up"><span>↑</span> 5%</div>
+                        </div>
+                        <div class="kpi-value" id="kpiEnv">92%</div>
+                        <div class="kpi-label">الامتثال البيئي</div>
+                        <div class="kpi-progress"><div class="progress-bar"><div class="progress-fill" style="width:92%;background:linear-gradient(90deg,var(--info),var(--primary))"></div></div></div>
+                    </div>
+                    <div class="kpi-card slide-up" style="animation-delay:0.5s">
+                        <div class="kpi-header">
+                            <div class="kpi-icon teal">👥</div>
+                            <div class="kpi-trend trend-up"><span>↑</span> 22%</div>
+                        </div>
+                        <div class="kpi-value" id="kpiTraining">1,240</div>
+                        <div class="kpi-label">ساعات التدريب</div>
+                        <div class="kpi-progress"><div class="progress-bar"><div class="progress-fill" style="width:95%;background:linear-gradient(90deg,var(--primary),var(--info))"></div></div></div>
+                    </div>
+                    <div class="kpi-card slide-up" style="animation-delay:0.6s">
+                        <div class="kpi-header">
+                            <div class="kpi-icon red">💰</div>
+                            <div class="kpi-trend trend-down"><span>↓</span> 18%</div>
+                        </div>
+                        <div class="kpi-value" id="kpiCost">$45K</div>
+                        <div class="kpi-label">تكلفة الحوادث</div>
+                        <div class="kpi-progress"><div class="progress-bar"><div class="progress-fill" style="width:45%;background:linear-gradient(90deg,var(--success),var(--primary))"></div></div></div>
+                    </div>
+                </div>
+
+                <div class="section-title"><h3>🚨 التنبيهات والتحذيرات</h3><div class="line"></div></div>
+                <div class="alerts-grid">
+                    <div class="alert-card danger slide-up" style="animation-delay:0.1s">
+                        <div class="alert-icon">🔴</div>
+                        <div class="alert-content">
+                            <h4>منطقة خطر عالي - المستودع B</h4>
+                            <p>تم رصد 3 مخالفات سلامة خطيرة في المستودع B خلال الأسبوع الماضي</p>
+                            <div class="alert-time">منذ 2 ساعة</div>
+                        </div>
+                    </div>
+                    <div class="alert-card warning slide-up" style="animation-delay:0.2s">
+                        <div class="alert-icon">🟡</div>
+                        <div class="alert-content">
+                            <h4>شهادة ISO 45001 على وشك الانتهاء</h4>
+                            <p>تبقى 15 يوماً فقط على انتهاء صلاحية الشهادة</p>
+                            <div class="alert-time">منذ 5 ساعات</div>
+                        </div>
+                    </div>
+                    <div class="alert-card info slide-up" style="animation-delay:0.3s">
+                        <div class="alert-icon">🔵</div>
+                        <div class="alert-content">
+                            <h4>5 مهام تفتيش متأخرة</h4>
+                            <p>هناك 5 مهام تفتيش دورية لم يتم إنجازها في قسم الإنتاج</p>
+                            <div class="alert-time">منذ 8 ساعات</div>
+                        </div>
+                    </div>
+                    <div class="alert-card success slide-up" style="animation-delay:0.4s">
+                        <div class="alert-icon">🟢</div>
+                        <div class="alert-content">
+                            <h4>إنجاز ممتاز في معدل الحوادث</h4>
+                            <p>انخفاض بنسبة 25% في معدل الحوادث مقارنة بالشهر الماضي</p>
+                            <div class="alert-time">منذ يوم واحد</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section-title"><h3>📈 التحليلات والرسوم البيانية</h3><div class="line"></div></div>
+                <div class="charts-grid">
+                    <div class="chart-card slide-up" style="animation-delay:0.1s">
+                        <div class="chart-header">
+                            <h4 class="chart-title">معدل الحوادث الشهري</h4>
+                            <div class="chart-actions">
+                                <button class="chart-action-btn" onclick="downloadChart('accidentsChart')" title="تحميل">💾</button>
+                                <button class="chart-action-btn" onclick="toggleChartType('accidentsChart')" title="تغيير النوع">📊</button>
+                            </div>
+                        </div>
+                        <div class="chart-container"><canvas id="accidentsChart"></canvas></div>
+                    </div>
+                    <div class="chart-card slide-up" style="animation-delay:0.2s">
+                        <div class="chart-header">
+                            <h4 class="chart-title">توزيع الحوادث حسب النوع</h4>
+                            <div class="chart-actions"><button class="chart-action-btn" onclick="downloadChart('incidentTypesChart')">💾</button></div>
+                        </div>
+                        <div class="chart-container"><canvas id="incidentTypesChart"></canvas></div>
+                    </div>
+                    <div class="chart-card slide-up" style="animation-delay:0.3s">
+                        <div class="chart-header">
+                            <h4 class="chart-title">الامتثال حسب القسم</h4>
+                            <div class="chart-actions"><button class="chart-action-btn" onclick="downloadChart('complianceChart')">💾</button></div>
+                        </div>
+                        <div class="chart-container"><canvas id="complianceChart"></canvas></div>
+                    </div>
+                    <div class="chart-card slide-up" style="animation-delay:0.4s">
+                        <div class="chart-header">
+                            <h4 class="chart-title">الاستهلاك البيئي</h4>
+                            <div class="chart-actions"><button class="chart-action-btn" onclick="downloadChart('environmentChart')">💾</button></div>
+                        </div>
+                        <div class="chart-container"><canvas id="environmentChart"></canvas></div>
+                    </div>
+                </div>
+
+                <div class="section-title"><h3>📋 آخر الحوادث والبلاغات</h3><div class="line"></div></div>
+                <div class="table-card slide-up">
+                    <div class="table-responsive">
+                        <table id="incidentsTable">
+                            <thead><tr><th>الرقم</th><th>التاريخ</th><th>الموقع</th><th>النوع</th><th>الخطورة</th><th>الحالة</th><th>الإجراء</th><th>المسؤول</th></tr></thead>
+                            <tbody id="incidentsTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SAFETY SECTION -->
+            <div id="safety" class="section-content">
+                <div class="kpi-grid">
+                    <div class="kpi-card"><div class="kpi-header"><div class="kpi-icon red">📉</div></div><div class="kpi-value">2.4</div><div class="kpi-label">معدل تكرار الحوادث (LTIFR)</div></div>
+                    <div class="kpi-card"><div class="kpi-header"><div class="kpi-icon yellow">⚡</div></div><div class="kpi-value">1.8</div><div class="kpi-label">معدل خطورة الحوادث</div></div>
+                    <div class="kpi-card"><div class="kpi-header"><div class="kpi-icon green">🏥</div></div><div class="kpi-value">18</div><div class="kpi-label">حوادث بدون توقف عمل</div></div>
+                    <div class="kpi-card"><div class="kpi-header"><div class="kpi-icon red">🚫</div></div><div class="kpi-value">6</div><div class="kpi-label">حوادث مع توقف عمل</div></div>
+                </div>
+                <div class="charts-grid">
+                    <div class="chart-card">
+                        <div class="chart-header"><h4 class="chart-title">الحوادث الوشيكة - الاتجاه الشهري</h4></div>
+                        <div class="chart-container"><canvas id="nearMissChart"></canvas></div>
+                    </div>
+                    <div class="chart-card">
+                        <div class="chart-header"><h4 class="chart-title">خريطة المخاطر</h4></div>
+                        <div class="risk-matrix" id="riskMatrix"></div>
+                    </div>
+                </div>
+                <div class="table-card">
+                    <div class="chart-header" style="margin-bottom:20px;"><h4 class="chart-title">سجل الفحوصات والتفتيشات</h4></div>
+                    <div class="table-responsive">
+                        <table>
+                            <thead><tr><th>التاريخ</th><th>الموقع</th><th>نوع الفحص</th><th>النتيجة</th><th>الملاحظات</th><th>الحالة</th></tr></thead>
+                            <tbody>
+                                <tr><td>2024-01-15</td><td>مصنع A</td><td>تفتيش سلامة عام</td><td>85%</td><td>3 ملاحظات</td><td><span class="status-badge status-pending">قيد المعالجة</span></td></tr>
+                                <tr><td>2024-01-12</td><td>المستودع B</td><td>فحص معدات الحماية</td><td>92%</td><td>1 ملاحظة</td><td><span class="status-badge status-completed">مغلق</span></td></tr>
+                                <tr><td>2024-01-10</td><td>مكتب الإدارة</td><td>فحص إجراءات الطوارئ</td><td>78%</td><td>5 ملاحظات</td><td><span class="status-badge status-inprogress">قيد التنفيذ</span></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- HEALTH SECTION -->
+            <div id="health" class="section-content">
+                <div class="kpi-grid">
+                    <div class="kpi-card"><div class="kpi-header"><div class="kpi-icon green">💉</div></div><div class="kpi-value">98%</div><div class="kpi-label">نسبة الفحوصات الطبية</div></div>
+                    <div class="kpi-card"><div class="kpi-header"><div class="kpi-icon yellow">🤒</div></div><div class="kpi-value">3</div><div class="kpi-label">الأمراض المهنية (شهرياً)</div></div>
+                    <div class="kpi-card"><div class="kpi-header"><div class="kpi-icon blue">🏭</div></div><div class="kpi-value">87%</div><div class="kpi-label">الامتثال البيئي للعمل</div></div>
+                    <div class="kpi-card"><div class="kpi-header"><div class="kpi-icon red">📉</div></div><div class="kpi-value">4.2%</div><div class="kpi-label">نسبة الغياب الصحي</div></div>
+                </div>
+                <div class="charts-grid">
+                    <div class="chart-card">
+                        <div class="chart-header"><h4 class="chart-title">قياسات البيئة العملية</h4></div>
+                        <div class="chart-container"><canvas id="workEnvironmentChart"></canvas></div>
+                    </div>
+                    <div class="chart-card">
+                        <div class="chart-header"><h4 class="chart-title">توزيع الأمراض المهنية</h4></div>
+                        <div class="chart-container"><canvas id="occupationalDiseasesChart"></canvas></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ENVIRONMENT SECTION -->
+            <div id="environment" class="section-content">
+                <div class="kpi-grid">
+                    <div class="kpi-card"><div class="kpi-header"><div class="kpi-icon blue">💧</div></div><div class="kpi-value">-12%</div><div class="kpi-label">تقليل استهلاك المياه</div></div>
+                    <div class="kpi-card"><div class="kpi-header"><div class="kpi-icon yellow">⚡</div></div><div class="kpi-value">-8%</div><div class="kpi-label">تقليل استهلاك الطاقة</div></div>
+                    <div class="kpi-card"><div class="kpi-header"><div class="kpi-icon green">♻️</div></div><div class="kpi-value">68%</div><div class="kpi-label">نسبة التدوير</div></div>
+                    <div class="kpi-card"><div class="kpi-header"><div class="kpi-icon red">🏭</div></div><div class="kpi-value">2</div><div class="kpi-label">مخالفات بيئية</div></div>
+                </div>
+                <div class="charts-grid">
+                    <div class="chart-card">
+                        <div class="chart-header"><h4 class="chart-title">الانبعاثات الشهرية</h4></div>
+                        <div class="chart-container"><canvas id="emissionsChart"></canvas></div>
+                    </div>
+                    <div class="chart-card">
+                        <div class="chart-header"><h4 class="chart-title">إدارة النفايات</h4></div>
+                        <div class="chart-container"><canvas id="wasteChart"></canvas></div>
+                    </div>
+                    <div class="chart-card">
+                        <div class="chart-header"><h4 class="chart-title">القياسات البيئية - المؤشرات الحيوية</h4></div>
+                        <div class="chart-container"><canvas id="envMeasurementsChart"></canvas></div>
+                    </div>
+                </div>
+                <div class="section-title" style="margin-top:30px;"><h3>📏 جدول القياسات البيئية</h3><div class="line"></div></div>
+                <div class="table-card">
+                    <div class="table-responsive">
+                        <table id="envMeasurementsTable">
+                            <thead><tr><th>التاريخ</th><th>الموقع</th><th>الإضاءة (Lux)</th><th>الاهتزاز (m/s²)</th><th>الوطأة الحرارية (WBGT)</th><th>الضوضاء (dB)</th><th>الانبعاثات (mg/m³)</th><th>الأتربة والغبار (mg/m³)</th><th>الحالة</th></tr></thead>
+                            <tbody id="envMeasurementsBody">
+                                <tr><td>2024-01-15</td><td>صالة الإنتاج</td><td>520</td><td>0.45</td><td>28.5</td><td>78</td><td>0.12</td><td>3.2</td><td><span class="status-badge status-completed">مطابق</span></td></tr>
+                                <tr><td>2024-01-12</td><td>مخزن الصويا</td><td>380</td><td>0.32</td><td>26.8</td><td>72</td><td>0.08</td><td>5.8</td><td><span class="status-badge status-pending">قيد المراجعة</span></td></tr>
+                                <tr><td>2024-01-10</td><td>الغلايات</td><td>450</td><td>0.68</td><td>31.2</td><td>85</td><td>0.25</td><td>8.5</td><td><span class="status-badge status-overdue">غير مطابق</span></td></tr>
+                                <tr><td>2024-01-08</td><td>المعمل</td><td>650</td><td>0.22</td><td>25.4</td><td>65</td><td>0.05</td><td>1.8</td><td><span class="status-badge status-completed">مطابق</span></td></tr>
+                                <tr><td>2024-01-05</td><td>مبنى التصنيع</td><td>490</td><td>0.55</td><td>29.1</td><td>82</td><td>0.18</td><td>6.2</td><td><span class="status-badge status-inprogress">قيد المعالجة</span></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="section-title" style="margin-top:30px;"><h3>➕ إدخال قياسات بيئية جديدة</h3><div class="line"></div></div>
+                <div class="data-entry-grid">
+                    <div class="entry-card">
+                        <h4>📏 نموذج القياسات البيئية</h4>
+                        <div class="form-group"><label>التاريخ</label><input type="date" id="envMeasureDate"></div>
+                        <div class="form-group"><label>الموقع</label><select id="envMeasureLocation">
+                            <option>صالة الإنتاج</option><option>مخزن الصويا</option><option>الغلايات</option><option>المعمل</option><option>مبنى التصنيع</option><option>الأنفاق</option><option>الكمبروسور</option><option>الطلمبات</option><option>أخرى</option>
+                        </select></div>
+                        <div class="form-row">
+                            <div class="form-group"><label>الإضاءة (Lux)</label><input type="number" id="lighting" value="500" step="10"></div>
+                            <div class="form-group"><label>الاهتزاز (m/s²)</label><input type="number" id="vibration" value="0.5" step="0.01"></div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group"><label>الوطأة الحرارية (WBGT)</label><input type="number" id="thermalStress" value="28" step="0.1"></div>
+                            <div class="form-group"><label>الضوضاء (dB)</label><input type="number" id="noise" value="75" step="1"></div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group"><label>الانبعاثات (mg/m³)</label><input type="number" id="emissionsMeasure" value="0.1" step="0.01"></div>
+                            <div class="form-group"><label>الأتربة والغبار (mg/m³)</label><input type="number" id="dust" value="5" step="0.1"></div>
+                        </div>
+                        <button class="btn btn-primary" onclick="addEnvMeasurement()" style="width:100%">💾 حفظ القياسات</button>
+                    </div>
+                </div>
+            </div>
+            <!-- COMPLIANCE SECTION -->
+            <div id="compliance" class="section-content">
+                <div class="kpi-grid">
+                    <div class="kpi-card"><div class="kpi-header"><div class="kpi-icon green">📜</div></div><div class="kpi-value">45</div><div class="kpi-label">التشريعات المطبقة</div></div>
+                    <div class="kpi-card"><div class="kpi-header"><div class="kpi-icon yellow">⚠️</div></div><div class="kpi-value">3</div><div class="kpi-label">حالات عدم الامتثال</div></div>
+                    <div class="kpi-card"><div class="kpi-header"><div class="kpi-icon blue">📋</div></div><div class="kpi-value">8</div><div class="kpi-label">التراخيص النشطة</div></div>
+                    <div class="kpi-card"><div class="kpi-header"><div class="kpi-icon red">💰</div></div><div class="kpi-value">$0</div><div class="kpi-label">الغرامات</div></div>
+                </div>
+                <div class="table-card">
+                    <div class="chart-header" style="margin-bottom:20px;"><h4 class="chart-title">حالة التراخيص والشهادات</h4></div>
+                    <div class="table-responsive">
+                        <table>
+                            <thead><tr><th>الشهادة/الترخيص</th><th>الجهة المصدرة</th><th>تاريخ الإصدار</th><th>تاريخ الانتهاء</th><th>الحالة</th><th>الأيام المتبقية</th></tr></thead>
+                            <tbody>
+                                <tr><td>ISO 45001:2018</td><td>SGS</td><td>2023-03-15</td><td>2024-03-15</td><td><span class="status-badge status-pending">على وشك الانتهاء</span></td><td style="color:var(--warning)">15 يوم</td></tr>
+                                <tr><td>ISO 14001:2015</td><td>Bureau Veritas</td><td>2023-06-01</td><td>2024-06-01</td><td><span class="status-badge status-completed">نشط</span></td><td style="color:var(--success)">120 يوم</td></tr>
+                                <tr><td>ترخيص مزاولة النشاط</td><td>البلدية</td><td>2023-01-01</td><td>2024-01-01</td><td><span class="status-badge status-overdue">منتهي</span></td><td style="color:var(--danger)">-5 أيام</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Compliance Data Entry Forms -->
+                <div class="section-title" style="margin-top:30px;"><h3>➕ إدخال بيانات الامتثال والقانونيات</h3><div class="line"></div></div>
+                <div class="data-entry-grid">
+                    <div class="entry-card">
+                        <h4>📜 إدخال تشريع / قانون جديد</h4>
+                        <div class="form-group"><label>اسم التشريع / القانون</label><input type="text" id="legislationName" placeholder="مثال: قانون العمل رقم 12 لسنة 2003"></div>
+                        <div class="form-group"><label>نوع المتطلب</label><select id="legislationType">
+                            <option>محلي</option>
+                            <option>دولي</option>
+                            <option>معيار ISO 45001</option>
+                            <option>معيار ISO 14001</option>
+                            <option>OSHA</option>
+                            <option>أخرى</option>
+                        </select></div>
+                        <div class="form-group"><label>حالة الامتثال</label><select id="legislationStatus">
+                            <option value="compliant">ممتثل</option>
+                            <option value="partial">ممتثل جزئياً</option>
+                            <option value="noncompliant">غير ممتثل</option>
+                            <option value="under_review">قيد المراجعة</option>
+                        </select></div>
+                        <div class="form-group"><label>تاريخ المراجعة القادمة</label><input type="date" id="legislationReviewDate"></div>
+                        <div class="form-group"><label>المسؤول عن المتابعة</label><input type="text" id="legislationResponsible" placeholder="اسم المسؤول"></div>
+                        <div class="form-group"><label>ملاحظات</label><textarea id="legislationNotes" rows="2" placeholder="ملاحظات حول الامتثال..."></textarea></div>
+                        <button class="btn btn-primary" onclick="addLegislation()" style="width:100%">💾 حفظ التشريع</button>
+                    </div>
+
+                    <div class="entry-card">
+                        <h4>📋 إدخال ترخيص / شهادة جديدة</h4>
+                        <div class="form-group"><label>اسم الترخيص / الشهادة</label><input type="text" id="certName" placeholder="مثال: ISO 45001:2018"></div>
+                        <div class="form-group"><label>الجهة المصدرة</label><input type="text" id="certIssuer" placeholder="مثال: SGS - Bureau Veritas"></div>
+                        <div class="form-row">
+                            <div class="form-group"><label>تاريخ الإصدار</label><input type="date" id="certIssueDate"></div>
+                            <div class="form-group"><label>تاريخ الانتهاء</label><input type="date" id="certExpiryDate"></div>
+                        </div>
+                        <div class="form-group"><label>حالة الترخيص</label><select id="certStatus">
+                            <option value="active">نشط</option>
+                            <option value="expiring_soon">على وشك الانتهاء</option>
+                            <option value="expired">منتهي</option>
+                            <option value="under_renewal">قيد التجديد</option>
+                        </select></div>
+                        <div class="form-group"><label>التكلفة (إن وجدت)</label><input type="number" id="certCost" placeholder="0" value="0"></div>
+                        <div class="form-group"><label>ملاحظات</label><textarea id="certNotes" rows="2" placeholder="ملاحظات..."></textarea></div>
+                        <button class="btn btn-primary" onclick="addCertificate()" style="width:100%">💾 حفظ الترخيص</button>
+                    </div>
+
+                    <div class="entry-card">
+                        <h4>⚠️ إدخال حالة عدم امتثال / مخالفة</h4>
+                        <div class="form-group"><label>تاريخ المخالفة</label><input type="date" id="violationDate"></div>
+                        <div class="form-group"><label>نوع المخالفة</label><select id="violationType">
+                            <option>مخالفة سلامة</option>
+                            <option>مخالفة بيئية</option>
+                            <option>مخالفة صحية</option>
+                            <option>تأخر في تجديد ترخيص</option>
+                            <option>عدم توفر شهادة مطلوبة</option>
+                            <option>غرامة مالية</option>
+                            <option>أخرى</option>
+                        </select></div>
+                        <div class="form-group"><label>الجهة المُخالِفة / المتأثرة</label><select id="violationDept">
+                            <option>الإدارة الهندسية</option>
+                            <option>الإدارة الإنتاج</option>
+                            <option>إدارة الجودة</option>
+                            <option>الأمن</option>
+                            <option>الشئون الإدارية</option>
+                            <option>المطعم</option>
+                            <option>الحملة</option>
+                            <option>البوفيهات</option>
+                            <option>المشتريات</option>
+                            <option>اللوجيستك</option>
+                            <option>المالية</option>
+                            <option>المراجعة</option>
+                            <option>نظم المعلومات</option>
+                            <option>الموارد البشرية</option>
+                            <option>المخازن</option>
+                            <option>أخرى</option>
+                        </select></div>
+                        <div class="form-group"><label>وصف المخالفة</label><textarea id="violationDesc" rows="2" placeholder="وصف تفصيلي للمخالفة..."></textarea></div>
+                        <div class="form-group"><label>الإجراء التصحيحي المطلوب</label><textarea id="violationAction" rows="2" placeholder="الإجراءات المطلوبة للمعالجة..."></textarea></div>
+                        <div class="form-group"><label>تاريخ الإغلاق المستهدف</label><input type="date" id="violationTargetDate"></div>
+                        <div class="form-group"><label>قيمة الغرامة (إن وجدت)</label><input type="number" id="violationFine" placeholder="0" value="0"></div>
+                        <button class="btn btn-primary" onclick="addViolation()" style="width:100%">💾 حفظ المخالفة</button>
+                    </div>
+                </div>
+
+                <!-- Compliance Records Table -->
+                <div class="section-title" style="margin-top:30px;"><h3>📋 سجل الامتثال والقانونيات</h3><div class="line"></div></div>
+                <div class="table-card">
+                    <div class="table-responsive">
+                        <table id="complianceRecordsTable">
+                            <thead><tr><th>الرقم</th><th>التاريخ</th><th>النوع</th><th>الوصف</th><th>الجهة / القسم</th><th>الحالة</th><th>التاريخ المستهدف</th></tr></thead>
+                            <tbody id="complianceRecordsBody">
+                                <tr><td>LEG-001</td><td>2024-01-15</td><td>تشريع</td><td>قانون العمل - السلامة المهنية</td><td>الموارد البشرية</td><td><span class="status-badge status-completed">ممتثل</span></td><td>2024-06-30</td></tr>
+                                <tr><td>CERT-002</td><td>2023-03-15</td><td>شهادة</td><td>ISO 45001:2018 - SGS</td><td>الجودة</td><td><span class="status-badge status-pending">على وشك الانتهاء</span></td><td>2024-03-15</td></tr>
+                                <tr><td>VIO-003</td><td>2024-01-10</td><td>مخالفة</td><td>تأخر تجديد ترخيص مزاولة النشاط</td><td>الشئون الإدارية</td><td><span class="status-badge status-overdue">متأخرة</span></td><td>2024-01-01</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TRAINING SECTION -->
+            <div id="training" class="section-content">
+                <div class="kpi-grid">
+                    <div class="kpi-card"><div class="kpi-header"><div class="kpi-icon blue">📚</div></div><div class="kpi-value">24</div><div class="kpi-label">الدورات المنفذة</div></div>
+                    <div class="kpi-card"><div class="kpi-header"><div class="kpi-icon green">✅</div></div><div class="kpi-value">89%</div><div class="kpi-label">نسبة الإكمال</div></div>
+                    <div class="kpi-card"><div class="kpi-header"><div class="kpi-icon yellow">⭐</div></div><div class="kpi-value">4.6/5</div><div class="kpi-label">رضا المتدربين</div></div>
+                    <div class="kpi-card"><div class="kpi-header"><div class="kpi-icon teal">👨‍🎓</div></div><div class="kpi-value">320</div><div class="kpi-label">المتدربين</div></div>
+                </div>
+                <div class="charts-grid">
+                    <div class="chart-card">
+                        <div class="chart-header"><h4 class="chart-title">خطة التدريب الشهرية</h4></div>
+                        <div class="chart-container"><canvas id="trainingPlanChart"></canvas></div>
+                    </div>
+                    <div class="chart-card">
+                        <div class="chart-header"><h4 class="chart-title">توزيع التدريب حسب الموضوع</h4></div>
+                        <div class="chart-container"><canvas id="trainingTopicsChart"></canvas></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ACTIONS SECTION -->
+            <div id="actions" class="section-content">
+                <div class="kpi-grid">
+                    <div class="kpi-card"><div class="kpi-header"><div class="kpi-icon yellow">📝</div></div><div class="kpi-value">45</div><div class="kpi-label">إجمالي الإجراءات</div></div>
+                    <div class="kpi-card"><div class="kpi-header"><div class="kpi-icon green">✅</div></div><div class="kpi-value">78%</div><div class="kpi-label">نسبة الإغلاق</div></div>
+                    <div class="kpi-card"><div class="kpi-header"><div class="kpi-icon red">⏰</div></div><div class="kpi-value">5</div><div class="kpi-label">متأخرة</div></div>
+                    <div class="kpi-card"><div class="kpi-header"><div class="kpi-icon blue">📉</div></div><div class="kpi-value">12 يوم</div><div class="kpi-label">متوسط مدة المعالجة</div></div>
+                </div>
+                <div class="charts-grid">
+                    <div class="chart-card">
+                        <div class="chart-header"><h4 class="chart-title">حالة الإجراءات التصحيحية</h4></div>
+                        <div class="chart-container"><canvas id="actionsStatusChart"></canvas></div>
+                    </div>
+                    <div class="chart-card">
+                        <div class="chart-header"><h4 class="chart-title">مدة المعالجة مقارنة بالهدف</h4></div>
+                        <div class="chart-container"><canvas id="actionsTimeChart"></canvas></div>
+                    </div>
+                </div>
+                <div class="table-card">
+                    <div class="chart-header" style="margin-bottom:20px;"><h4 class="chart-title">سجل الإجراءات والتوصيات</h4></div>
+                    <div class="table-responsive">
+                        <table>
+                            <thead><tr><th>الرقم</th><th>التاريخ</th><th>المصدر</th><th>الوصف</th><th>التاريخ المستهدف</th><th>الحالة</th></tr></thead>
+                            <tbody>
+                                <tr><td>CA-2024-001</td><td>2024-01-10</td><td>لجنة السلامة</td><td>تركيب حواجز واقية في منطقة التحميل</td><td>2024-01-25</td><td><span class="status-badge status-inprogress">قيد التنفيذ</span></td></tr>
+                                <tr><td>PA-2024-003</td><td>2024-01-08</td><td>تقرير تفتيش</td><td>تحديث إجراءات الطوارئ</td><td>2024-02-01</td><td><span class="status-badge status-pending">معلقة</span></td></tr>
+                                <tr><td>CA-2024-002</td><td>2024-01-05</td><td>حادث سقوط</td><td>صيانة السلالم المتحركة</td><td>2024-01-20</td><td><span class="status-badge status-completed">مغلقة</span></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DATA ENTRY SECTION -->
+            <div id="dataentry" class="section-content">
+                <div class="data-entry-grid">
+                    <!-- Incident Entry -->
+                    <div class="entry-card">
+                        <h4>📝 إدخال بيانات الحوادث</h4>
+                        <div class="form-group"><label>تاريخ الحادث</label><input type="date" id="incidentDate"></div>
+                        <div class="form-group"><label>الموقع</label><select id="incidentLocation">
+                            <option>المبنى الإداري القديم</option>
+                            <option>المبنى الإداري الجديد</option>
+                            <option>الأنفاق</option>
+                            <option>صالة الإنتاج</option>
+                            <option>مبنى التصنيع</option>
+                            <option>المعمل</option>
+                            <option>مخزن الصويا</option>
+                            <option>مخزن أبو شادي</option>
+                            <option>مخزن جمال</option>
+                            <option>البوابة</option>
+                            <option>الجراج</option>
+                            <option>شوارع المصنع</option>
+                            <option>الغلايات</option>
+                            <option>المولد</option>
+                            <option>الكمبروسور</option>
+                            <option>الإسكادا</option>
+                            <option>الطلمبات</option>
+                            <option>المطعم</option>
+                            <option>التحميل</option>
+                            <option>شارع الغلاية</option>
+                            <option>الغلاية</option>
+                            <option>الصوامع</option>
+                            <option>أخرى</option>
+                        </select></div>
+                        <div class="form-group"><label>نوع الحادث / الإدارة</label><select id="incidentType">
+                            <option>سقوط من ارتفاع</option>
+                            <option>إصابة ميكانيكية</option>
+                            <option>حريق</option>
+                            <option>تعرض كيميائي</option>
+                            <option>إصابة كهربائية</option>
+                            <option>الإدارة الهندسية</option>
+                            <option>الإدارة الإنتاج</option>
+                            <option>إدارة الجودة</option>
+                            <option>الأمن</option>
+                            <option>الشئون الإدارية</option>
+                            <option>المطعم</option>
+                            <option>الحملة</option>
+                            <option>البوفيهات</option>
+                            <option>المشتريات</option>
+                            <option>اللوجيستك</option>
+                            <option>المالية</option>
+                            <option>المراجعة</option>
+                            <option>نظم المعلومات</option>
+                            <option>الموارد البشرية</option>
+                            <option>المخازن</option>
+                            <option>أخرى</option>
+                        </select></div>
+                        <div class="form-row">
+                            <div class="form-group"><label>مستوى الخطورة</label><select id="incidentSeverity"><option value="low">منخفض</option><option value="medium">متوسط</option><option value="high">عالي</option><option value="critical">حرج</option></select></div>
+                            <div class="form-group"><label>عدد المصابين</label><input type="number" id="incidentInjuries" min="0" value="0"></div>
+                        </div>
+                        <div class="form-group"><label>الوصف</label><textarea id="incidentDesc" rows="3" placeholder="وصف تفصيلي للحادث..."></textarea></div>
+                        <button class="btn btn-primary" onclick="addIncident()" style="width:100%">💾 حفظ البيانات</button>
+                    </div>
+
+                    <!-- Inspection Entry -->
+                    <div class="entry-card">
+                        <h4>🔍 إدخال بيانات التفتيش</h4>
+                        <div class="form-group"><label>تاريخ التفتيش</label><input type="date" id="inspectionDate"></div>
+                        <div class="form-group"><label>الموقع</label><select id="inspectionLocation">
+                            <option>المبنى الإداري القديم</option>
+                            <option>المبنى الإداري الجديد</option>
+                            <option>الأنفاق</option>
+                            <option>صالة الإنتاج</option>
+                            <option>مبنى التصنيع</option>
+                            <option>المعمل</option>
+                            <option>مخزن الصويا</option>
+                            <option>مخزن أبو شادي</option>
+                            <option>مخزن جمال</option>
+                            <option>البوابة</option>
+                            <option>الجراج</option>
+                            <option>شوارع المصنع</option>
+                            <option>الغلايات</option>
+                            <option>المولد</option>
+                            <option>الكمبروسور</option>
+                            <option>الإسكادا</option>
+                            <option>الطلمبات</option>
+                            <option>المطعم</option>
+                            <option>التحميل</option>
+                            <option>شارع الغلاية</option>
+                            <option>الغلاية</option>
+                            <option>الصوامع</option>
+                            <option>أخرى</option>
+                        </select></div>
+                        <div class="form-group"><label>نوع الفحص</label><select id="inspectionType">
+                            <option>تفتيش سلامة عام</option>
+                            <option>فحص معدات الحماية</option>
+                            <option>فحص إجراءات الطوارئ</option>
+                            <option>فحص كهربائي</option>
+                            <option>فحص ميكانيكي</option>
+                            <option>قياس الإضاءة</option>
+                            <option>قياس الاهتزاز</option>
+                            <option>قياس الوطأة الحرارية</option>
+                            <option>قياس الضوضاء</option>
+                            <option>قياس الانبعاثات</option>
+                            <option>قياس الأتربة والغبار</option>
+                            <option>أخرى</option>
+                        </select></div>
+                        <div class="form-group"><label>نسبة الامتثال (%)</label><input type="number" id="inspectionScore" min="0" max="100" value="85"></div>
+                        <div class="form-group"><label>الملاحظات</label><textarea id="inspectionNotes" rows="3" placeholder="الملاحظات والتوصيات..."></textarea></div>
+                        <button class="btn btn-primary" onclick="addInspection()" style="width:100%">💾 حفظ البيانات</button>
+                    </div>
+
+                    <!-- Environmental Entry -->
+                    <div class="entry-card">
+                        <h4>🌱 إدخال بيانات بيئية</h4>
+                        <div class="form-group"><label>الفترة</label><input type="month" id="envPeriod" value="2024-01"></div>
+                        <div class="form-row">
+                            <div class="form-group"><label>استهلاك المياه (م³)</label><input type="number" id="waterUsage" value="1250"></div>
+                            <div class="form-group"><label>استهلاك الكهرباء (kWh)</label><input type="number" id="electricityUsage" value="45000"></div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group"><label>النفايات العامة (طن)</label><input type="number" id="generalWaste" value="45"></div>
+                            <div class="form-group"><label>النفايات الخطرة (طن)</label><input type="number" id="hazardousWaste" value="8"></div>
+                        </div>
+                        <div class="form-group"><label>نسبة التدوير (%)</label><input type="number" id="recyclingRate" min="0" max="100" value="68"></div>
+                        <div class="form-group"><label>الانبعاثات (طن CO2)</label><input type="number" id="emissions" value="120"></div>
+                        <button class="btn btn-primary" onclick="addEnvironmental()" style="width:100%">💾 حفظ البيانات</button>
+                    </div>
+
+                    <!-- Training Entry -->
+                    <div class="entry-card">
+                        <h4>📚 إدخال بيانات التدريب</h4>
+                        <div class="form-group"><label>اسم الدورة</label><input type="text" id="courseName" placeholder="مثال: السلامة الكهربائية"></div>
+                        <div class="form-group"><label>الموضوع</label><select id="courseTopic"><option>سلامة</option><option>صحة مهنية</option><option>بيئة</option><option>إسعافات أولية</option><option>مواد خطرة</option></select></div>
+                        <div class="form-row">
+                            <div class="form-group"><label>تاريخ البدء</label><input type="date" id="courseStart"></div>
+                            <div class="form-group"><label>تاريخ الانتهاء</label><input type="date" id="courseEnd"></div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group"><label>عدد المتدربين</label><input type="number" id="traineesCount" min="1" value="20"></div>
+                            <div class="form-group"><label>ساعات التدريب</label><input type="number" id="trainingHours" min="1" value="8"></div>
+                        </div>
+                        <div class="form-group"><label>اسم المدرب</label><input type="text" id="trainerName" placeholder="اسم المدرب"></div>
+                        <div class="form-group"><label>تقييم رضا المتدربين (من 5)</label>
+                            <select id="traineeSatisfaction">
+                                <option value="1">⭐ (1/5) - ضعيف جداً</option>
+                                <option value="2">⭐⭐ (2/5) - ضعيف</option>
+                                <option value="3">⭐⭐⭐ (3/5) - مقبول</option>
+                                <option value="4">⭐⭐⭐⭐ (4/5) - جيد</option>
+                                <option value="5" selected>⭐⭐⭐⭐⭐ (5/5) - ممتاز</option>
+                            </select>
+                        </div>
+                        <div class="form-group"><label>ملاحظات التقييم</label><textarea id="trainingNotes" rows="2" placeholder="ملاحظات حول جودة التدريب والمتدربين..."></textarea></div>
+                        <button class="btn btn-primary" onclick="addTraining()" style="width:100%">💾 حفظ البيانات</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>➕ إضافة حادث جديد</h3>
+                <button class="modal-close" onclick="closeModal()">×</button>
+            </div>
+            <div class="form-group"><label>تاريخ الحادث</label><input type="date" id="modalDate"></div>
+            <div class="form-row">
+                <div class="form-group"><label>الموقع</label><select id="modalLocation">
+                    <option>المبنى الإداري القديم</option>
+                    <option>المبنى الإداري الجديد</option>
+                    <option>الأنفاق</option>
+                    <option>صالة الإنتاج</option>
+                    <option>مبنى التصنيع</option>
+                    <option>المعمل</option>
+                    <option>مخزن الصويا</option>
+                    <option>مخزن أبو شادي</option>
+                    <option>مخزن جمال</option>
+                    <option>البوابة</option>
+                    <option>الجراج</option>
+                    <option>شوارع المصنع</option>
+                    <option>الغلايات</option>
+                    <option>المولد</option>
+                    <option>الكمبروسور</option>
+                    <option>الإسكادا</option>
+                    <option>الطلمبات</option>
+                    <option>المطعم</option>
+                    <option>التحميل</option>
+                    <option>شارع الغلاية</option>
+                    <option>الغلاية</option>
+                    <option>الصوامع</option>
+                    <option>أخرى</option>
+                </select></div>
+                <div class="form-group"><label>النوع</label><select id="modalType">
+                    <option>سقوط من ارتفاع</option>
+                    <option>إصابة ميكانيكية</option>
+                    <option>حريق</option>
+                    <option>تعرض كيميائي</option>
+                    <option>إصابة كهربائية</option>
+                    <option>الإدارة الهندسية</option>
+                    <option>الإدارة الإنتاج</option>
+                    <option>إدارة الجودة</option>
+                    <option>الأمن</option>
+                    <option>الشئون الإدارية</option>
+                    <option>المطعم</option>
+                    <option>الحملة</option>
+                    <option>البوفيهات</option>
+                    <option>المشتريات</option>
+                    <option>اللوجيستك</option>
+                    <option>المالية</option>
+                    <option>المراجعة</option>
+                    <option>نظم المعلومات</option>
+                    <option>الموارد البشرية</option>
+                    <option>المخازن</option>
+                    <option>أخرى</option>
+                </select></div>
+            </div>
+            <div class="form-row">
+                <div class="form-group"><label>الخطورة</label><select id="modalSeverity"><option value="low">منخفض</option><option value="medium">متوسط</option><option value="high">عالي</option><option value="critical">حرج</option></select></div>
+                <div class="form-group"><label>المسؤول</label><input type="text" id="modalResponsible" placeholder="اسم المسؤول"></div>
+            </div>
+            <div class="form-group"><label>الوصف</label><textarea id="modalDesc" rows="3" placeholder="وصف تفصيلي..."></textarea></div>
+            <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:20px">
+                <button class="btn btn-secondary" onclick="closeModal()">إلغاء</button>
+                <button class="btn btn-primary" onclick="saveModalIncident()">حفظ</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ===== DATA STORE =====
+        let incidents = [];
+        let complianceRecords = [];
+        let envMeasurements = [];
+        let inspections = [];
+        let environmentalData = [];
+        let trainingRecords = [];
+        let chartInstances = {};
+
+        async function loadAllData() {
+            try {
+                const res = await fetch('/api/data');
+                if (res.ok) {
+                    const data = await res.json();
+                    incidents = data.incidents || [];
+                    complianceRecords = data.complianceRecords || [];
+                    envMeasurements = data.envMeasurements || [];
+                    inspections = data.inspections || [];
+                    environmentalData = data.environmentalData || [];
+                    trainingRecords = data.trainingRecords || [];
+                    localStorage.setItem('hse_data', JSON.stringify(data));
+                    return;
+                }
+            } catch {}
+            const stored = localStorage.getItem('hse_data');
+            if (stored) {
+                const data = JSON.parse(stored);
+                incidents = data.incidents || [];
+                complianceRecords = data.complianceRecords || [];
+                envMeasurements = data.envMeasurements || [];
+                inspections = data.inspections || [];
+                environmentalData = data.environmentalData || [];
+                trainingRecords = data.trainingRecords || [];
+            }
+        }
+
+        async function saveAllData() {
+            const data = { incidents, complianceRecords, envMeasurements, inspections, environmentalData, trainingRecords };
+            localStorage.setItem('hse_data', JSON.stringify(data));
+            try {
+                await fetch('/api/data', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+            } catch {}
+        }
+
+        // ===== SECTION NAVIGATION =====
+        const sectionTitles = {
+            dashboard: {title:'لوحة الملخص العام', subtitle:'نظرة شاملة فورية على أداء النظام'},
+            safety: {title:'إدارة السلامة', subtitle:'مؤشرات وتحليلات السلامة المهنية'},
+            health: {title:'الصحة المهنية', subtitle:'متابعة الصحة المهنية والبيئة العملية'},
+            environment: {title:'إدارة البيئة', subtitle:'الاستهلاك والانبعاثات والنفايات'},
+            compliance: {title:'الامتثال والقانونيات', subtitle:'التراخيص والتشريعات والشهادات'},
+            training: {title:'التدريب والكفاءة', subtitle:'خطط التدريب ومؤشرات الكفاءة'},
+            actions: {title:'الإجراءات والتحسين', subtitle:'الإجراءات التصحيحية والوقائية'},
+            dataentry: {title:'إدخال البيانات والتحليل', subtitle:'إدخال وتحليل البيانات بشكل تفاعلي'}
+        };
+
+        function showSection(sectionId) {
+            document.querySelectorAll('.section-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            document.getElementById(sectionId).classList.add('active');
+            event.currentTarget.classList.add('active');
+
+            const info = sectionTitles[sectionId];
+            document.getElementById('pageTitle').textContent = info.title;
+            document.getElementById('pageSubtitle').textContent = info.subtitle;
+
+            setTimeout(() => {
+                if(sectionId === 'dashboard') initDashboardCharts();
+                if(sectionId === 'safety') initSafetyCharts();
+                if(sectionId === 'health') initHealthCharts();
+                if(sectionId === 'environment') initEnvironmentCharts();
+                if(sectionId === 'training') initTrainingCharts();
+                if(sectionId === 'actions') initActionsCharts();
+            }, 100);
+        }
+
+        // ===== CHART CONFIGURATION =====
+        Chart.defaults.color = '#94a3b8';
+        Chart.defaults.borderColor = 'rgba(255,255,255,0.05)';
+        Chart.defaults.font.family = 'Cairo';
+
+        function initDashboardCharts() {
+            const ctx1 = document.getElementById('accidentsChart');
+            if(!ctx1) return;
+            if(chartInstances['accidentsChart']) chartInstances['accidentsChart'].destroy();
+            chartInstances['accidentsChart'] = new Chart(ctx1, {
+                type: 'line',
+                data: {
+                    labels: ['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'],
+                    datasets: [{
+                        label: 'الحوادث',
+                        data: [28,24,22,26,20,18,24,21,19,23,25,24],
+                        borderColor: '#ef4444',
+                        backgroundColor: 'rgba(239,68,68,0.1)',
+                        fill: true,
+                        tension: 0.4,
+                        pointBackgroundColor: '#ef4444',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2,
+                        pointRadius: 4
+                    },{
+                        label: 'الحوادث الوشيكة',
+                        data: [45,38,42,35,40,33,38,36,34,39,41,37],
+                        borderColor: '#f59e0b',
+                        backgroundColor: 'rgba(245,158,11,0.1)',
+                        fill: true,
+                        tension: 0.4,
+                        pointBackgroundColor: '#f59e0b',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2,
+                        pointRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { position: 'top', labels: { color: '#fff', font: { size: 12 } } } },
+                    scales: { y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.03)' } }, x: { grid: { display: false } } }
+                }
+            });
+
+            const ctx2 = document.getElementById('incidentTypesChart');
+            if(!ctx2) return;
+            if(chartInstances['incidentTypesChart']) chartInstances['incidentTypesChart'].destroy();
+            chartInstances['incidentTypesChart'] = new Chart(ctx2, {
+                type: 'doughnut',
+                data: {
+                    labels: ['سقوط من ارتفاع','إصابة ميكانيكية','حريق','تعرض كيميائي','إصابة كهربائية','أخرى'],
+                    datasets: [{
+                        data: [35,25,15,12,8,5],
+                        backgroundColor: ['#ef4444','#f59e0b','#3b82f6','#22c55e','#8b5cf6','#64748b'],
+                        borderWidth: 0,
+                        hoverOffset: 10
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { position: 'right', labels: { color: '#fff', font: { size: 12 }, padding: 15 } } }
+                }
+            });
+
+            const ctx3 = document.getElementById('complianceChart');
+            if(!ctx3) return;
+            if(chartInstances['complianceChart']) chartInstances['complianceChart'].destroy();
+            chartInstances['complianceChart'] = new Chart(ctx3, {
+                type: 'bar',
+                data: {
+                    labels: ['الإنتاج','المستودعات','الإدارة','الصيانة','النقل','الأمن'],
+                    datasets: [{
+                        label: 'نسبة الامتثال (%)',
+                        data: [92,78,95,88,85,90],
+                        backgroundColor: ['#22c55e','#f59e0b','#22c55e','#3b82f6','#f59e0b','#22c55e'],
+                        borderRadius: 8,
+                        barThickness: 30
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: { y: { beginAtZero: true, max: 100, grid: { color: 'rgba(255,255,255,0.03)' } }, x: { grid: { display: false } } }
+                }
+            });
+
+            const ctx4 = document.getElementById('environmentChart');
+            if(!ctx4) return;
+            if(chartInstances['environmentChart']) chartInstances['environmentChart'].destroy();
+            chartInstances['environmentChart'] = new Chart(ctx4, {
+                type: 'line',
+                data: {
+                    labels: ['يناير','فبراير','مارس','أبريل','مايو','يونيو'],
+                    datasets: [{
+                        label: 'المياه (م³)',
+                        data: [1250,1180,1100,1050,980,920],
+                        borderColor: '#3b82f6',
+                        backgroundColor: 'rgba(59,130,246,0.1)',
+                        fill: true,
+                        tension: 0.4
+                    },{
+                        label: 'الكهرباء (kWh)',
+                        data: [45000,42000,41000,39000,38000,37000],
+                        borderColor: '#f59e0b',
+                        backgroundColor: 'rgba(245,158,11,0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { position: 'top', labels: { color: '#fff' } } },
+                    scales: { y: { grid: { color: 'rgba(255,255,255,0.03)' } }, x: { grid: { display: false } } }
+                }
+            });
+        }
+
+        function initSafetyCharts() {
+            const ctx = document.getElementById('nearMissChart');
+            if(!ctx) return;
+            if(chartInstances['nearMissChart']) chartInstances['nearMissChart'].destroy();
+            chartInstances['nearMissChart'] = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['يناير','فبراير','مارس','أبريل','مايو','يونيو'],
+                    datasets: [{
+                        label: 'البلاغات',
+                        data: [12,15,10,18,14,16],
+                        backgroundColor: '#3b82f6',
+                        borderRadius: 8
+                    },{
+                        label: 'التحقيقات',
+                        data: [10,12,9,15,12,14],
+                        backgroundColor: '#22c55e',
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { labels: { color: '#fff' } } },
+                    scales: { y: { grid: { color: 'rgba(255,255,255,0.03)' } }, x: { grid: { display: false } } }
+                }
+            });
+
+            const matrix = document.getElementById('riskMatrix');
+            if(matrix) {
+                matrix.innerHTML = '';
+                const risks = [
+                    'low','low','low','medium','high',
+                    'low','low','medium','high','critical',
+                    'low','medium','medium','high','critical',
+                    'medium','medium','high','critical','critical',
+                    'high','high','critical','critical','critical'
+                ];
+                risks.forEach(risk => {
+                    const cell = document.createElement('div');
+                    cell.className = `risk-cell risk-${risk}`;
+                    cell.textContent = risk === 'low' ? 'منخفض' : risk === 'medium' ? 'متوسط' : risk === 'high' ? 'عالي' : 'حرج';
+                    matrix.appendChild(cell);
+                });
+            }
+        }
+
+        function initHealthCharts() {
+            const ctx1 = document.getElementById('workEnvironmentChart');
+            if(!ctx1) return;
+            if(chartInstances['workEnvironmentChart']) chartInstances['workEnvironmentChart'].destroy();
+            chartInstances['workEnvironmentChart'] = new Chart(ctx1, {
+                type: 'radar',
+                data: {
+                    labels: ['الضوضاء','الغبار','الإضاءة','الحرارة','الرطوبة','المواد الكيميائية'],
+                    datasets: [{
+                        label: 'القياس الحالي',
+                        data: [65,45,85,70,60,55],
+                        borderColor: '#0d9488',
+                        backgroundColor: 'rgba(13,148,136,0.2)',
+                        pointBackgroundColor: '#0d9488'
+                    },{
+                        label: 'المعيار المطلوب',
+                        data: [80,60,90,75,70,65],
+                        borderColor: '#f59e0b',
+                        backgroundColor: 'rgba(245,158,11,0.1)',
+                        pointBackgroundColor: '#f59e0b'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { labels: { color: '#fff' } } },
+                    scales: { r: { grid: { color: 'rgba(255,255,255,0.1)' }, pointLabels: { color: '#fff' }, ticks: { display: false } } }
+                }
+            });
+
+            const ctx2 = document.getElementById('occupationalDiseasesChart');
+            if(!ctx2) return;
+            if(chartInstances['occupationalDiseasesChart']) chartInstances['occupationalDiseasesChart'].destroy();
+            chartInstances['occupationalDiseasesChart'] = new Chart(ctx2, {
+                type: 'pie',
+                data: {
+                    labels: ['أمراض الجهاز التنفسي','أمراض الجلد','إصابات العظام','إصابات السمع','أمراض الضغط','أخرى'],
+                    datasets: [{
+                        data: [30,20,25,15,5,5],
+                        backgroundColor: ['#ef4444','#f59e0b','#3b82f6','#8b5cf6','#22c55e','#64748b'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { position: 'right', labels: { color: '#fff' } } }
+                }
+            });
+        }
+
+        function initEnvironmentCharts() {
+            const ctx0 = document.getElementById('envMeasurementsChart');
+            if(ctx0) {
+                if(chartInstances['envMeasurementsChart']) chartInstances['envMeasurementsChart'].destroy();
+                chartInstances['envMeasurementsChart'] = new Chart(ctx0, {
+                    type: 'radar',
+                    data: {
+                        labels: ['الإضاءة','الاهتزاز','الوطأة الحرارية','الضوضاء','الانبعاثات','الأتربة والغبار'],
+                        datasets: [{
+                            label: 'القياس الحالي',
+                            data: [85, 70, 75, 65, 80, 55],
+                            borderColor: '#0d9488',
+                            backgroundColor: 'rgba(13,148,136,0.2)',
+                            pointBackgroundColor: '#0d9488',
+                            pointBorderColor: '#fff',
+                            pointBorderWidth: 2
+                        },{
+                            label: 'المعيار المطلوب',
+                            data: [90, 80, 85, 75, 85, 70],
+                            borderColor: '#f59e0b',
+                            backgroundColor: 'rgba(245,158,11,0.1)',
+                            pointBackgroundColor: '#f59e0b',
+                            pointBorderColor: '#fff',
+                            pointBorderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { position: 'top', labels: { color: '#fff', font: { size: 12 } } } },
+                        scales: { r: { grid: { color: 'rgba(255,255,255,0.1)' }, pointLabels: { color: '#fff', font: { size: 11 } }, ticks: { display: false } } }
+                    }
+                });
+            }
+
+            const ctx1 = document.getElementById('emissionsChart');
+            if(!ctx1) return;
+            if(chartInstances['emissionsChart']) chartInstances['emissionsChart'].destroy();
+            chartInstances['emissionsChart'] = new Chart(ctx1, {
+                type: 'line',
+                data: {
+                    labels: ['يناير','فبراير','مارس','أبريل','مايو','يونيو'],
+                    datasets: [{
+                        label: 'CO2 (طن)',
+                        data: [120,115,110,108,105,102],
+                        borderColor: '#ef4444',
+                        backgroundColor: 'rgba(239,68,68,0.1)',
+                        fill: true,
+                        tension: 0.4
+                    },{
+                        label: 'الحد المسموح',
+                        data: [130,130,130,130,130,130],
+                        borderColor: '#22c55e',
+                        borderDash: [5,5],
+                        fill: false
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { labels: { color: '#fff' } } },
+                    scales: { y: { grid: { color: 'rgba(255,255,255,0.03)' } }, x: { grid: { display: false } } }
+                }
+            });
+
+            const ctx2 = document.getElementById('wasteChart');
+            if(!ctx2) return;
+            if(chartInstances['wasteChart']) chartInstances['wasteChart'].destroy();
+            chartInstances['wasteChart'] = new Chart(ctx2, {
+                type: 'bar',
+                data: {
+                    labels: ['يناير','فبراير','مارس','أبريل','مايو','يونيو'],
+                    datasets: [{
+                        label: 'نفايات عامة',
+                        data: [45,42,40,38,35,33],
+                        backgroundColor: '#3b82f6',
+                        borderRadius: 8
+                    },{
+                        label: 'نفايات خطرة',
+                        data: [8,7,7,6,6,5],
+                        backgroundColor: '#ef4444',
+                        borderRadius: 8
+                    },{
+                        label: 'معاد تدويره',
+                        data: [25,24,23,22,21,20],
+                        backgroundColor: '#22c55e',
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { labels: { color: '#fff' } } },
+                    scales: { y: { grid: { color: 'rgba(255,255,255,0.03)' } }, x: { grid: { display: false } } }
+                }
+            });
+        }
+
+        function initTrainingCharts() {
+            const ctx1 = document.getElementById('trainingPlanChart');
+            if(!ctx1) return;
+            if(chartInstances['trainingPlanChart']) chartInstances['trainingPlanChart'].destroy();
+            chartInstances['trainingPlanChart'] = new Chart(ctx1, {
+                type: 'bar',
+                data: {
+                    labels: ['يناير','فبراير','مارس','أبريل','مايو','يونيو'],
+                    datasets: [{
+                        label: 'المخطط',
+                        data: [4,4,5,4,5,6],
+                        backgroundColor: 'rgba(13,148,136,0.3)',
+                        borderColor: '#0d9488',
+                        borderWidth: 2,
+                        borderRadius: 8
+                    },{
+                        label: 'المنفذ',
+                        data: [4,3,5,4,4,5],
+                        backgroundColor: '#0d9488',
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { labels: { color: '#fff' } } },
+                    scales: { y: { grid: { color: 'rgba(255,255,255,0.03)' } }, x: { grid: { display: false } } }
+                }
+            });
+
+            const ctx2 = document.getElementById('trainingTopicsChart');
+            if(!ctx2) return;
+            if(chartInstances['trainingTopicsChart']) chartInstances['trainingTopicsChart'].destroy();
+            chartInstances['trainingTopicsChart'] = new Chart(ctx2, {
+                type: 'doughnut',
+                data: {
+                    labels: ['السلامة','الصحة المهنية','البيئة','الإسعافات الأولية','المواد الخطرة','الطوارئ'],
+                    datasets: [{
+                        data: [35,20,15,12,10,8],
+                        backgroundColor: ['#ef4444','#22c55e','#3b82f6','#f59e0b','#8b5cf6','#0d9488'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { position: 'right', labels: { color: '#fff' } } }
+                }
+            });
+        }
+
+        function initActionsCharts() {
+            const ctx1 = document.getElementById('actionsStatusChart');
+            if(!ctx1) return;
+            if(chartInstances['actionsStatusChart']) chartInstances['actionsStatusChart'].destroy();
+            chartInstances['actionsStatusChart'] = new Chart(ctx1, {
+                type: 'doughnut',
+                data: {
+                    labels: ['مغلقة','قيد التنفيذ','معلقة','متأخرة'],
+                    datasets: [{
+                        data: [35,8,2,5],
+                        backgroundColor: ['#22c55e','#3b82f6','#f59e0b','#ef4444'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { position: 'right', labels: { color: '#fff' } } }
+                }
+            });
+
+            const ctx2 = document.getElementById('actionsTimeChart');
+            if(!ctx2) return;
+            if(chartInstances['actionsTimeChart']) chartInstances['actionsTimeChart'].destroy();
+            chartInstances['actionsTimeChart'] = new Chart(ctx2, {
+                type: 'bar',
+                data: {
+                    labels: ['يناير','فبراير','مارس','أبريل','مايو','يونيو'],
+                    datasets: [{
+                        label: 'الفعلي (أيام)',
+                        data: [15,14,13,12,11,12],
+                        backgroundColor: '#3b82f6',
+                        borderRadius: 8
+                    },{
+                        label: 'الهدف (أيام)',
+                        data: [10,10,10,10,10,10],
+                        backgroundColor: 'rgba(34,197,94,0.3)',
+                        borderColor: '#22c55e',
+                        borderWidth: 2,
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { labels: { color: '#fff' } } },
+                    scales: { y: { grid: { color: 'rgba(255,255,255,0.03)' } }, x: { grid: { display: false } } }
+                }
+            });
+        }
+
+        // ===== TABLE FUNCTIONS =====
+        function renderIncidentsTable() {
+            const tbody = document.getElementById('incidentsTableBody');
+            if(!tbody) return;
+            tbody.innerHTML = incidents.map(inc => {
+                const severityClass = inc.severity === 'critical' ? 'status-overdue' : inc.severity === 'high' ? 'status-pending' : inc.severity === 'medium' ? 'status-inprogress' : 'status-completed';
+                const severityText = inc.severity === 'critical' ? 'حرج' : inc.severity === 'high' ? 'عالي' : inc.severity === 'medium' ? 'متوسط' : 'منخفض';
+                const statusClass = inc.status === 'completed' ? 'status-completed' : inc.status === 'inprogress' ? 'status-inprogress' : 'status-pending';
+                const statusText = inc.status === 'completed' ? 'مغلق' : inc.status === 'inprogress' ? 'قيد التنفيذ' : 'معلق';
+                return `<tr><td><strong style="color:var(--primary)">${inc.id}</strong></td><td>${inc.date}</td><td>${inc.location}</td><td>${inc.type}</td><td><span class="status-badge ${severityClass}">${severityText}</span></td><td><span class="status-badge ${statusClass}">${statusText}</span></td><td>${inc.action}</td><td>${inc.responsible}</td></tr>`;
+            }).join('');
+        }
+
+        function renderComplianceTable() {
+            const tbody = document.getElementById('complianceRecordsBody');
+            if(!tbody) return;
+            tbody.innerHTML = complianceRecords.map(rec => {
+                const statusClass = rec.status === 'compliant' ? 'status-completed' : 
+                                   rec.status === 'expiring_soon' || rec.status === 'partial' ? 'status-pending' : 
+                                   rec.status === 'under_review' || rec.status === 'under_renewal' ? 'status-inprogress' : 'status-overdue';
+                const statusText = rec.status === 'compliant' ? 'ممتثل' : 
+                                  rec.status === 'expiring_soon' ? 'على وشك الانتهاء' :
+                                  rec.status === 'partial' ? 'ممتثل جزئياً' :
+                                  rec.status === 'under_review' ? 'قيد المراجعة' :
+                                  rec.status === 'under_renewal' ? 'قيد التجديد' : 'غير ممتثل';
+                return `<tr><td><strong style="color:var(--primary)">${rec.id}</strong></td><td>${rec.date}</td><td>${rec.type}</td><td>${rec.desc}</td><td>${rec.dept}</td><td><span class="status-badge ${statusClass}">${statusText}</span></td><td>${rec.target || '-'}</td></tr>`;
+            }).join('');
+        }
+
+        // ===== MODAL FUNCTIONS =====
+        function openModal() {
+            document.getElementById('modalOverlay').classList.add('active');
+            document.getElementById('modalDate').value = new Date().toISOString().split('T')[0];
+        }
+
+        function closeModal() {
+            document.getElementById('modalOverlay').classList.remove('active');
+        }
+
+        async function saveModalIncident() {
+            const date = document.getElementById('modalDate').value;
+            const location = document.getElementById('modalLocation').value;
+            const type = document.getElementById('modalType').value;
+            const severity = document.getElementById('modalSeverity').value;
+            const responsible = document.getElementById('modalResponsible').value;
+
+            if(!date || !responsible) {
+                showToast('يرجى ملء جميع الحقول المطلوبة', 'error');
+                return;
+            }
+
+            const newId = 'INC-2024-' + String(incidents.length + 1).padStart(3, '0');
+            incidents.unshift({id: newId, date: date, location: location, type: type, severity: severity, status: 'pending', action: 'تحقيق جارٍ', responsible: responsible});
+            await saveAllData();
+            renderIncidentsTable();
+            closeModal();
+            showToast('تم إضافة الحادث بنجاح', 'success');
+            updateKPIs();
+        }
+
+        // ===== DATA ENTRY FUNCTIONS =====
+        async function addIncident() {
+            const date = document.getElementById('incidentDate').value;
+            const location = document.getElementById('incidentLocation').value;
+            const type = document.getElementById('incidentType').value;
+            const severity = document.getElementById('incidentSeverity').value;
+            const injuries = document.getElementById('incidentInjuries').value;
+            const desc = document.getElementById('incidentDesc').value;
+
+            if(!date) { showToast('يرجى إدخال التاريخ', 'error'); return; }
+
+            const newId = 'INC-2024-' + String(incidents.length + 1).padStart(3, '0');
+            incidents.unshift({id: newId, date: date, location: location, type: type, severity: severity, status: 'pending', action: 'تحقيق جارٍ', responsible: 'غير محدد', injuries: parseInt(injuries)||0, desc: desc});
+            await saveAllData();
+            renderIncidentsTable();
+            showToast('تم حفظ بيانات الحادث بنجاح', 'success');
+            updateKPIs();
+        }
+
+        async function addInspection() {
+            const date = document.getElementById('inspectionDate').value;
+            const location = document.getElementById('inspectionLocation').value;
+            const type = document.getElementById('inspectionType').value;
+            const score = document.getElementById('inspectionScore').value;
+            const notes = document.getElementById('inspectionNotes').value;
+
+            if(!date) { showToast('يرجى إدخال التاريخ', 'error'); return; }
+
+            inspections.unshift({id: 'INS-' + String(inspections.length + 1).padStart(3, '0'), date, location, type, score: parseInt(score)||0, notes});
+            await saveAllData();
+            showToast('تم حفظ بيانات التفتيش بنجاح', 'success');
+        }
+
+        async function addEnvironmental() {
+            const period = document.getElementById('envPeriod').value;
+            const water = document.getElementById('waterUsage').value;
+            const electricity = document.getElementById('electricityUsage').value;
+            const generalWaste = document.getElementById('generalWaste').value;
+            const hazardousWaste = document.getElementById('hazardousWaste').value;
+            const recycling = document.getElementById('recyclingRate').value;
+            const emissions = document.getElementById('emissions').value;
+
+            if(!period) { showToast('يرجى إدخال الفترة', 'error'); return; }
+
+            environmentalData.unshift({id: period, water: parseFloat(water)||0, electricity: parseFloat(electricity)||0, generalWaste: parseFloat(generalWaste)||0, hazardousWaste: parseFloat(hazardousWaste)||0, recycling: parseInt(recycling)||0, emissions: parseFloat(emissions)||0});
+            await saveAllData();
+            showToast('تم حفظ البيانات البيئية بنجاح', 'success');
+        }
+
+        async function addTraining() {
+            const courseName = document.getElementById('courseName').value;
+            const topic = document.getElementById('courseTopic').value;
+            const startDate = document.getElementById('courseStart').value;
+            const endDate = document.getElementById('courseEnd').value;
+            const trainees = document.getElementById('traineesCount').value;
+            const hours = document.getElementById('trainingHours').value;
+            const trainer = document.getElementById('trainerName').value;
+            const satisfaction = document.getElementById('traineeSatisfaction').value;
+            const notes = document.getElementById('trainingNotes').value;
+
+            if(!courseName || !startDate) {
+                showToast('يرجى ملء الحقول المطلوبة (اسم الدورة وتاريخ البدء)', 'error');
+                return;
+            }
+
+            trainingRecords.unshift({id: 'TRN-' + String(trainingRecords.length + 1).padStart(3, '0'), courseName, topic, startDate, endDate, trainees: parseInt(trainees)||0, hours: parseInt(hours)||0, trainer, satisfaction: parseInt(satisfaction)||5, notes});
+            await saveAllData();
+            showToast(`تم حفظ بيانات التدريب بنجاح - التقييم: ${satisfaction}/5 ⭐`, 'success');
+        }
+
+        function renderEnvMeasurements() {
+            const tbody = document.getElementById('envMeasurementsBody');
+            if(!tbody) return;
+            tbody.innerHTML = envMeasurements.slice(0, 50).map(m =>
+                `<tr><td>${m.date}</td><td>${m.location}</td><td>${m.lighting}</td><td>${m.vibration}</td><td>${m.thermal}</td><td>${m.noise}</td><td>${m.emissions}</td><td>${m.dust}</td><td><span class="status-badge status-pending">قيد المراجعة</span></td>`
+            ).join('');
+        }
+
+        async function addEnvMeasurement() {
+            const date = document.getElementById('envMeasureDate').value;
+            const location = document.getElementById('envMeasureLocation').value;
+            const lighting = document.getElementById('lighting').value;
+            const vibration = document.getElementById('vibration').value;
+            const thermal = document.getElementById('thermalStress').value;
+            const noise = document.getElementById('noise').value;
+            const emissions = document.getElementById('emissionsMeasure').value;
+            const dust = document.getElementById('dust').value;
+
+            if(!date) { showToast('يرجى إدخال التاريخ', 'error'); return; }
+
+            envMeasurements.unshift({date, location, lighting: parseFloat(lighting)||0, vibration: parseFloat(vibration)||0, thermal: parseFloat(thermal)||0, noise: parseFloat(noise)||0, emissions: parseFloat(emissions)||0, dust: parseFloat(dust)||0});
+            await saveAllData();
+            renderEnvMeasurements();
+            showToast('تم حفظ القياسات البيئية بنجاح', 'success');
+            initEnvironmentCharts();
+        }
+
+        // ===== COMPLIANCE FUNCTIONS =====
+        async function addLegislation() {
+            const name = document.getElementById('legislationName').value;
+            const type = document.getElementById('legislationType').value;
+            const status = document.getElementById('legislationStatus').value;
+            const reviewDate = document.getElementById('legislationReviewDate').value;
+            const responsible = document.getElementById('legislationResponsible').value;
+
+            if(!name || !responsible) {
+                showToast('يرجى ملء اسم التشريع والمسؤول', 'error');
+                return;
+            }
+
+            const newId = 'LEG-' + String(complianceRecords.length + 1).padStart(3, '0');
+            complianceRecords.unshift({id: newId, date: new Date().toISOString().split('T')[0], type: 'تشريع', desc: name + ' (' + type + ')', dept: responsible, status: status, target: reviewDate});
+            await saveAllData();
+            renderComplianceTable();
+            showToast('تم حفظ التشريع بنجاح', 'success');
+        }
+
+        async function addCertificate() {
+            const name = document.getElementById('certName').value;
+            const issuer = document.getElementById('certIssuer').value;
+            const issueDate = document.getElementById('certIssueDate').value;
+            const expiryDate = document.getElementById('certExpiryDate').value;
+            const status = document.getElementById('certStatus').value;
+
+            if(!name || !issuer) {
+                showToast('يرجى ملء اسم الترخيص والجهة المصدرة', 'error');
+                return;
+            }
+
+            const newId = 'CERT-' + String(complianceRecords.length + 1).padStart(3, '0');
+            complianceRecords.unshift({id: newId, date: issueDate, type: 'شهادة', desc: name + ' - ' + issuer, dept: 'الجودة', status: status, target: expiryDate});
+            await saveAllData();
+            renderComplianceTable();
+            showToast('تم حفظ الترخيص بنجاح', 'success');
+        }
+
+        async function addViolation() {
+            const date = document.getElementById('violationDate').value;
+            const type = document.getElementById('violationType').value;
+            const dept = document.getElementById('violationDept').value;
+            const desc = document.getElementById('violationDesc').value;
+            const targetDate = document.getElementById('violationTargetDate').value;
+            const fine = document.getElementById('violationFine').value;
+
+            if(!date || !desc) {
+                showToast('يرجى ملء تاريخ المخالفة والوصف', 'error');
+                return;
+            }
+
+            const newId = 'VIO-' + String(complianceRecords.length + 1).padStart(3, '0');
+            complianceRecords.unshift({id: newId, date: date, type: 'مخالفة', desc: type + ': ' + desc, dept: dept, status: 'overdue', target: targetDate});
+            await saveAllData();
+            renderComplianceTable();
+            showToast('تم حفظ المخالفة بنجاح', 'success');
+        }
+
+        // ===== EXPORT FUNCTIONS =====
+        function exportToExcel() {
+            const wb = XLSX.utils.book_new();
+            const incidentsWS = XLSX.utils.json_to_sheet(incidents);
+            XLSX.utils.book_append_sheet(wb, incidentsWS, 'الحوادث');
+            const kpis = [
+                {المؤشر: 'إجمالي الحوادث', القيمة: 24, التغيير: '-12%'},
+                {المؤشر: 'نسبة الامتثال', القيمة: '87%', التغيير: '+8%'},
+                {المؤشر: 'الإجراءات المغلقة', القيمة: 156, التغيير: '+15%'},
+                {المؤشر: 'الامتثال البيئي', القيمة: '92%', التغيير: '+5%'},
+                {المؤشر: 'ساعات التدريب', القيمة: 1240, التغيير: '+22%'},
+                {المؤشر: 'تكلفة الحوادث', القيمة: '$45K', التغيير: '-18%'}
+            ];
+            const kpisWS = XLSX.utils.json_to_sheet(kpis);
+            XLSX.utils.book_append_sheet(wb, kpisWS, 'مؤشرات الأداء');
+            XLSX.writeFile(wb, 'EHS_Dashboard_Report.xlsx');
+            showToast('تم تصدير البيانات إلى Excel بنجاح', 'success');
+        }
+
+        function exportToPDF() {
+            showToast('جاري إعداد التقرير PDF...', 'info');
+            setTimeout(() => { window.print(); showToast('تم فتح نافذة الطباعة', 'success'); }, 500);
+        }
+
+        function downloadChart(chartId) {
+            const canvas = document.getElementById(chartId);
+            if(!canvas) return;
+            const link = document.createElement('a');
+            link.download = chartId + '.png';
+            link.href = canvas.toDataURL();
+            link.click();
+            showToast('تم تحميل الرسم البياني', 'success');
+        }
+
+        function toggleChartType(chartId) {
+            const chart = chartInstances[chartId];
+            if(!chart) return;
+            const newType = chart.config.type === 'line' ? 'bar' : 'line';
+            chart.config.type = newType;
+            chart.update();
+        }
+
+        // ===== UTILITY FUNCTIONS =====
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            const icon = type === 'success' ? '✅' : type === 'error' ? '❌' : type === 'warning' ? '⚠️' : 'ℹ️';
+            toast.innerHTML = `<span style="font-size:20px">${icon}</span><span>${message}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 4000);
+        }
+
+        function updateKPIs() {
+            document.getElementById('kpiAccidents').textContent = incidents.length;
+        }
+
+        function updateDashboard() {
+            const period = document.getElementById('periodFilter').value;
+            showToast(`تم تحديث البيانات للفترة: ${period === 'week' ? 'الأسبوع' : period === 'month' ? 'الشهر' : period === 'quarter' ? 'الربع' : 'السنة'}`, 'success');
+            setTimeout(() => { initDashboardCharts(); }, 300);
+        }
+
+        // ===== INITIALIZATION =====
+        (async function init() {
+            await loadAllData();
+            renderIncidentsTable();
+            renderComplianceTable();
+            renderEnvMeasurements();
+            initDashboardCharts();
+
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('incidentDate').value = today;
+            document.getElementById('inspectionDate').value = today;
+            document.getElementById('envMeasureDate').value = today;
+            document.getElementById('legislationReviewDate').value = today;
+            document.getElementById('violationDate').value = today;
+
+            document.getElementById('modalOverlay').addEventListener('click', function(e) {
+                if(e.target === this) closeModal();
+            });
+
+            document.addEventListener('keydown', function(e) {
+                if(e.key === 'Escape') closeModal();
+            });
+        })();
+    </script>
+</body>
+</html>

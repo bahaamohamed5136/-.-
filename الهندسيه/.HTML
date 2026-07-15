@@ -1,0 +1,1828 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام صيانات نماء لصناعة الأعلاف</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Cairo', 'Arial', sans-serif;
+            background-color: #1a1a2e;
+            color: #eaeaea;
+            direction: rtl;
+        }
+
+        .app-container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 10px;
+        }
+
+        .app-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 15px 20px;
+            background-color: #16213e;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #0f3460;
+            gap: 15px;
+        }
+
+        .app-header .logo {
+            width: 60px;
+            height: 60px;
+            border-radius: 8px;
+            flex-shrink: 0;
+        }
+
+        .app-header h1 {
+            color: #e94560;
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        .tabs-nav {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 15px;
+            background-color: #16213e;
+            padding: 10px;
+            border-radius: 10px;
+            overflow-x: auto;
+            border: 1px solid #0f3460;
+        }
+
+        .tab-btn {
+            padding: 12px 20px;
+            background-color: #0f3460;
+            color: #eaeaea;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'Cairo', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+
+        .tab-btn:hover {
+            background-color: #1a4a7a;
+        }
+
+        .tab-btn.active {
+            background-color: #e94560;
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+            background-color: #16213e;
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid #0f3460;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .section-title {
+            color: #e94560;
+            font-size: 20px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #0f3460;
+        }
+
+        .column-title {
+            color: #e94560;
+            font-size: 16px;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #0f3460;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+        }
+
+        .form-column {
+            background-color: #1a1a2e;
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid #0f3460;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #eaeaea;
+            font-weight: 600;
+        }
+
+        .required {
+            color: #e94560;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            background-color: #0f3460;
+            color: #eaeaea;
+            border: 1px solid #0f3460;
+            border-radius: 6px;
+            font-family: 'Cairo', sans-serif;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #e94560;
+        }
+
+        .form-group input.readonly {
+            background-color: #0a1a2e;
+            color: #a0a0a0;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 60px;
+        }
+
+        .time-input {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .time-field {
+            width: 60px !important;
+            text-align: center;
+        }
+
+        .time-input span {
+            color: #eaeaea;
+            font-weight: bold;
+        }
+
+        .time-input select {
+            width: auto !important;
+            padding: 10px 5px;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 2px solid #0f3460;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'Cairo', sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-success {
+            background-color: #2ecc71;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background-color: #27ae60;
+        }
+
+        .btn-primary {
+            background-color: #3498db;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #2980b9;
+        }
+
+        .btn-accent {
+            background-color: #e94560;
+            color: white;
+        }
+
+        .btn-accent:hover {
+            background-color: #c0392b;
+        }
+
+        .btn-danger {
+            background-color: #e74c3c;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #c0392b;
+        }
+
+        .search-bar,
+        .filter-bar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .search-bar input,
+        .filter-bar select {
+            padding: 10px;
+            background-color: #0f3460;
+            color: #eaeaea;
+            border: 1px solid #0f3460;
+            border-radius: 6px;
+            font-family: 'Cairo', sans-serif;
+            font-size: 14px;
+        }
+
+        .search-bar input {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .filter-bar label {
+            color: #eaeaea;
+            font-weight: 600;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            border: 1px solid #0f3460;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: #1a1a2e;
+        }
+
+        th {
+            background-color: #0f3460;
+            color: white;
+            padding: 12px;
+            text-align: right;
+            font-weight: 700;
+            white-space: nowrap;
+            position: sticky;
+            top: 0;
+        }
+
+        td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #0f3460;
+            color: #eaeaea;
+        }
+
+        tr:hover {
+            background-color: #0f3460;
+        }
+
+        .actions-bar {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-start;
+            margin-top: 15px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            border: 2px solid transparent;
+            transition: transform 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-title {
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .stat-value {
+            color: white;
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        .stat-card.blue { background-color: #3498db; }
+        .stat-card.red { background-color: #e74c3c; }
+        .stat-card.green { background-color: #27ae60; }
+        .stat-card.purple { background-color: #9b59b6; }
+        .stat-card.orange { background-color: #f39c12; }
+        .stat-card.teal { background-color: #1abc9c; }
+        .stat-card.orange-dark { background-color: #e67e22; }
+
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 20px;
+        }
+
+        .chart-container {
+            background-color: white;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .chart-container img,
+        .chart-container canvas {
+            max-width: 100%;
+            height: auto;
+            border-radius: 5px;
+        }
+
+        .select-checkbox {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 15px 30px;
+            border-radius: 10px;
+            color: white;
+            font-weight: 700;
+            z-index: 1000;
+            display: none;
+            animation: slideDown 0.3s ease;
+        }
+
+        .notification.success {
+            background-color: #2ecc71;
+            display: block;
+        }
+
+        .notification.error {
+            background-color: #e74c3c;
+            display: block;
+        }
+
+        .notification.warning {
+            background-color: #f39c12;
+            display: block;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateX(-50%) translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .tabs-nav {
+                flex-wrap: wrap;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .search-bar,
+            .filter-bar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .search-bar input,
+            .filter-bar select {
+                width: 100%;
+            }
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #1a1a2e;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #0f3460;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #e94560;
+        }
+
+        .geo-icon {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            vertical-align: middle;
+            margin-left: 6px;
+            flex-shrink: 0;
+        }
+        .geo-circle { border-radius: 50%; }
+        .geo-square { border-radius: 3px; }
+        .geo-diamond { transform: rotate(45deg); width: 12px; height: 12px; margin: 0 8px 0 4px; }
+        .geo-triangle {
+            width: 0; height: 0;
+            border-left: 8px solid transparent;
+            border-right: 8px solid transparent;
+            border-bottom: 14px solid white;
+        }
+        .geo-triangle-up {
+            width: 0; height: 0;
+            border-left: 8px solid transparent;
+            border-right: 8px solid transparent;
+            border-top: 14px solid white;
+        }
+        .geo-cross {
+            position: relative;
+            width: 4px; height: 16px;
+            border-radius: 1px;
+        }
+        .geo-cross::before {
+            content: '';
+            position: absolute;
+            width: 16px; height: 4px;
+            top: 6px; left: -6px;
+            border-radius: 1px;
+            background: inherit;
+        }
+        .geo-star {
+            position: relative;
+            width: 0; height: 0;
+            border-left: 8px solid transparent;
+            border-right: 8px solid transparent;
+            border-bottom: 14px solid white;
+            margin-bottom: 4px;
+        }
+        .geo-star::after {
+            content: '';
+            position: absolute;
+            width: 0; height: 0;
+            border-left: 8px solid transparent;
+            border-right: 8px solid transparent;
+            border-top: 14px solid white;
+            top: 4px; left: -8px;
+        }
+    </style>
+<base target="_blank">
+</head>
+<body>
+    <div class="app-container">
+        <header class="app-header">
+<img src="namaa logo.png" alt="???? ????" class="app-logo">
+            <h1><span class="geo-icon geo-diamond" style="background:#e94560; display:inline-block; vertical-align:middle; margin-left:10px;"></span> نظام صيانات نماء لصناعة الأعلاف</h1>
+        </header>
+
+        <nav class="tabs-nav">
+            <button class="tab-btn active" data-tab="input">ادخال بيانات العطل</button>
+            <button class="tab-btn" data-tab="view">عرض الاعطال</button>
+            <button class="tab-btn" data-tab="analysis">التحليلات والاحصائيات</button>
+            <button class="tab-btn" data-tab="dashboard">لوحة التحكم</button>
+            <button class="tab-btn" data-tab="time-analysis">تحليل اوقات الصيانة</button>
+        </nav>
+
+        <!-- Input Tab -->
+        <div id="input" class="tab-content active">
+            <div class="form-container">
+                <h2 class="section-title">ادخال بيانات عطل جديد</h2>
+                <form id="faultForm">
+                    <div class="form-grid">
+                        <div class="form-column">
+                            <h3 class="column-title">المعلومات الاساسية</h3>
+
+                            <div class="form-group">
+                                <label>رقم العطل:</label>
+                                <input type="text" id="fault_no" readonly class="readonly">
+                            </div>
+
+                            <div class="form-group">
+                                <label>التاريخ:</label>
+                                <input type="text" id="date" placeholder="DD/MM/YYYY">
+                            </div>
+
+                            <div class="form-group">
+                                <label>نوع العطل: <span class="required">*</span></label>
+                                <select id="fault_type" required>
+                                    <option value="">اختر...</option>
+                                    <option value="كهرباء">كهرباء</option>
+                                    <option value="ميكانيكا">ميكانيكا</option>
+                                    <option value="كهرباء وميكانيكا">كهرباء وميكانيكا</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label>نوع الصيانة: <span class="required">*</span></label>
+                                <select id="maintenance_type" required>
+                                    <option value="">اختر...</option>
+                                    <option value="فجائية">فجائية</option>
+                                    <option value="علاجية">علاجية</option>
+                                    <option value="مخطط">مخطط</option>
+                                    <option value="تعديل فني">تعديل فني</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label>الإدارة الطالبة: <span class="required">*</span></label>
+                                <select id="requesting_dept" required onchange="updateRequestNo()">
+                                    <option value="">اختر...</option>
+                                    <option value="الهندسية">الهندسية</option>
+                                    <option value="الانتاج">الانتاج</option>
+                                    <option value="الجودة">الجودة</option>
+                                    <option value="السلامة">السلامة</option>
+                                    <option value="المخازن">المخازن</option>
+                                    <option value="الشئون الادارية">الشئون الادارية</option>
+                                    <option value="الامن">الامن</option>
+                                    <option value="الادارة العليا">الادارة العليا</option>
+                                    <option value="المشتريات">المشتريات</option>
+                                    <option value="اللوجيستيك">اللوجيستيك</option>
+                                    <option value="الموارد البشرية">الموارد البشرية</option>
+                                    <option value="الحملة">الحملة</option>
+                                    <option value="أخرى">أخرى</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label>رقم طلب الصيانة:</label>
+                                <input type="text" id="request_no" readonly class="readonly">
+                            </div>
+
+                            <div class="form-group">
+                                <label>رقم الطلب:</label>
+                                <input type="text" id="order_no" placeholder="يكتب يدويا">
+                            </div>
+
+                            <div class="form-group">
+                                <label>المبنى: <span class="required">*</span></label>
+                                <select id="building" required>
+                                    <option value="">اختر...</option>
+                                    <option value="المبنى الاداري القديم">المبنى الاداري القديم</option>
+                                    <option value="المبنى الاداري الجديد">المبنى الاداري الجديد</option>
+                                    <option value="مخزن الصويا">مخزن الصويا</option>
+                                    <option value="ادوار مبنى التصنيع">ادوار مبنى التصنيع</option>
+                                    <option value="الانفاق">الانفاق</option>
+                                    <option value="السطح">السطح</option>
+                                    <option value="الصفايه">الصفايه</option>
+                                    <option value="المولد">المولد</option>
+                                    <option value="الكمبروسور">الكمبروسور</option>
+                                    <option value="خطوط الانتاج">خطوط الانتاج</option>
+                                    <option value="محولات الكهرباء">محولات الكهرباء</option>
+                                    <option value="اخرى">اخرى</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label>الدور: <span class="required">*</span></label>
+                                <select id="floor" required>
+                                    <option value="">اختر...</option>
+                                    <option value="الدور الارضى">الدور الارضى</option>
+                                    <option value="الدور الاول">الدور الاول</option>
+                                    <option value="الدور الثاني">الدور الثاني</option>
+                                    <option value="الدور الثالث">الدور الثالث</option>
+                                    <option value="الدور الرابع">الدور الرابع</option>
+                                    <option value="الدور الخامس">الدور الخامس</option>
+                                    <option value="الدور السادس">الدور السادس</option>
+                                    <option value="الدور السابع">الدور السابع</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label>المكان بالتفصيل:</label>
+                                <input type="text" id="location">
+                            </div>
+
+                            <div class="form-group">
+                                <label>الماكينة: <span class="required">*</span></label>
+                                <input type="text" id="machine" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label>المهندس المسؤول: <span class="required">*</span></label>
+                                <input type="text" id="engineer" required>
+                            </div>
+                        </div>
+
+                        <div class="form-column">
+                            <h3 class="column-title">اوقات الصيانة</h3>
+
+                            <div class="form-group">
+                                <label>وقت استلام البلاغ:</label>
+                                <input type="time" id="report_time" style="width:100%;">
+                            </div>
+
+                            <div class="form-group">
+                                <label>وقت البدء في الاصلاح:</label>
+                                <input type="time" id="start_time" style="width:100%;">
+                            </div>
+
+                            <div class="form-group">
+                                <label>وقت انتهاء الاصلاح:</label>
+                                <input type="time" id="end_time" style="width:100%;">
+                            </div>
+
+                            <div class="form-group" id="durationPreview" style="background:#1a4a7a;padding:12px;border-radius:6px;text-align:center;font-weight:bold;color:#fff;">
+                                مدة الصيانة: -- | وقت الاستجابة: --
+                            </div>
+
+                            <div class="form-group">
+                                <label>ملاحظات:</label>
+                                <textarea id="time_notes" rows="3"></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label>سبب التأخير (ان وجد):</label>
+                                <textarea id="delay_reason" rows="2"></textarea>
+                            </div>
+                        </div>
+
+                        <div class="form-column">
+                            <h3 class="column-title">تفاصيل العطل</h3>
+
+                            <div class="form-group">
+                                <label>وصف العطل: <span class="required">*</span></label>
+                                <textarea id="fault_desc" rows="3" required></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label>ما تم عمله:</label>
+                                <textarea id="work_done" rows="3"></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label>قطع الغيار المستخدمة:</label>
+                                <textarea id="spare_parts" rows="2"></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label>الملاحظات:</label>
+                                <textarea id="notes" rows="2"></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label>تم الاصلاح بكفاءة: <span class="required">*</span></label>
+                                <select id="efficiency" required>
+                                    <option value="">اختر...</option>
+                                    <option value="نعم">نعم</option>
+                                    <option value="لا">لا</option>
+                                    <option value="سيتم الاستكمال لاحقاً">سيتم الاستكمال لاحقاً</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-success"><span class="geo-icon geo-circle" style="background:white;"></span> حفظ البيانات</button>
+                        <button type="button" class="btn btn-primary" onclick="clearForm()"><span class="geo-icon geo-square" style="background:white;"></span> مسح الحقول</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- View Tab -->
+        <div id="view" class="tab-content">
+            <div class="search-bar">
+                <input type="text" id="searchInput" placeholder="بحث...">
+                <button class="btn btn-primary" onclick="searchFaults()"><span class="geo-icon geo-diamond" style="background:white;"></span> بحث</button>
+                <button class="btn btn-accent" onclick="loadFaults()"><span class="geo-icon geo-square" style="background:white;"></span> اظهار الكل</button>
+            </div>
+
+            <div class="table-container">
+                <table id="faultsTable">
+                    <thead>
+                        <tr>
+                            <th><input type="checkbox" id="selectAll" onclick="toggleSelectAll()"></th>
+                            <th>رقم</th>
+                            <th>التاريخ</th>
+                            <th>نوع العطل</th>
+                            <th>نوع الصيانة</th>
+                            <th>رقم طلب الصيانة</th>
+                            <th>رقم الطلب</th>
+                            <th>الادارة الطالبة</th>
+                            <th>المبنى</th>
+                            <th>الدور</th>
+                            <th>المكان</th>
+                            <th>الماكينة</th>
+                            <th>المهندس</th>
+                            <th>استلام البلاغ</th>
+                            <th>بدء الاصلاح</th>
+                            <th>انتهاء الاصلاح</th>
+                            <th>مدة الصيانة</th>
+                            <th>وصف العطل</th>
+                            <th>ما تم عمله</th>
+                            <th>قطع الغيار</th>
+                            <th>الملاحظات</th>
+                            <th>الكفاءة</th>
+                        </tr>
+                    </thead>
+                    <tbody id="faultsTableBody">
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="actions-bar">
+                <button class="btn btn-danger" onclick="deleteSelected()"><span class="geo-icon geo-cross" style="background:white;"></span> حذف المحدد</button>
+                <button class="btn btn-primary" onclick="exportToCSV()"><span class="geo-icon geo-triangle-up" style="border-top-color:white;"></span> تصدير CSV</button>
+                <button class="btn btn-danger" onclick="clearAllData()" style="background-color:#555; margin-right:auto;"><span style="font-size:18px;">🗑</span> مسح جميع البيانات</button>
+            </div>
+        </div>
+
+        <!-- Analysis Tab -->
+        <div id="analysis" class="tab-content">
+            <h2 class="section-title">التحليلات والاحصائيات</h2>
+
+            <div class="filter-bar">
+                <label>من تاريخ:</label>
+                <input type="text" id="analysisDateFrom" placeholder="DD/MM/YYYY" style="width:130px;">
+                <label>الى تاريخ:</label>
+                <input type="text" id="analysisDateTo" placeholder="DD/MM/YYYY" style="width:130px;">
+                <label>المبنى:</label>
+                <select id="analysisBuilding">
+                    <option value="">الكل</option>
+                </select>
+                <label>نوع العطل:</label>
+                <select id="analysisType">
+                    <option value="">الكل</option>
+                    <option value="كهرباء">كهرباء</option>
+                    <option value="ميكانيكا">ميكانيكا</option>
+                    <option value="كهرباء وميكانيكا">كهرباء وميكانيكا</option>
+                </select>
+                <button class="btn btn-accent" onclick="loadCharts()"><span class="geo-icon geo-triangle" style="border-bottom-color:white;"></span> تحديث</button>
+            </div>
+
+            <div class="charts-grid" id="chartsContainer">
+            </div>
+        </div>
+
+        <!-- Dashboard Tab -->
+        <div id="dashboard" class="tab-content">
+            <h2 class="section-title">لوحة التحكم</h2>
+
+            <div class="stats-grid">
+                <div class="stat-card blue">
+                    <div class="stat-title">🔧 اجمالي الاعطال</div>
+                    <div class="stat-value" id="totalFaults">0</div>
+                </div>
+                <div class="stat-card red">
+                    <div class="stat-title">⚡ اعطال كهرباء</div>
+                    <div class="stat-value" id="elecFaults">0</div>
+                </div>
+                <div class="stat-card green">
+                    <div class="stat-title">🔩 اعطال ميكانيكا</div>
+                    <div class="stat-value" id="mechFaults">0</div>
+                </div>
+                <div class="stat-card purple">
+                    <div class="stat-title">🔄 كهرباء وميكانيكا</div>
+                    <div class="stat-value" id="bothFaults">0</div>
+                </div>
+                <div class="stat-card orange">
+                    <div class="stat-title">✅ نسبة النجاح</div>
+                    <div class="stat-value" id="successRate">0%</div>
+                </div>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card purple">
+                    <div class="stat-title">⏱️ اجمالي ساعات الصيانة</div>
+                    <div class="stat-value" id="totalHours">0 س</div>
+                </div>
+                <div class="stat-card teal">
+                    <div class="stat-title">📊 متوسط وقت الاصلاح</div>
+                    <div class="stat-value" id="avgTime">0 د</div>
+                </div>
+                <div class="stat-card orange-dark">
+                    <div class="stat-title">🚀 متوسط وقت الاستجابة</div>
+                    <div class="stat-value" id="avgResponse">0 د</div>
+                </div>
+            </div>
+
+            <div class="table-section">
+                <h3 class="column-title">اداء المهندسين</h3>
+                <div class="table-container">
+                    <table id="engineersTable">
+                        <thead>
+                            <tr>
+                                <th>المهندس</th>
+                                <th>عدد الاعطال</th>
+                                <th>نسبة الكفاءة</th>
+                                <th>اجمالي الوقت</th>
+                                <th>متوسط الوقت</th>
+                            </tr>
+                        </thead>
+                        <tbody id="engineersTableBody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Time Analysis Tab -->
+        <div id="time-analysis" class="tab-content">
+            <h2 class="section-title">تحليل اوقات الصيانة</h2>
+
+            <div class="filter-bar">
+                <label>السنة:</label>
+                <select id="yearFilter">
+                    <option value="2024">2024</option>
+                    <option value="2025">2025</option>
+                    <option value="2026" selected>2026</option>
+                    <option value="2027">2027</option>
+                    <option value="2028">2028</option>
+                    <option value="2029">2029</option>
+                </select>
+
+                <label>الشهر:</label>
+                <select id="monthFilter">
+                    <option value="1">1-يناير</option>
+                    <option value="2">2-فبراير</option>
+                    <option value="3">3-مارس</option>
+                    <option value="4">4-ابريل</option>
+                    <option value="5">5-مايو</option>
+                    <option value="6" selected>6-يونيو</option>
+                    <option value="7">7-يوليو</option>
+                    <option value="8">8-اغسطس</option>
+                    <option value="9">9-سبتمبر</option>
+                    <option value="10">10-اكتوبر</option>
+                    <option value="11">11-نوفمبر</option>
+                    <option value="12">12-ديسمبر</option>
+                </select>
+
+                <button class="btn btn-accent" onclick="updateTimeAnalysis()"><span class="geo-icon geo-triangle" style="border-bottom-color:white;"></span> تحديث التحليل</button>
+            </div>
+
+            <div class="table-section">
+                <h3 class="column-title">احصائيات اوقات الصيانة</h3>
+                <div class="table-container">
+                    <table id="timeStatsTable">
+                        <thead>
+                            <tr>
+                                <th>البند</th>
+                                <th>اجمالي الساعات</th>
+                                <th>اجمالي الدقائق</th>
+                                <th>عدد الحالات</th>
+                                <th>متوسط الدقائق</th>
+                            </tr>
+                        </thead>
+                        <tbody id="timeStatsTableBody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="charts-grid" id="timeChartsContainer">
+            </div>
+        </div>
+    </div>
+
+    <div id="notification" class="notification"></div>
+
+    <footer style="text-align:center; padding:20px; margin-top:15px; color:#666; font-size:13px; border-top:1px solid #0f3460;">
+        by: ENG.BAHAA
+    </footer>
+
+    <script>
+        // ============================================================================
+        // نظام صيانات نماء لصناعة الأعلاف - نسخة الويب (HTML/CSS/JS纯静态)
+        // ============================================================================
+
+        // Storage keys (localStorage fallback)
+        const STORAGE_KEY = 'nama_maintenance_data';
+        const DEPT_COUNTER_KEY = 'nama_dept_counters';
+
+        let _cachedFaults = null;
+        let _cachedCounters = null;
+
+        // Load all data from server (fallback to localStorage)
+        async function loadAllData() {
+            try {
+                const res = await fetch('/api/data');
+                if (res.ok) {
+                    const data = await res.json();
+                    _cachedFaults = data.faults || [];
+                    _cachedCounters = data.dept_counters || {};
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify(_cachedFaults));
+                    localStorage.setItem(DEPT_COUNTER_KEY, JSON.stringify(_cachedCounters));
+                    return;
+                }
+            } catch {}
+            const stored = localStorage.getItem(STORAGE_KEY);
+            _cachedFaults = stored ? JSON.parse(stored) : [];
+            const counters = localStorage.getItem(DEPT_COUNTER_KEY);
+            _cachedCounters = counters ? JSON.parse(counters) : {};
+        }
+
+        // Save all data to server + localStorage
+        async function saveAllData() {
+            const data = { faults: _cachedFaults, dept_counters: _cachedCounters };
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(_cachedFaults));
+            localStorage.setItem(DEPT_COUNTER_KEY, JSON.stringify(_cachedCounters));
+            try {
+                await fetch('/api/data', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+            } catch {}
+        }
+
+        function getFaults() { return _cachedFaults || []; }
+
+        function saveFaults(faults) {
+            _cachedFaults = faults;
+            return saveAllData();
+        }
+
+        function getDeptCounters() { return _cachedCounters || {}; }
+
+        function saveDeptCounters(counters) {
+            _cachedCounters = counters;
+            return saveAllData();
+        }
+
+        // Get next fault number
+        function getNextFaultNo() {
+            const faults = getFaults();
+            if (faults.length > 0) {
+                return Math.max(...faults.map(f => f.no || 0)) + 1;
+            }
+            return 1;
+        }
+
+        // Parse time string to minutes
+        function parseTime12h(timeStr) {
+            try {
+                timeStr = timeStr.trim();
+                if (!timeStr) return 0;
+
+                // Handle 24h format first (HH:MM, no AM/PM)
+                let match24 = timeStr.match(/^(\d{1,2}):(\d{2})$/);
+                if (match24) {
+                    let hours = parseInt(match24[1]);
+                    let mins = parseInt(match24[2]);
+                    if (hours >= 0 && hours < 24 && mins >= 0 && mins < 60) {
+                        return hours * 60 + mins;
+                    }
+                    return 0;
+                }
+
+                // Handle 12h format (HH:MM AM/PM or Arabic variants)
+                timeStr = timeStr.replace(/صباحاً|صباحا|ص/g, 'AM')
+                                .replace(/مساءً|مساء|م/g, 'PM');
+                timeStr = timeStr.replace(/\s+/g, ' ').trim();
+
+                let match = timeStr.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
+                if (match) {
+                    let hours = parseInt(match[1]);
+                    let mins = parseInt(match[2]);
+                    let ampm = match[3].toUpperCase();
+                    if (ampm === 'PM' && hours !== 12) hours += 12;
+                    if (ampm === 'AM' && hours === 12) hours = 0;
+                    return hours * 60 + mins;
+                }
+
+                return 0;
+            } catch (e) {
+                console.error('Time parse error:', e);
+                return 0;
+            }
+        }
+
+        // Calculate duration
+        function calculateDuration(startTime, endTime) {
+            let start = parseTime12h(startTime);
+            let end = parseTime12h(endTime);
+            if (start > 0 && end > 0) {
+                if (end < start) end += 24 * 60;
+                return end - start;
+            }
+            return 0;
+        }
+
+        // Calculate response time
+        function calculateResponseTime(reportTime, startTime) {
+            let report = parseTime12h(reportTime);
+            let start = parseTime12h(startTime);
+            if (report > 0 && start > 0) {
+                if (start < report) start += 24 * 60;
+                return start - report;
+            }
+            return 0;
+        }
+
+        // Format duration
+        function formatDuration(minutes) {
+            if (!minutes || minutes <= 0) return '0 دقيقة';
+            let hours = Math.floor(minutes / 60);
+            let mins = minutes % 60;
+            if (hours > 0 && mins > 0) return `${hours} ساعة و ${mins} دقيقة`;
+            else if (hours > 0) return `${hours} ساعة`;
+            else return `${mins} دقيقة`;
+        }
+
+        // Get current time as HH:MM
+        function getTimeNow() {
+            const now = new Date();
+            return String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
+        }
+
+        // Update duration preview
+        function updateDurationPreview() {
+            const report = document.getElementById('report_time').value;
+            const start = document.getElementById('start_time').value;
+            const end = document.getElementById('end_time').value;
+            const preview = document.getElementById('durationPreview');
+            if (preview) {
+                let dur = '--';
+                let resp = '--';
+                if (start && end) {
+                    let d = calculateDuration(start, end);
+                    if (d > 0) dur = formatDuration(d);
+                }
+                if (report && start) {
+                    let r = calculateResponseTime(report, start);
+                    if (r > 0) resp = formatDuration(r);
+                }
+                preview.textContent = `مدة الصيانة: ${dur} | وقت الاستجابة: ${resp}`;
+            }
+        }
+
+        // Display stored time as 24h HH:MM
+        function displayTime(timeStr) {
+            try {
+                if (!timeStr) return '--:--';
+                timeStr = timeStr.trim();
+                let m = timeStr.match(/^(\d{1,2}):(\d{2})$/);
+                if (m) return timeStr;
+                let t = timeStr.replace(/صباحاً|صباحا|ص/g, 'AM').replace(/مساءً|مساء|م/g, 'PM').replace(/\s+/g, ' ').trim();
+                let m2 = t.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
+                if (m2) {
+                    let h = parseInt(m2[1]);
+                    let min = m2[2];
+                    if (m2[3].toUpperCase() === 'PM' && h !== 12) h += 12;
+                    if (m2[3].toUpperCase() === 'AM' && h === 12) h = 0;
+                    return String(h).padStart(2, '0') + ':' + min;
+                }
+                return timeStr;
+            } catch (e) { return timeStr; }
+        }
+
+        // Notification
+        function showNotification(message, type = 'success') {
+            const notif = document.getElementById('notification');
+            notif.textContent = message;
+            notif.className = `notification ${type}`;
+            setTimeout(() => { notif.className = 'notification'; }, 3000);
+        }
+
+        // Tab switching
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                btn.classList.add('active');
+                const tabId = btn.getAttribute('data-tab');
+                document.getElementById(tabId).classList.add('active');
+                if (tabId === 'view') loadFaults();
+                if (tabId === 'analysis') loadCharts();
+                if (tabId === 'dashboard') loadDashboard();
+                if (tabId === 'time-analysis') updateTimeAnalysis();
+            });
+        });
+
+        // Initialize
+        (async function init() {
+            await loadAllData();
+            const now = new Date();
+            const day = String(now.getDate()).padStart(2, '0');
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const year = now.getFullYear();
+            document.getElementById('date').value = `${day}/${month}/${year}`;
+
+            ['report_time', 'start_time', 'end_time'].forEach(id => {
+                document.getElementById(id).value = getTimeNow();
+                document.getElementById(id).addEventListener('input', updateDurationPreview);
+            });
+            updateDurationPreview();
+
+            loadNextFaultNo();
+        })();
+
+        function loadNextFaultNo() {
+            document.getElementById('fault_no').value = getNextFaultNo();
+        }
+
+        function getNextRequestNo(department) {
+            const counters = getDeptCounters();
+            const next = (counters[department] || 0) + 1;
+            counters[department] = next;
+            saveDeptCounters(counters);
+            return `${department}-${String(next).padStart(3, '0')}`;
+        }
+
+        function updateRequestNo() {
+            const dept = document.getElementById('requesting_dept').value;
+            if (dept) {
+                const counters = getDeptCounters();
+                const next = (counters[dept] || 0) + 1;
+                document.getElementById('request_no').value = `${dept}-${String(next).padStart(3, '0')}`;
+            } else {
+                document.getElementById('request_no').value = '';
+            }
+        }
+
+        function generateRequestNo(dept) {
+            const counters = getDeptCounters();
+            const next = (counters[dept] || 0) + 1;
+            counters[dept] = next;
+            // Save happens in form submit handler (saveFaults saves both)
+            return `${dept}-${String(next).padStart(3, '0')}`;
+        }
+
+        // Form submission
+        document.getElementById('faultForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const requiredFields = ['fault_type', 'maintenance_type', 'requesting_dept', 'building', 'floor', 'machine', 'engineer', 'efficiency'];
+            for (const field of requiredFields) {
+                if (!document.getElementById(field).value) {
+                    showNotification('برجاء ملء جميع الحقول المطلوبة', 'warning');
+                    return;
+                }
+            }
+
+            if (!document.getElementById('fault_desc').value.trim()) {
+                showNotification('برجاء وصف العطل', 'warning');
+                return;
+            }
+
+            const reportTime = document.getElementById('report_time').value.trim();
+            const startTime = document.getElementById('start_time').value.trim();
+            const endTime = document.getElementById('end_time').value.trim();
+
+            if (!reportTime || !startTime || !endTime) {
+                showNotification('برجاء إدخال جميع الأوقات (البلاغ، البدء، الانتهاء)', 'warning');
+                return;
+            }
+
+            const duration = calculateDuration(startTime, endTime);
+            const responseTime = calculateResponseTime(reportTime, startTime);
+
+            if (duration <= 0) {
+                showNotification('وقت الصيانة غير صالح! تأكد أن وقت الانتهاء بعد وقت البدء', 'warning');
+                return;
+            }
+
+            const dept = document.getElementById('requesting_dept').value;
+            const requestNo = generateRequestNo(dept);
+
+            const fault = {
+                no: getNextFaultNo(),
+                date: document.getElementById('date').value,
+                type: document.getElementById('fault_type').value,
+                maintenance_type: document.getElementById('maintenance_type').value,
+                requesting_dept: dept,
+                request_no: requestNo,
+                order_no: document.getElementById('order_no').value,
+                building: document.getElementById('building').value,
+                floor: document.getElementById('floor').value,
+                location: document.getElementById('location').value,
+                machine: document.getElementById('machine').value,
+                engineer: document.getElementById('engineer').value,
+                report_time: reportTime,
+                start_time: startTime,
+                end_time: endTime,
+                duration_minutes: duration,
+                response_time_minutes: responseTime,
+                desc: document.getElementById('fault_desc').value,
+                work: document.getElementById('work_done').value,
+                parts: document.getElementById('spare_parts').value,
+                notes: document.getElementById('notes').value,
+                time_notes: document.getElementById('time_notes').value,
+                delay_reason: document.getElementById('delay_reason').value,
+                efficiency: document.getElementById('efficiency').value,
+                timestamp: new Date().toISOString()
+            };
+
+            const faults = getFaults();
+            faults.push(fault);
+            await saveFaults(faults);
+
+            showNotification(`تم حفظ بيانات العطل بنجاح! رقم العطل: ${fault.no} - رقم طلب الصيانة: ${requestNo}`);
+            clearForm();
+        });
+
+        function clearForm() {
+            document.getElementById('faultForm').reset();
+            const now = new Date();
+            const day = String(now.getDate()).padStart(2, '0');
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const year = now.getFullYear();
+            document.getElementById('date').value = `${day}/${month}/${year}`;
+
+            document.getElementById('report_time').value = getTimeNow();
+            document.getElementById('start_time').value = '';
+            document.getElementById('end_time').value = '';
+
+            document.getElementById('maintenance_type').value = '';
+            document.getElementById('requesting_dept').value = '';
+            document.getElementById('request_no').value = '';
+            document.getElementById('order_no').value = '';
+
+            updateDurationPreview();
+            loadNextFaultNo();
+        }
+
+        // Chart instance tracking for cleanup
+        let chartInstances = [];
+
+        function destroyCharts() {
+            chartInstances.forEach(c => { try { c.destroy(); } catch(e) {} });
+            chartInstances = [];
+        }
+
+        // Get filtered faults based on analysis tab filters
+        function getFilteredFaults(faults) {
+            const dateFrom = document.getElementById('analysisDateFrom').value.trim();
+            const dateTo = document.getElementById('analysisDateTo').value.trim();
+            const building = document.getElementById('analysisBuilding').value;
+            const ftype = document.getElementById('analysisType').value;
+
+            return faults.filter(f => {
+                if (building && f.building !== building) return false;
+                if (ftype && f.type !== ftype) return false;
+                if (dateFrom) {
+                    const parts = f.date.split('/');
+                    const fDate = new Date(parseInt(parts[2]), parseInt(parts[1])-1, parseInt(parts[0]));
+                    const fromParts = dateFrom.split('/');
+                    const fromDate = new Date(parseInt(fromParts[2]), parseInt(fromParts[1])-1, parseInt(fromParts[0]));
+                    if (fDate < fromDate) return false;
+                }
+                if (dateTo) {
+                    const parts = f.date.split('/');
+                    const fDate = new Date(parseInt(parts[2]), parseInt(parts[1])-1, parseInt(parts[0]));
+                    const toParts = dateTo.split('/');
+                    const toDate = new Date(parseInt(toParts[2]), parseInt(toParts[1])-1, parseInt(toParts[0]));
+                    if (fDate > toDate) return false;
+                }
+                return true;
+            });
+        }
+
+        // Populate analysis building dropdown from data
+        function populateAnalysisFilters() {
+            const faults = getFaults();
+            const buildings = [...new Set(faults.map(f => f.building).filter(Boolean))];
+            const select = document.getElementById('analysisBuilding');
+            const currentVal = select.value;
+            select.innerHTML = '<option value="">الكل</option>';
+            buildings.sort().forEach(b => {
+                const opt = document.createElement('option');
+                opt.value = b;
+                opt.textContent = b;
+                if (b === currentVal) opt.selected = true;
+                select.appendChild(opt);
+            });
+        }
+
+        // Load faults table
+        function loadFaults() {
+            const faults = getFaults();
+            renderFaultsTable(faults);
+        }
+
+        function renderFaultsTable(faults) {
+            const tbody = document.getElementById('faultsTableBody');
+            tbody.innerHTML = '';
+
+            if (faults.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="22" style="text-align:center;">لا توجد بيانات</td></tr>';
+                return;
+            }
+
+            faults.forEach(fault => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td><input type="checkbox" class="select-checkbox" data-no="${fault.no}"></td>
+                    <td>${fault.no}</td>
+                    <td>${fault.date}</td>
+                    <td>${fault.type}</td>
+                    <td>${fault.maintenance_type || ''}</td>
+                    <td>${fault.request_no || ''}</td>
+                    <td>${fault.order_no || ''}</td>
+                    <td>${fault.requesting_dept || ''}</td>
+                    <td>${fault.building}</td>
+                    <td>${fault.floor}</td>
+                    <td>${fault.location || ''}</td>
+                    <td>${fault.machine}</td>
+                    <td>${fault.engineer}</td>
+                    <td>${fault.report_time}</td>
+                    <td>${fault.start_time}</td>
+                    <td>${fault.end_time}</td>
+                    <td>${formatDuration(fault.duration_minutes)}</td>
+                    <td>${fault.desc}</td>
+                    <td>${fault.work || ''}</td>
+                    <td>${fault.parts || ''}</td>
+                    <td>${fault.notes || ''}</td>
+                    <td>${fault.efficiency}</td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function toggleSelectAll() {
+            const selectAll = document.getElementById('selectAll');
+            const checkboxes = document.querySelectorAll('.select-checkbox');
+            checkboxes.forEach(cb => cb.checked = selectAll.checked);
+        }
+
+        function searchFaults() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            if (!searchTerm) {
+                loadFaults();
+                return;
+            }
+
+            const faults = getFaults();
+            const filtered = faults.filter(f => 
+                (f.date && f.date.toLowerCase().includes(searchTerm)) ||
+                (f.engineer && f.engineer.toLowerCase().includes(searchTerm)) ||
+                (f.machine && f.machine.toLowerCase().includes(searchTerm)) ||
+                (f.building && f.building.toLowerCase().includes(searchTerm)) ||
+                (f.request_no && f.request_no.toLowerCase().includes(searchTerm)) ||
+                (f.order_no && f.order_no.toLowerCase().includes(searchTerm)) ||
+                (f.requesting_dept && f.requesting_dept.toLowerCase().includes(searchTerm)) ||
+                (f.maintenance_type && f.maintenance_type.toLowerCase().includes(searchTerm))
+            );
+            renderFaultsTable(filtered);
+        }
+
+        async function deleteSelected() {
+            const checkboxes = document.querySelectorAll('.select-checkbox:checked');
+            if (checkboxes.length === 0) {
+                showNotification('برجاء اختيار سجل للحذف', 'warning');
+                return;
+            }
+
+            if (!confirm('هل انت متأكد من الحذف؟')) return;
+
+            const faultNos = Array.from(checkboxes).map(cb => parseInt(cb.getAttribute('data-no')));
+            let faults = getFaults();
+            faults = faults.filter(f => !faultNos.includes(f.no));
+            await saveFaults(faults);
+
+            showNotification('تم الحذف بنجاح');
+            loadFaults();
+        }
+
+        function exportToCSV() {
+            const faults = getFaults();
+            if (faults.length === 0) {
+                showNotification('لا توجد بيانات للتصدير', 'warning');
+                return;
+            }
+
+            const headers = ['رقم العطل', 'التاريخ', 'نوع العطل', 'نوع الصيانة', 'رقم طلب الصيانة', 'رقم الطلب', 'الادارة الطالبة',
+                            'المبنى', 'الدور', 'المكان التفصيلي', 'الماكينة', 'المهندس',
+                            'وقت استلام البلاغ', 'وقت البدء', 'وقت الانتهاء',
+                            'مدة الصيانة (دقيقة)', 'وقت الاستجابة (دقيقة)',
+                            'وصف العطل', 'ما تم عمله', 'قطع الغيار', 'الملاحظات', 'الكفاءة'];
+
+            let csv = '\uFEFF' + headers.join(',') + '\n';
+
+            faults.forEach(fault => {
+                const row = [
+                    fault.no, fault.date, fault.type, fault.maintenance_type || '', fault.request_no || '', fault.order_no || '', fault.requesting_dept || '',
+                    fault.building, fault.floor, fault.location || '', fault.machine, fault.engineer,
+                    fault.report_time, fault.start_time, fault.end_time,
+                    fault.duration_minutes || 0, fault.response_time_minutes || 0,
+                    fault.desc, fault.work || '', fault.parts || '',
+                    fault.notes || '', fault.efficiency
+                ];
+                csv += row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(',') + '\n';
+            });
+
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `تقرير_الاعطال_${new Date().toISOString().slice(0,10)}.csv`;
+            link.click();
+            showNotification('تم التصدير بنجاح');
+        }
+
+        // Charts using Chart.js (CDN)
+        function loadCharts() {
+            const allFaults = getFaults();
+            populateAnalysisFilters();
+            const faults = getFilteredFaults(allFaults);
+            const container = document.getElementById('chartsContainer');
+
+            destroyCharts();
+            container.innerHTML = '';
+
+            if (faults.length === 0) {
+                container.innerHTML = '<div style="text-align:center; padding:50px; color:#888;">لا توجد بيانات للفترة المحددة</div>';
+                return;
+            }
+
+            // Count by type
+            const typeCounts = {};
+            const buildingCounts = {};
+            const floorCounts = {};
+            const efficiencyCounts = {};
+
+            faults.forEach(f => {
+                typeCounts[f.type] = (typeCounts[f.type] || 0) + 1;
+                buildingCounts[f.building] = (buildingCounts[f.building] || 0) + 1;
+                floorCounts[f.floor] = (floorCounts[f.floor] || 0) + 1;
+                efficiencyCounts[f.efficiency] = (efficiencyCounts[f.efficiency] || 0) + 1;
+            });
+
+            container.innerHTML = `
+                <div class="chart-container">
+                    <canvas id="chart1"></canvas>
+                </div>
+                <div class="chart-container">
+                    <canvas id="chart2"></canvas>
+                </div>
+                <div class="chart-container">
+                    <canvas id="chart3"></canvas>
+                </div>
+                <div class="chart-container">
+                    <canvas id="chart4"></canvas>
+                </div>
+            `;
+
+            // Load Chart.js from CDN (pinned to v4.5.0)
+            if (typeof Chart === 'undefined') {
+                const script = document.createElement('script');
+                script.src = 'https://cdn.jsdelivr.net/npm/chart.js@4.5.0/dist/chart.umd.min.js';
+                script.onload = () => renderCharts(typeCounts, buildingCounts, floorCounts, efficiencyCounts);
+                document.head.appendChild(script);
+            } else {
+                renderCharts(typeCounts, buildingCounts, floorCounts, efficiencyCounts);
+            }
+        }
+
+        function renderCharts(typeCounts, buildingCounts, floorCounts, efficiencyCounts) {
+            // Chart 1: Fault types (Pie)
+            chartInstances.push(new Chart(document.getElementById('chart1'), {
+                type: 'pie',
+                data: {
+                    labels: Object.keys(typeCounts),
+                    datasets: [{
+                        data: Object.values(typeCounts),
+                        backgroundColor: ['#e74c3c', '#3498db', '#9b59b6']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: { display: true, text: 'توزيع الاعطال حسب النوع', font: { size: 16 } }
+                    }
+                }
+            }));
+
+            // Chart 2: Buildings (Bar)
+            chartInstances.push(new Chart(document.getElementById('chart2'), {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(buildingCounts),
+                    datasets: [{
+                        label: 'عدد الاعطال',
+                        data: Object.values(buildingCounts),
+                        backgroundColor: '#27ae60'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: { display: true, text: 'توزيع الاعطال حسب المبنى', font: { size: 16 } }
+                    }
+                }
+            }));
+
+            // Chart 3: Floors (Bar)
+            chartInstances.push(new Chart(document.getElementById('chart3'), {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(floorCounts),
+                    datasets: [{
+                        label: 'عدد الاعطال',
+                        data: Object.values(floorCounts),
+                        backgroundColor: '#f39c12'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: { display: true, text: 'توزيع الاعطال حسب الدور', font: { size: 16 } }
+                    }
+                }
+            }));
+
+            // Chart 4: Efficiency (Pie)
+            chartInstances.push(new Chart(document.getElementById('chart4'), {
+                type: 'pie',
+                data: {
+                    labels: Object.keys(efficiencyCounts),
+                    datasets: [{
+                        data: Object.values(efficiencyCounts),
+                        backgroundColor: ['#27ae60', '#e74c3c', '#f39c12']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: { display: true, text: 'نسبة كفاءة الاصلاح', font: { size: 16 } }
+                    }
+                }
+            }));
+        }
+
+        // Dashboard
+        function loadDashboard() {
+            const faults = getFaults();
+            const total = faults.length;
+
+            const elecCount = faults.filter(f => f.type === 'كهرباء').length;
+            const mechCount = faults.filter(f => f.type === 'ميكانيكا').length;
+            const bothCount = faults.filter(f => f.type === 'كهرباء وميكانيكا').length;
+            const successCount = faults.filter(f => f.efficiency === 'نعم').length;
+            const successRate = total > 0 ? (successCount / total * 100).toFixed(1) : 0;
+
+            const totalMinutes = faults.reduce((sum, f) => sum + (f.duration_minutes || 0), 0);
+            const totalHours = (totalMinutes / 60).toFixed(1);
+            const avgMinutes = total > 0 ? Math.floor(totalMinutes / total) : 0;
+
+            const responseTimes = faults.filter(f => f.response_time_minutes > 0).map(f => f.response_time_minutes);
+            const avgResponse = responseTimes.length > 0 ? Math.floor(responseTimes.reduce((a, b) => a + b, 0) / responseTimes.length) : 0;
+
+            document.getElementById('totalFaults').textContent = total;
+            document.getElementById('elecFaults').textContent = elecCount;
+            document.getElementById('mechFaults').textContent = mechCount;
+            document.getElementById('bothFaults').textContent = bothCount;
+            document.getElementById('successRate').textContent = successRate + '%';
+            document.getElementById('totalHours').textContent = totalHours + ' س';
+            document.getElementById('avgTime').textContent = formatDuration(avgMinutes);
+            document.getElementById('avgResponse').textContent = formatDuration(avgResponse);
+
+            // Engineers table
+            const engineers = {};
+            faults.forEach(f => {
+                const eng = f.engineer;
+                if (!engineers[eng]) engineers[eng] = { total: 0, success: 0, time: 0 };
+                engineers[eng].total++;
+                if (f.efficiency === 'نعم') engineers[eng].success++;
+                engineers[eng].time += f.duration_minutes || 0;
+            });
+
+            const tbody = document.getElementById('engineersTableBody');
+            tbody.innerHTML = '';
+
+            if (Object.keys(engineers).length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">لا توجد بيانات</td></tr>';
+                return;
+            }
+
+            Object.entries(engineers).forEach(([eng, stats]) => {
+                const rate = stats.total > 0 ? (stats.success / stats.total * 100).toFixed(1) : 0;
+                const avgTime = stats.total > 0 ? Math.floor(stats.time / stats.total) : 0;
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${eng}</td>
+                    <td>${stats.total}</td>
+                    <td>${rate}%</td>
+                    <td>${formatDuration(stats.time)}</td>
+                    <td>${formatDuration(avgTime)}</td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // Time Analysis
+        function updateTimeAnalysis() {
+            const year = parseInt(document.getElementById('yearFilter').value);
+            const month = parseInt(document.getElementById('monthFilter').value);
+            const faults = getFaults();
+
+            const monthFaults = faults.filter(f => {
+                try {
+                    const parts = f.date.split('/');
+                    return parseInt(parts[2]) === year && parseInt(parts[1]) === month;
+                } catch { return false; }
+            });
+
+            const tbody = document.getElementById('timeStatsTableBody');
+            tbody.innerHTML = '';
+
+            if (monthFaults.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;">لا توجد بيانات للفترة المحددة (${month}/${year})</td></tr>`;
+                document.getElementById('timeChartsContainer').innerHTML = '';
+                return;
+            }
+
+            const totalMin = monthFaults.reduce((sum, f) => sum + (f.duration_minutes || 0), 0);
+            const totalResp = monthFaults.filter(f => f.response_time_minutes > 0).reduce((sum, f) => sum + f.response_time_minutes, 0);
+            const countWithResponse = monthFaults.filter(f => f.response_time_minutes > 0).length;
+
+            tbody.innerHTML += `<tr><td>اجمالي الشهر (${month}/${year})</td><td>${(totalMin/60).toFixed(1)}</td><td>${totalMin}</td><td>${monthFaults.length}</td><td>${Math.floor(totalMin/monthFaults.length)}</td></tr>`;
+
+            if (countWithResponse > 0) {
+                tbody.innerHTML += `<tr><td>متوسط وقت الاستجابة</td><td>${(totalResp/60).toFixed(1)}</td><td>${totalResp}</td><td>${countWithResponse}</td><td>${Math.floor(totalResp/countWithResponse)}</td></tr>`;
+            }
+
+            // By type
+            ['كهرباء', 'ميكانيكا', 'كهرباء وميكانيكا'].forEach(ftype => {
+                const typeFaults = monthFaults.filter(f => f.type === ftype);
+                if (typeFaults.length > 0) {
+                    const tMin = typeFaults.reduce((sum, f) => sum + (f.duration_minutes || 0), 0);
+                    tbody.innerHTML += `<tr><td>اعطال ${ftype}</td><td>${(tMin/60).toFixed(1)}</td><td>${tMin}</td><td>${typeFaults.length}</td><td>${Math.floor(tMin/typeFaults.length)}</td></tr>`;
+                }
+            });
+
+            // By machine (top 5)
+            const machineStats = {};
+            monthFaults.forEach(f => {
+                if (!machineStats[f.machine]) machineStats[f.machine] = { time: 0, count: 0 };
+                machineStats[f.machine].time += f.duration_minutes || 0;
+                machineStats[f.machine].count++;
+            });
+
+            Object.entries(machineStats)
+                .sort((a, b) => b[1].time - a[1].time)
+                .slice(0, 5)
+                .forEach(([machine, stats]) => {
+                    tbody.innerHTML += `<tr><td>ماكينة: ${machine}</td><td>${(stats.time/60).toFixed(1)}</td><td>${stats.time}</td><td>${stats.count}</td><td>${Math.floor(stats.time/stats.count)}</td></tr>`;
+                });
+
+            // By engineer
+            const engStats = {};
+            monthFaults.forEach(f => {
+                if (!engStats[f.engineer]) engStats[f.engineer] = { time: 0, count: 0 };
+                engStats[f.engineer].time += f.duration_minutes || 0;
+                engStats[f.engineer].count++;
+            });
+
+            Object.entries(engStats).forEach(([eng, stats]) => {
+                tbody.innerHTML += `<tr><td>مهندس: ${eng}</td><td>${(stats.time/60).toFixed(1)}</td><td>${stats.time}</td><td>${stats.count}</td><td>${Math.floor(stats.time/stats.count)}</td></tr>`;
+            });
+
+            // By building
+            const buildingStats = {};
+            monthFaults.forEach(f => {
+                if (!buildingStats[f.building]) buildingStats[f.building] = { time: 0, count: 0 };
+                buildingStats[f.building].time += f.duration_minutes || 0;
+                buildingStats[f.building].count++;
+            });
+
+            Object.entries(buildingStats).forEach(([building, stats]) => {
+                tbody.innerHTML += `<tr><td>مبنى: ${building}</td><td>${(stats.time/60).toFixed(1)}</td><td>${stats.time}</td><td>${stats.count}</td><td>${Math.floor(stats.time/stats.count)}</td></tr>`;
+            });
+
+            // Time charts
+            destroyCharts();
+            const chartsContainer = document.getElementById('timeChartsContainer');
+            chartsContainer.innerHTML = `
+                <div class="chart-container">
+                    <canvas id="timeChart1"></canvas>
+                </div>
+                <div class="chart-container">
+                    <canvas id="timeChart2"></canvas>
+                </div>
+            `;
+
+            if (typeof Chart === 'undefined') {
+                const script = document.createElement('script');
+                script.src = 'https://cdn.jsdelivr.net/npm/chart.js@4.5.0/dist/chart.umd.min.js';
+                script.onload = () => renderTimeCharts(machineStats, engStats);
+                document.head.appendChild(script);
+            } else {
+                renderTimeCharts(machineStats, engStats);
+            }
+        }
+
+        function renderTimeCharts(machineStats, engStats) {
+            const machines = Object.entries(machineStats).sort((a, b) => b[1].time - a[1].time).slice(0, 5);
+            const engineers = Object.entries(engStats).slice(0, 5);
+
+            chartInstances.push(new Chart(document.getElementById('timeChart1'), {
+                type: 'bar',
+                data: {
+                    labels: machines.map(m => m[0]),
+                    datasets: [{
+                        label: 'ساعات',
+                        data: machines.map(m => m[1].time / 60),
+                        backgroundColor: '#3498db'
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    plugins: {
+                        title: { display: true, text: 'وقت الصيانة حسب الماكينة', font: { size: 16 } }
+                    }
+                }
+            }));
+
+            chartInstances.push(new Chart(document.getElementById('timeChart2'), {
+                type: 'bar',
+                data: {
+                    labels: engineers.map(e => e[0]),
+                    datasets: [{
+                        label: 'ساعات',
+                        data: engineers.map(e => e[1].time / 60),
+                        backgroundColor: '#e74c3c'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: { display: true, text: 'وقت الصيانة حسب المهندس', font: { size: 16 } }
+                    }
+                }
+            }));
+        }
+
+        // Clear all data with password
+        async function clearAllData() {
+            const password = prompt('ادخل الرقم السري للمسح:');
+            if (password !== '5136') {
+                showNotification('الرقم السري خطأ', 'error');
+                return;
+            }
+            if (!confirm('هل انت متأكد من مسح جميع البيانات؟ هذا الإجراء لا يمكن التراجع عنه!')) return;
+
+            _cachedFaults = [];
+            _cachedCounters = {};
+            await saveAllData();
+            showNotification('تم مسح جميع البيانات بنجاح');
+            const activeTab = document.querySelector('.tab-btn.active');
+            if (activeTab) activeTab.click();
+        }
+    </script>
+</body>
+</html>

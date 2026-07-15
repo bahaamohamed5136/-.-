@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام صيانة الحريق - نماء</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:'Segoe UI',Tahoma,sans-serif;background:linear-gradient(135deg,#1e3c72,#2a5298);min-height:100vh}
+        .container{max-width:1400px;margin:0 auto;padding:20px}
+        .header{background:linear-gradient(135deg,#ff6b35,#f7931e);color:#fff;padding:30px;border-radius:15px;text-align:center;margin-bottom:30px;box-shadow:0 10px 30px rgba(0,0,0,0.3)}
+        .header h1{font-size:2.2em;margin-bottom:10px}
+        .designer{background:rgba(255,255,255,0.2);display:inline-block;padding:8px 20px;border-radius:25px;margin-top:10px}
+        .nav-tabs{display:flex;gap:10px;margin-bottom:30px;flex-wrap:wrap}
+        .nav-tab{background:rgba(255,255,255,0.9);border:none;padding:15px 30px;border-radius:10px;cursor:pointer;font-size:1.1em;font-weight:bold;color:#2a5298;transition:all 0.3s}
+        .nav-tab:hover,.nav-tab.active{background:#ff6b35;color:#fff;transform:translateY(-2px)}
+        .section{background:#fff;border-radius:15px;padding:30px;margin-bottom:30px;box-shadow:0 5px 20px rgba(0,0,0,0.1);display:none}
+        .section.active{display:block;animation:fadeIn 0.5s}
+        @keyframes fadeIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+        .form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px;margin-bottom:20px}
+        .form-group{display:flex;flex-direction:column}
+        .form-group label{font-weight:bold;margin-bottom:8px;color:#2a5298}
+        .form-group input,.form-group select,.form-group textarea{padding:12px;border:2px solid #e0e0e0;border-radius:8px;font-size:1em;transition:border-color 0.3s;font-family:inherit}
+        .form-group input:focus,.form-group select:focus,.form-group textarea:focus{outline:none;border-color:#ff6b35}
+        .form-group textarea{min-height:80px;resize:vertical}
+        .btn{background:linear-gradient(135deg,#ff6b35,#f7931e);color:#fff;border:none;padding:15px 40px;border-radius:10px;font-size:1.2em;font-weight:bold;cursor:pointer;transition:all 0.3s;box-shadow:0 4px 15px rgba(255,107,53,0.4)}
+        .btn:hover{transform:translateY(-2px)}
+        .btn-success{background:linear-gradient(135deg,#28a745,#20c997);margin-right:10px}
+        .btn-danger{background:linear-gradient(135deg,#dc3545,#e74c3c)}
+        table{width:100%;border-collapse:collapse;background:#fff;border-radius:10px;overflow:hidden}
+        th{background:linear-gradient(135deg,#2a5298,#1e3c72);color:#fff;padding:15px;text-align:right}
+        td{padding:12px;border-bottom:1px solid #eee}
+        tr:hover{background:#f8f9fa}
+        .status-good{background:#d4edda;color:#155724;padding:5px 15px;border-radius:20px;font-weight:bold}
+        .status-bad{background:#f8d7da;color:#721c24;padding:5px 15px;border-radius:20px;font-weight:bold}
+        .charts-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(400px,1fr));gap:30px;margin-top:20px}
+        .chart-box{background:#fff;padding:20px;border-radius:15px;box-shadow:0 5px 15px rgba(0,0,0,0.1)}
+        .chart-box h3{text-align:center;margin-bottom:20px;color:#2a5298}
+        .stats-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:20px;margin-bottom:30px}
+        .stat-card{background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;padding:25px;border-radius:15px;text-align:center;box-shadow:0 5px 15px rgba(0,0,0,0.2)}
+        .stat-card h3{font-size:2.5em;margin-bottom:5px}
+        .search-box input{width:100%;padding:15px;border:2px solid #e0e0e0;border-radius:10px;font-size:1.1em;margin-bottom:20px}
+        .filter-row{display:flex;gap:15px;margin-bottom:20px;flex-wrap:wrap}
+        .filter-row select{padding:10px;border:2px solid #e0e0e0;border-radius:8px;min-width:200px}
+        .alert{padding:15px;border-radius:10px;margin-bottom:20px;display:none}
+        .alert-success{background:#d4edda;color:#155724}
+        .action-buttons{display:flex;gap:10px}
+        .action-buttons button{padding:5px 15px;border:none;border-radius:5px;cursor:pointer}
+        .edit-btn{background:#ffc107}
+        .delete-btn{background:#dc3545;color:#fff}
+        .footer{text-align:center;padding:20px;color:#fff;margin-top:30px}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <img src="../namaa%20logo.png" alt="Namaa Logo" style="height:60px;margin-bottom:10px;">
+            <h1>🔥 نظام إدارة صيانة أنظمة الحريق</h1>
+            <div>شركة نماء لصناعة الأعلاف</div>
+            <div class="designer">👨‍💻 مصمم البرنامج: المهندس بهاء محمد</div>
+        </div>
+        
+        <div class="nav-tabs">
+            <button class="nav-tab active" onclick="showSection('input')">📝 تسجيل عطل</button>
+            <button class="nav-tab" onclick="showSection('records')">📋 السجل</button>
+            <button class="nav-tab" onclick="showSection('analysis')">📊 التحليل</button>
+        </div>
+        
+        <div id="input" class="section active">
+            <h2 style="color:#2a5298;margin-bottom:25px;text-align:center">تسجيل بلاغ صيانة جديد</h2>
+            <div class="alert alert-success" id="successAlert">✅ تم الحفظ بنجاح!</div>
+            
+            <form id="maintenanceForm">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>📅 التاريخ</label>
+                        <input type="date" id="date" required>
+                    </div>
+                    <div class="form-group">
+                        <label>⚠️ نوع العطل</label>
+                        <select id="faultType" required>
+                            <option value="">-- اختر --</option>
+                            <option value="إنذار">🚨 إنذار</option>
+                            <option value="إطفاء">🧯 إطفاء</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>🏢 المبنى / المنطقة</label>
+                        <select id="building" required>
+                            <option value="">-- اختر --</option>
+                            <option value="المبنى الإداري القديم">🏛️ المبنى الإداري القديم</option>
+                            <option value="المبنى الإداري الجديد">🏢 المبنى الإداري الجديد</option>
+                            <option value="غرفة الطلمبات">🔧 غرفة الطلمبات</option>
+                            <option value="المانوهلات">🕳️ المانوهلات</option>
+                            <option value="مخزن الصويا">🌾 مخزن الصويا</option>
+                            <option value="الغمر الكلي">🏭 الغمر الكلي</option>
+                            <option value="الشوارع">🛣️ الشوارع</option>
+                            <option value="مبنى التصنيع">🏗️ مبنى التصنيع</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>📍 المكان بالتحديد</label>
+                        <input type="text" id="exactLocation" placeholder="اكتب المكان بالتفصيل...">
+                    </div>
+                </div>
+                
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>📝 وصف العطل</label>
+                        <textarea id="faultDesc" placeholder="اشرح العطل..." required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>🔧 ما تم عمله</label>
+                        <textarea id="actionTaken" placeholder="الإجراءات..." required></textarea>
+                    </div>
+                </div>
+                
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>🔩 قطع الغيار</label>
+                        <textarea id="spareParts" placeholder="قطع الغيار المستخدمة..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>📌 الملاحظات</label>
+                        <textarea id="notes" placeholder="ملاحظات..."></textarea>
+                    </div>
+                </div>
+                
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>✅ هل تم الإصلاح بكفاءة؟</label>
+                        <select id="efficiency" required>
+                            <option value="">-- اختر --</option>
+                            <option value="نعم">✅ نعم</option>
+                            <option value="لا">❌ لا - يحتاج متابعة</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div style="text-align:center;margin-top:30px">
+                    <button type="submit" class="btn">💾 حفظ</button>
+                    <button type="button" class="btn btn-success" onclick="clearForm()">🔄 جديد</button>
+                </div>
+            </form>
+        </div>
+        
+        <div id="records" class="section">
+            <h2 style="color:#2a5298;text-align:center;margin-bottom:25px">📋 سجل البلاغات</h2>
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="🔍 ابحث..." onkeyup="searchRecords()">
+            </div>
+            <div class="filter-row">
+                <select id="filterType" onchange="filterRecords()">
+                    <option value="">كل الأنواع</option>
+                    <option value="إنذار">إنذار</option>
+                    <option value="إطفاء">إطفاء</option>
+                </select>
+                <select id="filterBuilding" onchange="filterRecords()">
+                    <option value="">كل المباني</option>
+                    <option>المبنى الإداري القديم</option>
+                    <option>المبنى الإداري الجديد</option>
+                    <option>غرفة الطلمبات</option>
+                    <option>المانوهلات</option>
+                    <option>مخزن الصويا</option>
+                    <option>الغمر الكلي</option>
+                    <option>الشوارع</option>
+                    <option>مبنى التصنيع</option>
+                </select>
+                <select id="filterEfficiency" onchange="filterRecords()">
+                    <option value="">كل الحالات</option>
+                    <option value="نعم">✅ تم الإصلاح</option>
+                    <option value="لا">❌ يحتاج متابعة</option>
+                </select>
+                <button class="btn" onclick="exportToExcel()" style="padding:10px 20px;font-size:1em">📥 Excel</button>
+                <button class="btn btn-success" onclick="window.print()" style="padding:10px 20px;font-size:1em">🖨️ طباعة</button>
+            </div>
+            
+            <div style="overflow-x:auto">
+                <table id="recordsTable">
+                    <thead>
+                        <tr>
+                            <th>#</th><th>التاريخ</th><th>النوع</th><th>المبنى</th><th>المكان</th>
+                            <th>العطل</th><th>الإجراء</th><th>قطع الغيار</th><th>ملاحظات</th><th>الكفاءة</th><th>إجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody id="recordsBody"></tbody>
+                </table>
+            </div>
+        </div>
+        
+        <div id="analysis" class="section">
+            <h2 style="color:#2a5298;text-align:center;margin-bottom:25px">📊 التحليل</h2>
+            <div class="stats-cards">
+                <div class="stat-card"><h3 id="totalRecords">0</h3><p>إجمالي البلاغات</p></div>
+                <div class="stat-card" style="background:linear-gradient(135deg,#f093fb,#f5576c)"><h3 id="alarmCount">0</h3><p>إنذار</p></div>
+                <div class="stat-card" style="background:linear-gradient(135deg,#4facfe,#00f2fe)"><h3 id="suppressionCount">0</h3><p>إطفاء</p></div>
+                <div class="stat-card" style="background:linear-gradient(135deg,#43e97b,#38f9d7)"><h3 id="efficientCount">0</h3><p>تم الإصلاح</p></div>
+                <div class="stat-card" style="background:linear-gradient(135deg,#fa709a,#fee140)"><h3 id="pendingCount">0</h3><p>متابعة</p></div>
+            </div>
+            
+            <div class="charts-grid">
+                <div class="chart-box"><h3>نوع العطل</h3><canvas id="typeChart"></canvas></div>
+                <div class="chart-box"><h3>المبنى</h3><canvas id="buildingChart"></canvas></div>
+                <div class="chart-box"><h3>الكفاءة</h3><canvas id="efficiencyChart"></canvas></div>
+                <div class="chart-box"><h3>شهرياً</h3><canvas id="monthlyChart"></canvas></div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>نظام صيانة الحريق - شركة نماء © 2025 | المهندس بهاء محمد</p>
+            <p style="margin-top:5px;font-size:0.9em;opacity:0.8;">by: eng.bahaa</p>
+        </div>
+    </div>
+
+    <script>
+        let records=[];
+        let editingId=null;
+
+        async function loadRecords(){
+            try {
+                const res=await fetch('/api/data');
+                if(res.ok){const data=await res.json();records=data.records||[];localStorage.setItem('fireRecords',JSON.stringify(records));return;}
+            }catch{}
+            const stored=localStorage.getItem('fireRecords');
+            records=stored?JSON.parse(stored):[];
+        }
+
+        async function saveRecords(){
+            localStorage.setItem('fireRecords',JSON.stringify(records));
+            try {
+                await fetch('/api/data',{
+                    method:'POST',
+                    headers:{'Content-Type':'application/json'},
+                    body:JSON.stringify({records:records})
+                });
+            }catch{}
+        }
+
+        (async function init(){
+            await loadRecords();
+            document.getElementById('date').valueAsDate=new Date();
+            renderRecords();
+        })();
+        
+        function showSection(id){
+            document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+            document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            event.target.classList.add('active');
+            if(id==='records')renderRecords();
+            if(id==='analysis')updateAnalysis();
+        }
+        
+        document.getElementById('maintenanceForm').addEventListener('submit',async function(e){
+            e.preventDefault();
+            const record={
+                id:editingId||Date.now(),
+                date:document.getElementById('date').value,
+                faultType:document.getElementById('faultType').value,
+                building:document.getElementById('building').value,
+                exactLocation:document.getElementById('exactLocation').value,
+                faultDesc:document.getElementById('faultDesc').value,
+                actionTaken:document.getElementById('actionTaken').value,
+                spareParts:document.getElementById('spareParts').value,
+                notes:document.getElementById('notes').value,
+                efficiency:document.getElementById('efficiency').value
+            };
+            if(editingId){records[records.findIndex(r=>r.id===editingId)]=record;editingId=null;}
+            else records.unshift(record);
+            await saveRecords();
+            document.getElementById('successAlert').style.display='block';
+            setTimeout(()=>document.getElementById('successAlert').style.display='none',3000);
+            clearForm();
+        });
+        
+        function clearForm(){document.getElementById('maintenanceForm').reset();document.getElementById('date').valueAsDate=new Date();editingId=null;}
+        
+        function renderRecords(){
+            const tbody=document.getElementById('recordsBody');
+            tbody.innerHTML='';
+            const ft=document.getElementById('filterType').value;
+            const fb=document.getElementById('filterBuilding').value;
+            const fe=document.getElementById('filterEfficiency').value;
+            const st=document.getElementById('searchInput').value.toLowerCase();
+            
+            records.filter(r=>(!ft||r.faultType===ft)&&(!fb||r.building===fb)&&(!fe||r.efficiency===fe)&&(!st||r.faultDesc.toLowerCase().includes(st)||r.building.includes(st))).forEach((r,i)=>{
+                const row=tbody.insertRow();
+                row.innerHTML=`<td>${i+1}</td><td>${r.date}</td><td>${r.faultType}</td><td>${r.building}</td><td>${r.exactLocation||'-'}</td><td>${r.faultDesc}</td><td>${r.actionTaken}</td><td>${r.spareParts||'-'}</td><td>${r.notes||'-'}</td><td><span class="${r.efficiency==='نعم'?'status-good':'status-bad'}">${r.efficiency==='نعم'?'✅ نعم':'❌ لا'}</span></td><td class="action-buttons"><button class="edit-btn" onclick="editRecord(${r.id})">✏️</button><button class="delete-btn" onclick="deleteRecord(${r.id})">🗑️</button></td>`;
+            });
+        }
+        
+        function searchRecords(){renderRecords();}
+        function filterRecords(){renderRecords();}
+        
+        function editRecord(id){
+            const r=records.find(x=>x.id===id);
+            if(r){document.getElementById('date').value=r.date;document.getElementById('faultType').value=r.faultType;document.getElementById('building').value=r.building;document.getElementById('exactLocation').value=r.exactLocation;document.getElementById('faultDesc').value=r.faultDesc;document.getElementById('actionTaken').value=r.actionTaken;document.getElementById('spareParts').value=r.spareParts;document.getElementById('notes').value=r.notes;document.getElementById('efficiency').value=r.efficiency;editingId=id;showSection('input');document.querySelectorAll('.nav-tab')[0].click();}
+        }
+        
+        async function deleteRecord(id){if(confirm('حذف البلاغ؟')){records=records.filter(r=>r.id!==id);await saveRecords();renderRecords();updateAnalysis();}}
+        
+        function updateAnalysis(){
+            document.getElementById('totalRecords').textContent=records.length;
+            document.getElementById('alarmCount').textContent=records.filter(r=>r.faultType==='إنذار').length;
+            document.getElementById('suppressionCount').textContent=records.filter(r=>r.faultType==='إطفاء').length;
+            document.getElementById('efficientCount').textContent=records.filter(r=>r.efficiency==='نعم').length;
+            document.getElementById('pendingCount').textContent=records.filter(r=>r.efficiency==='لا').length;
+            updateCharts();
+        }
+        
+        function updateCharts(){
+            const buildings=['المبنى الإداري القديم','المبنى الإداري الجديد','غرفة الطلمبات','المانوهلات','مخزن الصويا','الغمر الكلي','الشوارع','مبنى التصنيع'];
+            const bCounts=buildings.map(b=>records.filter(r=>r.building===b).length);
+            const months={};records.forEach(r=>{const m=r.date.substring(0,7);months[m]=(months[m]||0)+1;});
+            
+            new Chart(document.getElementById('typeChart'),{type:'doughnut',data:{labels:['إنذار','إطفاء'],datasets:[{data:[records.filter(r=>r.faultType==='إنذار').length,records.filter(r=>r.faultType==='إطفاء').length],backgroundColor:['#ff6b35','#4facfe']}]}});
+            new Chart(document.getElementById('buildingChart'),{type:'bar',data:{labels:buildings,datasets:[{label:'الأعطال',data:bCounts,backgroundColor:'#667eea',borderRadius:5}]},options:{scales:{y:{beginAtZero:true,ticks:{stepSize:1}}}}});
+            new Chart(document.getElementById('efficiencyChart'),{type:'pie',data:{labels:['تم الإصلاح','متابعة'],datasets:[{data:[records.filter(r=>r.efficiency==='نعم').length,records.filter(r=>r.efficiency==='لا').length],backgroundColor:['#43e97b','#fa709a']}]}});
+            new Chart(document.getElementById('monthlyChart'),{type:'line',data:{labels:Object.keys(months).sort(),datasets:[{label:'الأعطال',data:Object.keys(months).sort().map(k=>months[k]),borderColor:'#ff6b35',backgroundColor:'rgba(255,107,53,0.1)',fill:true,tension:0.4}]},options:{scales:{y:{beginAtZero:true,ticks:{stepSize:1}}}}});
+        }
+        
+        function exportToExcel(){
+            let csv='التاريخ,نوع العطل,المبنى,المكان,وصف العطل,ما تم عمله,قطع الغيار,ملاحظات,الكفاءة\\n';
+            records.forEach(r=>csv+=`${r.date},${r.faultType},${r.building},${r.exactLocation},${r.faultDesc},${r.actionTaken},${r.spareParts},${r.notes},${r.efficiency}\\n`);
+            const blob=new Blob(['\\uFEFF'+csv],{type:'text/csv;charset=utf-8;'});
+            const link=document.createElement('a');link.href=URL.createObjectURL(blob);link.download='بلاغات_الحريق_نماء.csv';link.click();
+        }
+        
+    </script>
+</body>
+</html>
