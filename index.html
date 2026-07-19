@@ -9,9 +9,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 <body>
-    <div class="floating-bg">
-        <div class="pattern"></div>
-    </div>
+    <div class="floating-bg"><div class="pattern"></div></div>
 
     <header>
         <div class="header-content">
@@ -20,19 +18,18 @@
             <div class="dedication">
                 <p class="rip-label">المغفور له بإذن الله</p>
                 <h2 class="parent-name">محمد عبد العظيم أحمد</h2>
-                <p class="dua">إنا لله وإنا إليه راجعون<br>اللهم اغفر له وارحمه وعافه واعفُ عنه وأكرم نزله ووسّع مدخله واغسله بالماء والثلج والبرد<br>اللهم اجعل قبره روضة من رياض الجنة ولا تجعله حفرة من حفر النار<br>اللهم ارحمه رحمة واسعة تُغنيه بها عن رحمة من رحمة عبادك</p>
+                <p class="dua">إنا لله وإنا إليه راجعون<br>اللهم اغفر له وارحمه وعافه واعفُ عنه وأكرم نزله ووسّع مدخله واغسله بالماء والثلج والبرد<br>اللهم اجعل قبره روضة من رياض الجنة ولا تجعله حفرة من حفر النار</p>
             </div>
         </div>
     </header>
 
     <nav class="main-nav">
         <div class="nav-container">
-            <button class="nav-toggle" id="navToggle">
-                <i class="fas fa-bars"></i>
-            </button>
+            <button class="nav-toggle" id="navToggle"><i class="fas fa-bars"></i></button>
             <ul class="nav-links" id="navLinks">
-                <li><a href="#quran-pdf" class="active"><i class="fas fa-book-quran"></i> القرآن الكريم</a></li>
-                <li><a href="#quran-audio"><i class="fas fa-headphones"></i> تلاوات صوتية</a></li>
+                <li><a href="#mushaf" class="active"><i class="fas fa-book-quran"></i> المصحف الناطق</a></li>
+                <li><a href="#mushaf-pdf"><i class="fas fa-file-pdf"></i> المصحف PDF</a></li>
+                <li><a href="#quran-audio"><i class="fas fa-headphones"></i> التلاوات الصوتية</a></li>
                 <li><a href="#azkar"><i class="fas fa-hands-praying"></i> الأذكار</a></li>
                 <li><a href="#ruqyah"><i class="fas fa-shield-halved"></i> الرقية الشرعية</a></li>
                 <li><a href="#dua"><i class="fas fa-mosque"></i> أدعية قرآنية</a></li>
@@ -42,106 +39,135 @@
     </nav>
 
     <main>
-        <!-- Prayer Times Banner -->
-        <section class="prayer-banner" id="prayer-banner">
+        <section class="prayer-banner">
             <div class="container">
                 <div class="prayer-info">
-                    <div class="current-prayer" id="currentPrayer">
-                        <i class="fas fa-clock"></i>
-                        <span>جارٍ تحميل مواقيت الصلاة...</span>
-                    </div>
+                    <div class="current-prayer"><i class="fas fa-clock"></i> <span>جارٍ تحميل مواقيت الصلاة...</span></div>
                     <div class="next-prayer" id="nextPrayer"></div>
                     <div class="current-time" id="currentTime"></div>
                 </div>
             </div>
         </section>
 
-        <!-- Quran PDF Section -->
-        <section id="quran-pdf" class="section">
+        <!-- Mushaf Natiq (Speaking Quran) -->
+        <section id="mushaf" class="section">
             <div class="container">
-                <h2 class="section-title"><i class="fas fa-book-quran"></i> القرآن الكريم - المصحف الشريف</h2>
-                <div class="pdf-controls">
-                    <select id="quranPdfSelect">
-                        <option value="https://cdn.islamic.network/quran/images-surah-mp3/alafasy_128kbps/001.mp3">الفاتحة</option>
-                    </select>
-                    <div class="surah-selector">
-                        <label>اختر السورة:</label>
-                        <select id="surahSelect"></select>
-                        <button onclick="openQuranPdf()" class="btn-primary"><i class="fas fa-book-open"></i> افتح المصحف</button>
+                <h2 class="section-title"><i class="fas fa-book-quran"></i> المصحف الناطق</h2>
+                <p class="section-subtitle">اقرأ مع القارئ - يتم تمييز الآية أثناء التلاوة</p>
+
+                <div class="mushaf-controls">
+                    <div class="control-group">
+                        <label><i class="fas fa-user"></i> القارئ</label>
+                        <select id="mushafReciter" onchange="onMushafReciterChange()">
+                            <option value="ar.alafasy">عبد الباسط عبد الصمد</option>
+                            <option value="ar.minshawi16">محمد صديق المنشاوى</option>
+                            <option value="ar.muayyad">معاذ الشحي</option>
+                            <option value="ar.husary">محمود خليل الحصري</option>
+                            <option value="ar.ayyoub">أحمد العجمي</option>
+                            <option value="ar.ahmedajamy">أحمد العجمي (الطبلاوي)</option>
+                            <option value="ar.muhammadjibril">محمد جبريل</option>
+                            <option value="ar.saaboreymaah">صبري رضا</option>
+                            <option value="ar.abdulsamad">عبدالباسط عبدالصمد (مجود)</option>
+                        </select>
+                    </div>
+                    <div class="control-group">
+                        <label><i class="fas fa-list"></i> السورة</label>
+                        <select id="mushafSurah" onchange="loadMushafAyahs()">
+                        </select>
+                    </div>
+                    <button class="btn-primary" onclick="loadMushafAyahs()"><i class="fas fa-play"></i> ابدأ التلاوة</button>
+                </div>
+
+                <div class="mushaf-player" id="mushafPlayer">
+                    <div class="mushaf-player-header">
+                        <div class="mushaf-now-playing" id="mushafNowPlaying">اختر السورة والقارئ ثم اضغط ابدأ التلاوة</div>
+                        <div class="mushaf-reciter-label" id="mushafReciterLabel">عبد الباسط عبد الصمد</div>
+                    </div>
+                    <div class="mushaf-player-controls">
+                        <button class="play-btn" id="mushafPlayBtn" onclick="toggleMushafPlay()">
+                            <i class="fas fa-play" id="mushafPlayIcon"></i>
+                        </button>
+                        <div class="progress-container" onclick="seekMushaf(event)">
+                            <div class="progress-bar" id="mushafProgressBar"></div>
+                        </div>
+                        <div class="time-info">
+                            <span id="mushafCurrentTime">0:00</span>
+                            <span id="mushafDuration">0:00</span>
+                        </div>
+                        <div class="volume-control">
+                            <i class="fas fa-volume-up"></i>
+                            <input type="range" id="mushafVolume" min="0" max="100" value="80" oninput="changeMushafVolume()">
+                        </div>
                     </div>
                 </div>
-                <div class="pdf-viewer">
-                    <iframe id="quranPdfFrame" src="about:blank" title="المصحف الشريف"></iframe>
-                </div>
-                <div class="alternative-links">
-                    <a href="https://quran.com" target="_blank" class="btn-secondary"><i class="fas fa-external-link-alt"></i> اقرأ القرآن على قران.كم</a>
-                    <a href="https://www.mp3quran.net/ar" target="_blank" class="btn-secondary"><i class="fas fa-external-link-alt"></i> تلاوات على موقع MP3 Quran</a>
+
+                <div class="ayahs-container" id="ayahsContainer">
+                    <div class="ayahs-loading">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        <span>اختر سورة لبدء التلاوة...</span>
+                    </div>
                 </div>
             </div>
         </section>
 
-        <!-- Quran Audio Section -->
-        <section id="quran-audio" class="section section-alt">
+        <!-- Mushaf PDF -->
+        <section id="mushaf-pdf" class="section section-alt">
             <div class="container">
-                <h2 class="section-title"><i class="fas fa-headphones"></i> تلاوات قرآنية - أصوات القراء</h2>
-                
-                <div class="reciter-selection">
-                    <h3>اختر القارئ:</h3>
-                    <div class="reciters-grid">
-                        <div class="reciter-card active" data-reciter="abdulbasit" onclick="selectReciter(this)">
-                            <img src="https://img.mp3quran.net/ye2024/Abdul_Basit_Abdus_Samad_192.webp" alt="عبد الباسط" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect fill=%22%234a7c59%22 width=%22100%22 height=%22100%22/><text x=%2250%22 y=%2255%22 font-size=%2214%22 fill=%22white%22 text-anchor=%22middle%22>عبد الباسط</text></svg>'">
-                            <span>عبد الباسط عبد الصمد</span>
-                        </div>
-                        <div class="reciter-card" data-reciter="husary" onclick="selectReciter(this)">
-                            <img src="https://img.mp3quran.net/ye2024/Muhammad_Siddiq_Al-Minshawi_192.webp" alt="الحصري" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect fill=%22%234a7c59%22 width=%22100%22 height=%22100%22/><text x=%2250%22 y=%2255%22 font-size=%2214%22 fill=%22white%22 text-anchor=%22middle%22>الحصري</text></svg>'">
-                            <span>محمود خليل الحصري</span>
-                        </div>
-                        <div class="reciter-card" data-reciter="muayqili" onclick="selectReciter(this)">
-                            <img src="https://img.mp3quran.net/ye2024/Abdullah_Basfar_192.webp" alt="المعيقلي" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect fill=%22%234a7c59%22 width=%22100%22 height=%22100%22/><text x=%2250%22 y=%2255%22 font-size=%2214%22 fill=%22white%22 text-anchor=%22middle%22>المعيقلي</text></svg>'">
-                            <span>عبدالرحمن العوسى (المعيقلي)</span>
-                        </div>
-                        <div class="reciter-card" data-reciter="minshawi" onclick="selectReciter(this)">
-                            <img src="https://img.mp3quran.net/ye2024/Muhammad_Siddiq_Al-Minshawi_192.webp" alt="المنشاوى" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect fill=%22%234a7c59%22 width=%22100%22 height=%22100%22/><text x=%2250%22 y=%2255%22 font-size=%2214%22 fill=%22white%22 text-anchor=%22middle%22>المنشاوى</text></svg>'">
-                            <span>محمد صديق المنشاوى</span>
-                        </div>
-                        <div class="reciter-card" data-reciter="ajamy" onclick="selectReciter(this)">
-                            <img src="https://img.mp3quran.net/ye2024/Saad_Al_Ghamdi_192.webp" alt="العجمى" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect fill=%22%234a7c59%22 width=%22100%22 height=%22100%22/><text x=%2250%22 y=%2255%22 font-size=%2214%22 fill=%22white%22 text-anchor=%22middle%22>العجمى</text></svg>'">
-                            <span>سعد الغامدي (العجمي)</span>
-                        </div>
-                        <div class="reciter-card" data-reciter="tablawi" onclick="selectReciter(this)">
-                            <img src="https://img.mp3quran.net/ye2024/Mohamed_Rifat_192.webp" alt="الطبلاوى" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect fill=%22%234a7c59%22 width=%22100%22 height=%22100%22/><text x=%2250%22 y=%2255%22 font-size=%2214%22 fill=%22white%22 text-anchor=%22middle%22>الطبلاوى</text></svg>'">
-                            <span>أحمد بن علي العجمي (الطبلاوي)</span>
-                        </div>
-                        <div class="reciter-card" data-reciter="rifat" onclick="selectReciter(this)">
-                            <img src="https://img.mp3quran.net/ye2024/Mohamed_Rifat_192.webp" alt="محمد رفعت" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect fill=%22%234a7c59%22 width=%22100%22 height=%22100%22/><text x=%2250%22 y=%2255%22 font-size=%2214%22 fill=%22white%22 text-anchor=%22middle%22>رفعت</text></svg>'">
-                            <span>محمد رفعت</span>
-                        </div>
+                <h2 class="section-title"><i class="fas fa-file-pdf"></i> المصحف الشريف - PDF</h2>
+                <div class="pdf-controls">
+                    <div class="surah-selector">
+                        <label>اختر السورة:</label>
+                        <select id="surahSelect"></select>
+                        <button onclick="openMushafPdf()" class="btn-primary"><i class="fas fa-book-open"></i> افتح المصحف</button>
                     </div>
                 </div>
+                <div class="pdf-viewer">
+                    <iframe id="quranPdfFrame" src="https://www.mp3quran.net/api3/files/mp3/mini_mushaf/001.pdf" title="المصحف الشريف"></iframe>
+                </div>
+                <div class="pdf-help">
+                    <p><i class="fas fa-info-circle"></i> استخدم أزرار التكبير والتصغير في المتصفح للتحكم في الحجم</p>
+                </div>
+            </div>
+        </section>
 
-                <div class="surah-list-section">
-                    <div class="search-box">
-                        <i class="fas fa-search"></i>
-                        <input type="text" id="surahSearch" placeholder="ابحث عن السورة..." oninput="filterSurahs()">
+        <!-- Quran Audio -->
+        <section id="quran-audio" class="section">
+            <div class="container">
+                <h2 class="section-title"><i class="fas fa-headphones"></i> التلاوات الصوتية</h2>
+
+                <div class="audio-select-row">
+                    <div class="control-group">
+                        <label><i class="fas fa-user"></i> القارئ</label>
+                        <select id="audioReciter" onchange="onAudioReciterChange()">
+                            <option value="abdulbasit">عبد الباسط عبد الصمد</option>
+                            <option value="husary">محمود خليل الحصري</option>
+                            <option value="muayqili">عبدالرحمن العوسى (المعيقلي)</option>
+                            <option value="minshawi">محمد صديق المنشاوى</option>
+                            <option value="ajamy">سعد الغامدي (العجمي)</option>
+                            <option value="tablawi">أحمد بن علي العجمي (الطبلاوي)</option>
+                            <option value="rifat">محمد رفعت</option>
+                        </select>
                     </div>
-                    <div class="surah-list" id="surahList"></div>
+                    <div class="control-group">
+                        <label><i class="fas fa-list"></i> السورة</label>
+                        <select id="audioSurah" onchange="playAudioSurah()">
+                        </select>
+                    </div>
                 </div>
 
                 <div class="audio-player" id="audioPlayer">
                     <div class="player-info">
-                        <div class="now-playing" id="nowPlaying">اختر سورة للاستماع</div>
+                        <div class="now-playing" id="nowPlaying">اختر السورة للاستماع</div>
                         <div class="reciter-name" id="currentReciterName">عبد الباسط عبد الصمد</div>
                     </div>
                     <div class="player-controls">
-                        <button class="play-btn" id="playBtn" onclick="togglePlay()">
-                            <i class="fas fa-play" id="playIcon"></i>
-                        </button>
+                        <button class="play-btn" id="playBtn" onclick="togglePlay()"><i class="fas fa-play" id="playIcon"></i></button>
                         <div class="progress-container" onclick="seekAudio(event)">
                             <div class="progress-bar" id="progressBar"></div>
                         </div>
                         <div class="time-info">
-                            <span id="currentTime">0:00</span>
-                            <span id="duration">0:00</span>
+                            <span id="audioCurrentTime">0:00</span>
+                            <span id="audioDuration">0:00</span>
                         </div>
                         <div class="volume-control">
                             <i class="fas fa-volume-up"></i>
@@ -152,54 +178,47 @@
             </div>
         </section>
 
-        <!-- Azkar Section -->
-        <section id="azkar" class="section">
+        <!-- Azkar -->
+        <section id="azkar" class="section section-alt">
             <div class="container">
                 <h2 class="section-title"><i class="fas fa-hands-praying"></i> الأذكار</h2>
-                
                 <div class="azkar-tabs">
-                    <button class="azkar-tab active" onclick="showAzkarTab('morning')"><i class="fas fa-sun"></i> أذكار الصباح</button>
-                    <button class="azkar-tab" onclick="showAzkarTab('evening')"><i class="fas fa-moon"></i> أذكار المساء</button>
-                    <button class="azkar-tab" onclick="showAzkarTab('leaving')"><i class="fas fa-door-open"></i> أذكار الخروج من المنزل</button>
+                    <button class="azkar-tab active" onclick="showAzkarTab('morning',this)"><i class="fas fa-sun"></i> أذكار الصباح</button>
+                    <button class="azkar-tab" onclick="showAzkarTab('evening',this)"><i class="fas fa-moon"></i> أذكار المساء</button>
+                    <button class="azkar-tab" onclick="showAzkarTab('leaving',this)"><i class="fas fa-door-open"></i> أذكار الخروج</button>
                 </div>
-
                 <div class="azkar-content" id="azkarMorning"></div>
                 <div class="azkar-content hidden" id="azkarEvening"></div>
                 <div class="azkar-content hidden" id="azkarLeaving"></div>
             </div>
         </section>
 
-        <!-- Ruqyah Section -->
-        <section id="ruqyah" class="section section-alt">
+        <!-- Ruqyah -->
+        <section id="ruqyah" class="section">
             <div class="container">
                 <h2 class="section-title"><i class="fas fa-shield-halved"></i> الرقية الشرعية</h2>
                 <div class="ruqyah-intro">
-                    <p>الرقية الشرعية من الكتاب والسنة هي العلاج الأكيد بإذن الله تعالى. وهي العمد التي يتم التداوي بها من العين والسحر والحسد وما يتبعها من الأمراض.</p>
+                    <p>الرقية الشرعية من الكتاب والسنة هي العلاج الأكيد بإذن الله تعالى</p>
                 </div>
                 <div class="ruqyah-list" id="ruqyahList"></div>
             </div>
         </section>
 
-        <!-- Quranic Dua Section -->
-        <section id="dua" class="section">
+        <!-- Dua -->
+        <section id="dua" class="section section-alt">
             <div class="container">
                 <h2 class="section-title"><i class="fas fa-mosque"></i> أدعية قرآنية</h2>
                 <div class="dua-list" id="duaList"></div>
             </div>
         </section>
 
-        <!-- Prayer Times Section -->
-        <section id="prayer-times" class="section section-alt">
+        <!-- Prayer Times -->
+        <section id="prayer-times" class="section">
             <div class="container">
                 <h2 class="section-title"><i class="fas fa-clock"></i> مواقيت الصلاة</h2>
-                <div class="prayer-location" id="prayerLocation">
-                    <i class="fas fa-map-marker-alt"></i>
-                    <span id="locationText">جارٍ تحديد الموقع...</span>
-                </div>
+                <div class="prayer-location"><i class="fas fa-map-marker-alt"></i> <span id="locationText">جارٍ تحديد الموقع...</span></div>
                 <div class="prayer-grid" id="prayerGrid"></div>
-                <div class="prayer-note">
-                    <p><i class="fas fa-info-circle"></i> تتحدث مواقيت الصلاة تلقائياً حسب الوقت والموقع</p>
-                </div>
+                <div class="prayer-note"><p><i class="fas fa-info-circle"></i> تتحدث مواقيت الصلاة تلقائياً حسب الوقت والموقع</p></div>
             </div>
         </section>
     </main>
@@ -211,19 +230,15 @@
                     <p>اللهم تقبل منا ومن المسلمين صالح الأعمال</p>
                     <p class="footer-rip">المغفور له بإذن الله محمد عبد العظيم أحمد</p>
                 </div>
-                <div class="footer-info">
-                    <p>صدقة جارية على روح والدينا المفطور لهما</p>
-                </div>
             </div>
         </div>
     </footer>
 
-    <div class="scroll-top" id="scrollTop" onclick="scrollToTop()">
-        <i class="fas fa-arrow-up"></i>
-    </div>
+    <div class="scroll-top" id="scrollTop" onclick="scrollToTop()"><i class="fas fa-arrow-up"></i></div>
 
     <audio id="mainAudio" preload="auto"></audio>
-    
+    <audio id="mushafAudio" preload="auto"></audio>
+
     <script src="script.js"></script>
 </body>
 </html>
