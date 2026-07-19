@@ -60,7 +60,7 @@ const surahs = [
     { number: 58, name: "المجادلة", englishName: "Al-Mujadilah", ayahs: 22 },
     { number: 59, name: "الحشر", englishName: "Al-Hashr", ayahs: 24 },
     { number: 60, name: "الممتحنة", englishName: "Al-Mumtahanah", ayahs: 13 },
-    { number: 61, name: "الصف", englishName: "As-Saf", ayahs: 14 },
+    { number: 61, name: "الصف", englishName: "As-Saff", ayahs: 14 },
     { number: 62, name: "الجمعة", englishName: "Al-Jumuah", ayahs: 11 },
     { number: 63, name: "المنافقون", englishName: "Al-Munafiqun", ayahs: 11 },
     { number: 64, name: "التغابن", englishName: "At-Taghabun", ayahs: 18 },
@@ -92,7 +92,7 @@ const surahs = [
     { number: 90, name: "البلد", englishName: "Al-Balad", ayahs: 20 },
     { number: 91, name: "الشمس", englishName: "Ash-Shams", ayahs: 15 },
     { number: 92, name: "الليل", englishName: "Al-Layl", ayahs: 21 },
-    { number: 93, name: "الضحى", englishName: "Ad-Duha", ayahs: 11 },
+    { number: 93, name: "الضحى", englishName: "Ad-Duhaa", ayahs: 11 },
     { number: 94, name: "الشرح", englishName: "Ash-Sharh", ayahs: 8 },
     { number: 95, name: "التين", englishName: "At-Tin", ayahs: 8 },
     { number: 96, name: "العلق", englishName: "Al-Alaq", ayahs: 19 },
@@ -116,23 +116,30 @@ const surahs = [
     { number: 114, name: "الناس", englishName: "An-Nas", ayahs: 6 }
 ];
 
-// ==================== RECITER DATA ====================
-const reciters = {
-    abdulbasit: { name: "عبد الباسط عبد الصمد", base: "https://server7.mp3quran.net/basit/" },
-    husary: { name: "محمود خليل الحصري", base: "https://server8.mp3quran.net/husr/" },
-    muayqili: { name: "عبدالرحمن العوسى (المعيقلي)", base: "https://server8.mp3quran.net/muayqili/" },
-    minshawi: { name: "محمد صديق المنشاوى", base: "https://server10.mp3quran.net/menshawi128/" },
-    ajamy: { name: "أحمد بن علي العجمي", base: "https://server8.mp3quran.net/ajamy/" },
-    tablawi: { name: "أحمد بن علي العجمي (الطبلاوي)", base: "https://server8.mp3quran.net/ahmedajamy/" },
-    rifat: { name: "محمد رفعت", base: "https://server8.mp3quran.net/rifat/" }
+// ==================== RECITER DATA (alquran.cloud CDN) ====================
+const recitersCDN = {
+    'ar.alafasy': { name: 'مشاري العفاسي', bitrates: [128, 64, 32] },
+    'ar.husary': { name: 'محمود خليل الحصري', bitrates: [128, 64, 32] },
+    'ar.minshawi': { name: 'محمد صديق المنشاوي', bitrates: [192, 128, 64] },
+    'ar.ajamy': { name: 'أحمد العجمي', bitrates: [128, 64, 32] },
+    'ar.muhammadjibreel': { name: 'محمد جبريل', bitrates: [128, 64, 32] },
+    'ar.muhammadayoub': { name: 'محمد أيوب', bitrates: [128, 64, 32] },
+    'ar.hudhaify': { name: 'علي الحذيفي', bitrates: [128, 64, 32] },
+    'ar.abdulbasit': { name: 'عبد الباسط عبد الصمد', bitrates: [192, 128, 64] }
 };
+
+function getCdnUrl(edition, surahNum, bitrate) {
+    var br = bitrate || 128;
+    var padded = String(surahNum).padStart(3, '0');
+    return 'https://cdn.islamic.network/quran/audio/' + br + '/' + edition + '/' + padded + '.mp3';
+}
 
 // ==================== AZKAR DATA ====================
 const azkarMorning = [
     { text: "أَصْبَحْنَا وَأَصْبَحَ الْمُلْكُ لِلَّهِ، وَالْحَمْدُ لِلَّهِ، لاَ إِلَـهَ إِلاَّ اللَّهُ وَحْدَهُ لاَ شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ، رَبِّ أَسْأَلُكَ خَيْرَ مَا فِي هَذَا الْيَوْمِ وَخَيْرَ مَا بَعْدَهُ، وَأَعُوذُ بِكَ مِنْ شَرِّ مَا فِي هَذَا الْيَوْمِ وَشَرِّ مَا بَعْدَهُ، رَبِّ أَعُوذُ بِكَ مِنَ الْكَسَلِ وَسُوءِ الْكِبَرِ، رَبِّ أَعُوذُ بِكَ مِنْ عَذَابٍ فِي النَّارِ وَعَذَابٍ فِي الْقَبْرِ", count: 1, source: "رواه مسلم" },
     { text: "اللَّهُمَّ بِكَ أَصْبَحْنَا، وَبِكَ أَمْسَيْنَا، وَبِكَ نَحْيَا، وَبِكَ نَمُوتُ وَإِلَيْكَ النُّشُورُ", count: 1, source: "رواه الترمذي" },
     { text: "اللَّهُمَّ أَنْتَ رَبِّي لاَ إِلَـهَ إِلاَّ أَنْتَ، خَلَقْتَنِي وَأَنَا عَبْدُكَ، وَأَنَا عَلَى عَهْدِكَ وَوَعْدِكَ مَا اسْتَطَعْتُ، أَعُوذُ بِكَ مِنْ شَرِّ مَا صَنَعْتُ، أَبُوءُ لَكَ بِنِعْمَتِكَ عَلَيَّ، وَأَبُوءُ بِذَنْبِي فَاغْفِرْ لِي فَإِنَّهُ لاَ يَغْفِرُ الذُّنُوبَ إِلاَّ أَنْتَ", count: 1, source: "رواه البخاري" },
-    { text: "اللَّهُمَّ إِنِّي أَصْبَحْتُ أُشْهِدُكَ، وَأُشْهِدُ حَمَلَةَ عَرْشِكَ، وَمَلاَئِكَتَكَ، وَجَمِيعَ خَلْقِكَ، أَنَّكَ أَنْتَ اللَّهُ لاَ إِلَـهَ إِلاَّ أَنْتَ وَحْدَكَ لاَ شَرِيكَ لَكَ، وَأَنَّ مُحَمَّدًا عَبْدُكَ وَرَسُولُكَ", count: 4, source: "رواه أبو داود" },
+    { text: "اللَّهُمَّ إِنِّي أَصْبَحْتُ أُشْهِدُكَ، وَأُشْهِدُ حَمَلَةَ عَرْشِكَ، وَملاَئِكَتَكَ، وَجَمِيعَ خَلْقِكَ، أَنَّكَ أَنْتَ اللَّهُ لاَ إِلَـهَ إِلاَّ أَنْتَ وَحْدَكَ لاَ شَرِيكَ لَكَ، وَأَنَّ مُحَمَّدًا عَبْدُكَ وَرَسُولُكَ", count: 4, source: "رواه أبو داود" },
     { text: "اللَّهُمَّ مَا أَصْبَحَ بِي مِنْ نِعْمَةٍ أَوْ بِأَحَدٍ مِنْ خَلْقِكَ فَمِنْكَ وَحْدَكَ لاَ شَرِيكَ لَكَ، فَلَكَ الْحَمْدُ وَلَكَ الشُّكْرُ", count: 1, source: "رواه أبو داود" },
     { text: "بِسْمِ اللَّهِ الَّذِي لاَ يَضُرُّ مَعَ اسْمِهِ شَيْءٌ فِي الأَرْضِ وَلاَ فِي السَّمَاءِ وَهُوَ السَّمِيعُ الْعَلِيمُ", count: 3, source: "رواه أبو داود والترمذي" },
     { text: "اللَّهُمَّ عَافِنِي فِي بَدَنِي، اللَّهُمَّ عَافِنِي فِي سَمْعِي، اللَّهُمَّ عَافِنِي فِي بَصَرِي، لاَ إِلَـهَ إِلاَّ أَنْتَ. اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنَ الْكُفْرِ، وَالْفَقْرِ، وَأَعُوذُ بِكَ مِنْ عَذَابِ الْقَبْرِ، لاَ إِلَـهَ إِلاَّ أَنْتَ", count: 3, source: "رواه أبو داود" },
@@ -140,9 +147,9 @@ const azkarMorning = [
     { text: "سُبْحَانَ اللَّهِ وَبِحَمْدِهِ", count: 100, source: "رواه مسلم" },
     { text: "لاَ إِلَـهَ إِلاَّ اللَّهُ وَحْدَهُ لاَ شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ", count: 10, source: "رواه البخاري ومسلم" },
     { text: "أَسْتَغْفِرُ اللَّهَ وَأَتُوبُ إِلَيْهِ", count: 100, source: "رواه البخاري ومسلم" },
-    { text: "اللَّهُمَّ إِنِّي أَسْأَلُكَ الْعَفْوَ وَالْعَافِيَةَ فِي الدُّنْيَا وَالْآخِرَةِ، اللَّهُمَّ إِنِّي أَسْأَلُكَ الْعَفْوَ وَالْعَافِيَةَ فِي دِينِي وَدُنْيَايَ وَأَهْلِي وَمَالِي، اللَّهُمَّ اسْتُرْ عَوْرَاتِي وَآمِنْ رَوْعَاتِي، اللَّهُمَّ احْفَظْنِي مِنْ بَيْنِ يَدَيَّ وَمِنْ خَلْفِي وَعَنْ يَمِينِي وَعَنْ شِمَالِي، وَمِنْ فَوْقِي، وَأَعُوذُ بِعَظَمَتِكَ أَنْ أُغْتَالَ مِنْ تَحْتِي", count: 1, source: "رواه أبو داود" },
+    { text: "اللَّهُمَّ إِنِّي أَسْأَلُكَ الْعَفْوَ وَالْعَافِيَةَ فِي الدُّنْيَا وَالآخِرَةِ، اللَّهُمَّ إِنِّي أَسْأَلُكَ الْعَفْوَ وَالْعَافِيَةَ فِي دِينِي وَدُنْيَايَ وَأَهْلِي وَمَالِي، اللَّهُمَّ اسْتُرْ عَوْرَاتِي وَآمِنْ رَوْعَاتِي، اللَّهُمَّ احْفَظْنِي مِنْ بَيْنِ يَدَيَّ وَمِنْ خَلْفِي وَعَنْ يَمِينِي وَعَنْ شِمَالِي، وَمِنْ فَوْقِي، وَأَعُوذُ بِعَظَمَتِكَ أَنْ أُغْتَالَ مِنْ تَحْتِي", count: 1, source: "رواه أبو داود" },
     { text: "يَا حَيُّ يَا قيُّومُ بِرَحْمَتِكَ أَسْتَغِيثُ، أَصْلِحْ لِي شَأْنِي كُلَّهُ، وَلاَ تَكِلْنِي إِلَى نَفْسِي طَرْفَةَ عَيْنٍ أَبَداً", count: 1, source: "رواه الحاكم" },
-    { text: "اللَّهُمَّ عَالِمَ الْغَيْبِ وَالشَّهَادَةِ فَاطِرَ السَّمَوَاتِ وَالأَرْضِ، رَبَّ كُلِّ شَيْءٍ وَمَلِيكَهُ، أَشْهَدُ أَنْ لاَ إِلَـهَ إِلاَّ أَنْتَ، أَعُوذُ بِكَ مِنْ شَرِّ نَفْسِي، وَمِنْ شَرِّ الشَّيْطَانِ وَشِرْكِهِ، وَأَنْ أَقْتَرِفَ عَلَى نَفْسِي سُوءاً أَوْ أَجُرَّهُ إِلَى مُسْلِمٍ", count: 1, source: "رواه الترمذي" },
+    { text: "اللَّهُمَّ عَالِمَ الْغَيْبِ وَالشَّهَادَةِ فَاطِرَ السَّمَوَاتِ وَالأَرْضِ، رَبَّ كُلِّ شَيْءٍ وَمَلِيكَهُ، أَشْهِدُ أَنْ لاَ إِلَـهَ إِلاَّ أَنْتَ، أَعُوذُ بِكَ مِنْ شَرِّ نَفْسِي، وَمِنْ شَرِّ الشَّيْطَانِ وَشِرْكِهِ، وَأَنْ أَقْتَرِفَ عَلَى نَفْسِي سُوءاً أَوْ أَجُرَّهُ إِلَى مُسْلِمٍ", count: 1, source: "رواه الترمذي" },
     { text: "اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنَ الْهَمِّ وَالْحَزَنِ، وَأَعُوذُ بِكَ مِنَ الْعَجْزِ وَالْكَسَلِ، وَأَعُوذُ بِكَ مِنَ الْجُبْنِ وَالْبُخْلِ، وَأَعُوذُ بِكَ مِنْ غَلَبَةِ الدَّيْنِ وَقَهْرِ الرِّجَالِ", count: 1, source: "رواه أبو داود" }
 ];
 
@@ -150,15 +157,13 @@ const azkarEvening = [
     { text: "أَمْسَيْنَا وَأَمْسَى الْمُلْكُ لِلَّهِ، وَالْحَمْدُ لِلَّهِ، لاَ إِلَـهَ إِلاَّ اللَّهُ وَحْدَهُ لاَ شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ، رَبِّ أَسْأَلُكَ خَيْرَ مَا فِي هَذِهِ اللَّيْلَةِ وَخَيْرَ مَا بَعْدَهَا، وَأَعُوذُ بِكَ مِنْ شَرِّ مَا فِي هَذِهِ اللَّيْلَةِ وَشَرِّ مَا بَعْدَهَا، رَبِّ أَعُوذُ بِكَ مِنَ الْكَسَلِ وَسُوءِ الْكِبَرِ، رَبِّ أَعُوذُ بِكَ مِنْ عَذَابٍ فِي النَّارِ وَعَذَابٍ فِي الْقَبْرِ", count: 1, source: "رواه مسلم" },
     { text: "اللَّهُمَّ بِكَ أَمْسَيْنَا، وَبِكَ أَصْبَحْنَا، وَبِكَ نَحْيَا، وَبِكَ نَمُوتُ وَإِلَيْكَ الْمَصِيرُ", count: 1, source: "رواه الترمذي" },
     { text: "اللَّهُمَّ أَنْتَ رَبِّي لاَ إِلَـهَ إِلاَّ أَنْتَ، خَلَقْتَنِي وَأَنَا عَبْدُكَ، وَأَنَا عَلَى عَهْدِكَ وَوَعْدِكَ مَا اسْتَطَعْتُ، أَعُوذُ بِكَ مِنْ شَرِّ مَا صَنَعْتُ، أَبُوءُ لَكَ بِنِعْمَتِكَ عَلَيَّ، وَأَبُوءُ بِذَنْبِي فَاغْفِرْ لِي فَإِنَّهُ لاَ يَغْفِرُ الذُّنُوبَ إِلاَّ أَنْتَ", count: 1, source: "رواه البخاري" },
-    { text: "اللَّهُمَّ إِنِّي أَمْسَيْتُ أُشْهِدُكَ، وَأُشْهِدُ حَمَلَةَ عَرْشِكَ، وَمَلاَئِكَتَكَ، وَجَمِيعَ خَلْقِكَ، أَنَّكَ أَنْتَ اللَّهُ لاَ إِلَـهَ إِلاَّ أَنْتَ وَحْدَكَ لاَ شَرِيكَ لَكَ، وَأَنَّ مُحَمَّدًا عَبْدُكَ وَرَسُولُكَ", count: 4, source: "رواه أبو داود" },
+    { text: "اللَّهُمَّ إِنِّي أَمْسَيْتُ أُشْهِدُكَ، وَأُشْهِدُ حَمَلَةَ عَرْشِكَ، وَملاَئِكَتَكَ، وَجَمِيعَ خَلْقِكَ، أَنَّكَ أَنْتَ اللَّهُ لاَ إِلَـهَ إِلاَّ أَنْتَ وَحْدَكَ لاَ شَرِيكَ لَكَ، وَأَنَّ مُحَمَّدًا عَبْدُكَ وَرَسُولُكَ", count: 4, source: "رواه أبو داود" },
     { text: "اللَّهُمَّ مَا أَمْسَى بِي مِنْ نِعْمَةٍ أَوْ بِأَحَدٍ مِنْ خَلْقِكَ فَمِنْكَ وَحْدَكَ لاَ شَرِيكَ لَكَ، فَلَكَ الْحَمْدُ وَلَكَ الشُّكْرُ", count: 1, source: "رواه أبو داود" },
     { text: "بِسْمِ اللَّهِ الَّذِي لاَ يَضُرُّ مَعَ اسْمِهِ شَيْءٌ فِي الأَرْضِ وَلاَ فِي السَّمَاءِ وَهُوَ السَّمِيعُ الْعَلِيمُ", count: 3, source: "رواه أبو داود والترمذي" },
     { text: "اللَّهُمَّ عَافِنِي فِي بَدَنِي، اللَّهُمَّ عَافِنِي فِي سَمْعِي، اللَّهُمَّ عَافِنِي فِي بَصَرِي، لاَ إِلَـهَ إِلاَّ أَنْتَ. اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنَ الْكُفْرِ، وَالْفَقْرِ، وَأَعُوذُ بِكَ مِنْ عَذَابِ الْقَبْرِ، لاَ إِلَـهَ إِلاَّ أَنْتَ", count: 3, source: "رواه أبو داود" },
     { text: "حَسْبِيَ اللَّهُ لاَ إِلَـهَ إِلاَّ هُوَ عَلَيْهِ تَوَكَّلْتُ وَهُوَ رَبُّ الْعَرْشِ الْعَظِيمِ", count: 7, source: "رواه أبو داود" },
     { text: "أَعُوذُ بِكَلِمَاتِ اللَّهِ التَّامَّاتِ مِنْ شَرِّ مَا خَلَقَ", count: 3, source: "رواه مسلم" },
-    { text: "اللَّهُمَّ إِنِّي أَسْأَلُكَ الْعَفْوَ وَالْعَافِيَةَ فِي الدُّنْيَا وَالْآخِرَةِ، اللَّهُمَّ إِنِّي أَسْأَلُكَ الْعَفْوَ وَالْعَافِيَةَ فِي دِينِي وَدُنْيَايَ وَأَهْلِي وَمَالِي، اللَّهُمَّ اسْتُرْ عَوْرَاتِي وَآمِنْ رَوْعَاتِي، اللَّهُمَّ احْفَظْنِي مِنْ بَيْنِ يَدَيَّ وَمِنْ خَلْفِي وَعَنْ يَمِينِي وَعَنْ شِمَالِي، وَمِنْ فَوْقِي، وَأَعُوذُ بِعَظَمَتِكَ أَنْ أُغْتَالَ مِنْ تَحْتِي", count: 1, source: "رواه أبو داود" },
-    { text: "يَا حَيُّ يَا قيُّومُ بِرَحْمَتِكَ أَسْتَغِيثُ، أَصْلِحْ لِي شَأْنِي كُلَّهُ، وَلاَ تَكِلْنِي إِلَى نَفْسِي طَرْفَةَ عَيْنٍ أَبَداً", count: 1, source: "رواه الحاكم" },
-    { text: "اللَّهُمَّ عَالِمَ الْغَيْبِ وَالشَّهَادَةِ فَاطِرَ السَّمَوَاتِ وَالأَرْضِ، رَبَّ كُلِّ شَيْءٍ وَمَلِيكَهُ، أَشْهَدُ أَنْ لاَ إِلَـهَ إِلاَّ أَنْتَ، أَعُوذُ بِكَ مِنْ شَرِّ نَفْسِي، وَمِنْ شَرِّ الشَّيْطَانِ وَشِرْكِهِ، وَأَنْ أَقْتَرِفَ عَلَى نَفْسِي سُوءاً أَوْ أَجُرَّهُ إِلَى مُسْلِمٍ", count: 1, source: "رواه الترمذي" },
+    { text: "اللَّهُمَّ إِنِّي أَسْأَلُكَ الْعَفْوَ وَالْعَافِيَةَ فِي الدُّنْيَا وَالآخِرَةِ", count: 1, source: "رواه أبو داود" },
     { text: "اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنَ الْهَمِّ وَالْحَزَنِ، وَأَعُوذُ بِكَ مِنَ الْعَجْزِ وَالْكَسَلِ، وَأَعُوذُ بِكَ مِنَ الْجُبْنِ وَالْبُخْلِ، وَأَعُوذُ بِكَ مِنْ غَلَبَةِ الدَّيْنِ وَقَهْرِ الرِّجَالِ", count: 1, source: "رواه أبو داود" }
 ];
 
@@ -167,230 +172,154 @@ const azkarLeaving = [
     { text: "اللَّهُمَّ إِنِّي أَعُوذُ بِكَ أَنْ أَضِلَّ أَوْ أُضَلَّ، أَوْ أَزِلَّ أَوْ أُزَلَّ، أَوْ أَظْلِمَ أَوْ أُظْلَمَ، أَوْ أَجْهَلَ أَوْ يُجْهَلَ عَلَيَّ", count: 1, source: "رواه أبو داود" },
     { text: "بِسْمِ اللَّهِ الَّذِي لاَ يَضُرُّ مَعَ اسْمِهِ شَيْءٌ فِي الأَرْضِ وَلاَ فِي السَّمَاءِ وَهُوَ السَّمِيعُ الْعَلِيمُ", count: 3, source: "رواه أبو داود والترمذي" },
     { text: "اللَّهُمَّ إِنِّي أَسْأَلُكَ مِنْ فَضْلِكَ. اللَّهُمَّ اعْصِمْنِي مِنَ الشَّيْطَانِ الرَّجِيمِ", count: 1, source: "رواه أبو داود والترمذي" },
-    { text: "اللَّهُمَّ إِنِّي ظَلَمْتُ نَفْسِي ظُلْماً كَثِيراً وَلاَ يَغْفِرُ الذُّنُوبَ إِلاَّ أَنْتَ فَاغْفِرْ لِي مَغْفِرَةً مِنْ عِنْدَكَ وَارْحَمْنِي إِنَّكَ أَنْتَ الْغَفُورُ الرَّحِيمُ", count: 1, source: "رواه البخاري" },
     { text: "سُبْحَانَ اللَّهِ وَبِحَمْدِهِ", count: 3, source: "رواه مسلم" },
-    { text: "اللَّهُمَّ حَبِّبْ إِلَيْنَا الإِيمَانَ وَزَيِّنْهُ فِي قُلُوبِنَا، وَكَرِّهْ إِلَيْنَا الْكُفْرَ وَالْفُسُوقَ وَالْعِصْيَانَ، وَاجْعَلْنَا مِنَ الرَّاشِدِينَ، اللَّهُمَّ تَوَفَّنَا مُسْلِمِينَ وَأَحْيِنَا مُسْلِمِينَ وَأَلْحِقْنَا بِالصَّالِحِينَ غَيْرَ خَزَايَا وَلاَ مَفْتُونِينَ", count: 1, source: "رواه الترمذي" },
-    { text: "اللَّهُمَّ اقْضِ عَنَّا الدَّيْنَ وَأَغْنِنَا مِنَ الْفَقْرِ، فَإِنَّ كَثِيراً مِنَ الْعِبَادِ يَصُدُّنَا الْجَبَرُوتُ، وَالدَّيْنُ، وَالْفَقْرُ، اللَّهُمَّ إِنَّا نَسْتَعِينُكَ بِعِزَّتِكَ الَّتِي لاَ تُقَهَرُ، وَنَسْتَغْفِرُكَ الَّذِي لاَ تُرَدُّ الْمَطَالِبُ إِلَيْهِ", count: 1, source: "رواه ابن حبان" },
+    { text: "اللَّهُمَّ حَبِّبْ إِلَيْنَا الإيمَانَ وَزَيِّنْهُ فِي قُلُوبِنَا، وَكَرِّهْ إِلَيْنَا الْكُفْرَ وَالْفُسُوقَ وَالْعِصْيَانَ، وَاجْعَلْنَا مِنَ الرَّاشِدِينَ", count: 1, source: "رواه الترمذي" },
     { text: "اللَّهُمَّ إِنِّي أَسْتَخِيرُكَ بِعِلْمِكَ، وَأَسْتَقْدِرُكَ بِقُدْرَتِكَ، وَأَسْأَلُكَ مِنْ فَضْلِكَ الْعَظِيمِ، فَإِنَّكَ تَقْدِرُ وَلاَ أَقْدِرُ، وَتَعْلَمُ وَلاَ أَعْلَمُ، وَأَنْتَ عَلاَّمُ الْغُيُوبِ", count: 1, source: "رواه البخاري" }
 ];
 
 // ==================== RUQYAH DATA ====================
 const ruqyahData = [
-    {
-        title: "آية الكرسي",
-        text: "اللَّهُ لاَ إِلَـهَ إِلاَّ هُوَ الْحَيُّ الْقَيُّومُ لاَ تَأْخُذُهُ سِنَةٌ وَلاَ نَوْمٌ لَّهُ مَا فِي السَّمَاوَاتِ وَمَا فِي الأَرْضِ مَن ذَا الَّذِي يَشْفَعُ عِندَهُ إِلاَّ بِإِذْنِهِ يَعْلَمُ مَا بَيْنَ أَيْدِيهِمْ وَمَا خَلْفَهُمْ وَلاَ يُحِيطُونَ بِشَيْءٍ مِّنْ عِلْمِهِ إِلاَّ بِمَا شَاء وَسِعَ كُرْسِيُّهُ السَّمَاوَاتِ وَالأَرْضَ وَلاَ يَؤُودُهُ حِفْظُهُمَا وَهُوَ الْعَلِيُّ الْعَظِيمُ",
-        source: "البقرة: 255",
-        benefit: "من قرأها حين يصبح أُجير من الجن حتى يمسي، ومن قرأها حين يمسي أُجير من الجن حتى يصبح"
-    },
-    {
-        title: "المعوذتان",
-        text: "قُلْ أَعُوذُ بِرَبِّ الْفَلَقِ مِن شَرِّ مَا خَلَقَ وَمِن شَرِّ غَاسِقٍ إِذَا وَقَبَ وَمِن شَرِّ النَّفَّاثَاتِ فِي الْعُقَدِ وَمِن شَرِّ حَاسِدٍ إِذَا حَسَدَ\nقُلْ أَعُوذُ بِرَبِّ النَّاسِ مَلِكِ النَّاسِ إِلَـهِ النَّاسِ مِن شَرِّ الْوَسْوَاسِ الْخَنَّاسِ الَّذِي يُوَسْوِسُ فِي صُدُورِ النَّاسِ مِنَ الْجِنَّةِ وَالنَّاسِ",
-        source: "الفلق والناس",
-        benefit: "كان يقرأهما النبي ﷺ كل ليلة حين يأوي إلى فراشه"
-    },
-    {
-        title: "سورة الإخلاص",
-        text: "قُلْ هُوَ اللَّهُ أَحَدٌ، اللَّهُ الصَّمَدُ، لَمْ يَلِدْ وَلَمْ يُولَدْ، وَلَمْ يَكُن لَّهُ كُفُوًا أَحَدٌ",
-        source: "الإخلاص: 1-4",
-        benefit: "من قرأها ثلاث مرات حين يصبح وحين يمسي كفته من كل شيء"
-    },
-    {
-        title: "سورة الفلق",
-        text: "قُلْ أَعُوذُ بِرَبِّ الْفَلَقِ مِن شَرِّ مَا خَلَقَ، وَمِن شَرِّ غَاسِقٍ إِذَا وَقَبَ، وَمِن شَرِّ النَّفَّاثَاتِ فِي الْعُقَدِ، وَمِن شَرِّ حَاسِدٍ إِذَا حَسَدَ",
-        source: "الفلق: 1-5",
-        benefit: " Protection from evil eye and envy"
-    },
-    {
-        title: "سورة الناس",
-        text: "قُلْ أَعُوذُ بِرَبِّ النَّاسِ مَلِكِ النَّاسِ إِلَـهِ النَّاسِ مِن شَرِّ الْوَسْوَاسِ الْخَنَّاسِ الَّذِي يُوَسْوِسُ فِي صُدُورِ النَّاسِ مِنَ الْجِنَّةِ وَالنَّاسِ",
-        source: "الناس: 1-6",
-        benefit: "Protection from whisperings of Shaytan"
-    },
-    {
-        title: "آية من سورة البقرة",
-        text: "وَإِلَـهُكُمْ إِلَـهٌ وَاحِدٌ لاَّ إِلَـهَ إِلاَّ هُوَ الرَّحْمَنُ الرَّحِيمُ",
-        source: "البقرة: 163",
-        benefit: "إذا قرأها في дома لم يدخله شيطان"
-    },
-    {
-        title: "آية من سورة البقرة - طه",
-        text: "وَقُلْ رَبِّ أَدْخِلْنِي مُدْخَلَ صِدْقٍ وَأَخْرِجْنِي مُخْرَجَ صِدْقٍ وَاجْعَ لِي مِن لَّدُنْكَ سُلْطَانًا نَّصِيرًا",
-        source: "طه: 115-116",
-        benefit: "دعاء مأثور للدخول والخروج بالصدق"
-    },
-    {
-        title: "من أدعية الاستخارة",
-        text: "اللَّهُمَّ إِنِّي أَسْتَخِيرُكَ بِعِلْمِكَ، وَأَسْتَقْدِرُكَ بِقُدْرَتِكَ، وَأَسْأَلُكَ مِنْ فَضْلِكَ الْعَظِيمِ، فَإِنَّكَ تَقْدِرُ وَلاَ أَقْدِرُ، وَتَعْلَمُ وَلاَ أَعْلَمُ، وَأَنْتَ عَلاَّمُ الْغُيُوبِ",
-        source: "رواه البخاري",
-        benefit: "الاستخارة هي سؤال الله تعالى أن يختار لعبده ما هو خير له"
-    },
-    {
-        title: "أدعية قرآنية مأثورة",
-        text: "رَبَّنَا تَقَبَّلْ مِنَّا إِنَّكَ أَنتَ السَّمِيعُ الْعَلِيمُ\nرَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً وَفِي الْآخِرَةِ حَسَنَةً وَقِنَا عَذَابَ النَّارِ\nرَبَّنَا أَفْرِغْ عَلَيْنَا صَبْراً وَثَبِّتْ أَقْدَامَنَا وَانصُرْنَا عَلَى الْقَوْمِ الْكَافِرِينَ\nرَبَّنَا اغْفِرْ لِي وَلِوَالِدَيَّ وَلِلْمُؤْمِنِينَ يَوْمَ يَقُومُ الْحِسَابُ",
-        source: "مختلفة من القرآن الكريم",
-        benefit: "من أدعية القرآن الكريم المأثورة التي كان النبي ﷺ يدعو بها"
-    }
+    { title: "آية الكرسي", text: "اللَّهُ لاَ إِلَـهَ إِلاَّ هُوَ الْحَيُّ الْقَيُّومُ لاَ تَأْخُذُهُ سِنَةٌ وَلاَ نَوْمٌ لَّهُ مَا فِي السَّمَاوَاتِ وَمَا فِي الأَرْضِ مَن ذَا الَّذِي يَشْفَعُ عِندَهُ إِلاَّ بِإِذْنِهِ يَعْلَمُ مَا بَيْنَ أَيْدِيهِمْ وَمَا خَلْفَهُمْ وَلاَ يُحِيطُونَ بِشَيْءٍ مِّنْ عِلْمِهِ إِلاَّ بِمَا شَاء وَسِعَ كُرْسِيُّهُ السَّمَاوَاتِ وَالأَرْضَ وَلاَ يَؤُودُهُ حِفْظُهُمَا وَهُوَ الْعَلِيُّ الْعَظِيمُ", source: "البقرة: 255", benefit: "من قرأها حين يصبح أُجير من الجن حتى يمسي، ومن قرأها حين يمسي أُجير من الجن حتى يصبح" },
+    { title: "المعوذتان", text: "قُلْ أَعُوذُ بِرَبِّ الْفَلَقِ مِن شَرِّ مَا خَلَقَ وَمِن شَرِّ غَاسِقٍ إِذَا وَقَبَ وَمِن شَرِّ النَّفَّاثَاتِ فِي الْعُقَدِ وَمِن شَرِّ حَاسِدٍ إِذَا حَسَدَ\nقُلْ أَعُوذُ بِرَبِّ النَّاسِ مَلِكِ النَّاسِ إِلَـهِ النَّاسِ مِن شَرِّ الْوَسْوَاسِ الْخَنَّاسِ الَّذِي يُوَسْوِسُ فِي صُدُورِ النَّاسِ مِنَ الْجِنَّةِ وَالنَّاسِ", source: "الفلق والناس", benefit: "كان يقرأهما النبي ﷺ كل ليلة حين يأوي إلى فراشه" },
+    { title: "سورة الإخلاص", text: "قُلْ هُوَ اللَّهُ أَحَدٌ، اللَّهُ الصَّمَدُ، لَمْ يَلِدْ وَلَمْ يُولَدْ، وَلَمْ يَكُن لَّهُ كُفُوًا أَحَدٌ", source: "الإخلاص: 1-4", benefit: "من قرأها ثلاث مرات حين يصبح وحين يمسي كفته من كل شيء" },
+    { title: "آية من سورة البقرة", text: "وَإِلَـهُكُمْ إِلَـهٌ وَاحِدٌ لاَّ إِلَـهَ إِلاَّ هُوَ الرَّحْمَنُ الرَّحِيمُ", source: "البقرة: 163", benefit: "إذا قرأها في дома لم يدخله شيطان" },
+    { title: "آية من سورة البقرة (الكريم)", text: "وَكَانَ اللَّهُ عَلَى كُلِّ شَيْءٍ مُّقْتَدِرًا", source: "البقرة: 20", benefit: "من قرأها في بيته كثر خيره ونفي عنه الفقر" },
+    { title: "آية من سورة آل عمران", text: "إِنَّ اللَّهَ لَا يُضِيعُ أَجْرَ الْمُحْسِنِينَ", source: "آل عمران: 195", benefit: "تحفظ من شرور الدنيا والآخرة" },
+    { title: "آية من سورة الأعراف", text: "رَبَّنَا آتِنَا مِن لَّدُنكَ رَحْمَةً وَهَيِّئْ لَنَا مِنْ أَمْرِنَا رَشَدًا", source: "الأعراف: 189", benefit: "دعاء مستجاب بإذن الله" },
+    { title: "سورة الكرسي", text: "اللَّهُ لاَ إِلَـهَ إِلاَّ هُوَ الْحَيُّ الْقَيُّومُ لاَ تَأْخُذُهُ سِنَةٌ وَلاَ نَوْمٌ", source: "البقرة: 255", benefit: "من قرأها عند النوم حرمه الله على الشيطان" }
 ];
 
 // ==================== DUA DATA ====================
 const duaData = [
-    {
-        title: "دعاء الاستفتاح",
-        text: "اللَّهُمَّ بَاعِدْ بَيْنِي وَبَيْنَ خَطَايَايَ كَمَا بَاعَدْتَ بَيْنَ الْمَشْرِقِ وَالْمَغْرِبِ، اللَّهُمَّ نَقِّنِي مِنْ خَطَايَايَ كَمَا يُنَقَّى الثَّوْبُ الأَبْيَضُ مِنَ الدَّنَسِ، اللَّهُمَّ اغْسِلْنِي مِنْ خَطَايَايَ بِالثَّلْجِ وَالْمَاءِ وَالْبَرَدِ",
-        source: "رواه البخاري ومسلم"
-    },
-    {
-        title: "دعاء النبي ﷺ في الصلاة",
-        text: "اللَّهُمَّ اهْدِنِي فِيمَنْ هَدَيْتَ، وَعَافِنِي فِيمَنْ عَافَيْتَ، وَتَوَلَّنِي فِيمَنْ تَوَلَّيْتَ، وَبَارِكْ لِي فِيمَا أَعْطَيْتَ، وَقِنِي شَرَّ مَا قَضَيْتَ، فَإِنَّكَ تَقْضِي وَلاَ يُقْضَى عَلَيْكَ، وَإِنَّهُ لاَ يَذِلُّ مَنْ وَالَيْتَ، وَلاَ يَعِزُّ مَنْ عَادَيْتَ، تَبَارَكْتَ رَبَّنَا وَتَعَالَيْتَ",
-        source: "رواه أبو داود"
-    },
-    {
-        title: "دعاء دخول المسجد",
-        text: "اللَّهُمَّ افْتَحْ لِي أَبْوَابَ رَحْمَتِكَ",
-        source: "رواه مسلم"
-    },
-    {
-        title: "دعاء الخروج من المسجد",
-        text: "اللَّهُمَّ إِنِّي أَسْأَلُكَ مِنْ فَضْلِكَ",
-        source: "رواه مسلم"
-    },
-    {
-        title: "دعاء لبس الثوب",
-        text: "الْحَمْدُ لِلَّهِ الَّذِي كَسَانِي هَذَا وَرَزَقَنِيهِ مِنْ غَيْرِ حَوْلٍ مِنِّي وَلاَ قُوَّةٍ",
-        source: "رواه أبو داود والترمذي"
-    },
-    {
-        title: "دعاء دخول المنزل",
-        text: "بِسْمِ اللَّهِ وَلَجْنَا، وَبِسْمِ اللَّهِ خَرَجْنَا، وَعَلَى اللَّهِ رَبِّنَا تَوَكَّلْنَا",
-        source: "رواه أبو داود"
-    },
-    {
-        title: "دعاء الخروج من المنزل",
-        text: "بِسْمِ اللَّهِ، تَوَكَّلْتُ عَلَى اللَّهِ، وَلاَ حَوْلَ وَلاَ قُوَّةَ إِلاَّ بِاللَّهِ",
-        source: "رواه أبو داود والترمذي"
-    },
-    {
-        title: "دعاء السفر",
-        text: "سُبْحَانَ الَّذِي سَخَّرَ لَنَا هَذَا وَمَا كُنَّا لَهُ مُقْرِنِينَ، وَإِنَّا إِلَى رَبِّنَا لَمُنقَلِبُونَ، اللَّهُمَّ إِنَّا نَسْأَلُكَ فِي سَفَرِنَا هَذَا الْبِرَّ وَالتَّقْوَى، وَمِنَ الْعَمَلِ مَا تَرْضَى، اللَّهُمَّ هَوِّنْ عَلَيْنَا سَفَرَنَا هَذَا وَاطْوِ عَنَّا بُعْدَهُ، اللَّهُمَّ أَنْتَ الصَّاحِبُ فِي السَّفَرِ، وَالْخَلِيفَةُ فِي الأَهْلِ، اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنْ وَعْثَاءِ السَّفَرِ، وَكَآبَةِ الْمَنْظَرِ، وَسُوءِ الْمُنْقَلَبِ فِي الْمَالِ وَالأَهْلِ",
-        source: "رواه مسلم"
-    },
-    {
-        title: "دعاء الرجوع من السفر",
-        text: "آيِبُونَ تَائِبُونَ عَابِدُونَ لِرَبِّنَا حَامِدُونَ",
-        source: "رواه مسلم"
-    },
-    {
-        title: "دعاء الاستيقاظ من النوم",
-        text: "الْحَمْدُ لِلَّهِ الَّذِي أَحْيَانَا بَعْدَ مَا أَمَاتَنَا وَإِلَيْهِ النُّشُورُ",
-        source: "رواه البخاري"
-    },
-    {
-        title: "دعاء النوم",
-        text: "بِاسْمِكَ اللَّهُمَّ أَمُوتُ وَأَحْيَا",
-        source: "رواه البخاري"
-    },
-    {
-        title: "دعاء دخول الخلاء",
-        text: "اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنَ الْخُبُثِ وَالْخَبَائِثِ",
-        source: "رواه البخاري ومسلم"
-    },
-    {
-        title: "دعاء الخروج من الخلاء",
-        text: "غُفْرَانَكَ",
-        source: "رواه البخاري ومسلم"
-    },
-    {
-        title: "دعاء الهم والحزن",
-        text: "اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنَ الْهَمِّ وَالْحَزَنِ، وَأَعُوذُ بِكَ مِنَ الْعَجْزِ وَالْكَسَلِ، وَأَعُوذُ بِكَ مِنَ الْجُبْنِ وَالْبُخْلِ، وَأَعُوذُ بِكَ مِنْ غَلَبَةِ الدَّيْنِ وَقَهْرِ الرِّجَالِ",
-        source: "رواه أبو داود"
-    },
-    {
-        title: "دعاء الكرب",
-        text: "لاَ إِلَـهَ إِلاَّ اللَّهُ الْعَظِيمُ الْحَلِيمُ، لاَ إِلَـهَ إِلاَّ اللَّهُ رَبُّ الْعَرْشِ الْعَظِيمِ، لاَ إِلَـهَ إِلاَّ اللَّهُ رَبُّ السَّمَوَاتِ وَرَبُّ الأَرْضِ وَرَبُّ الْعَرْشِ الْكَرِيمِ",
-        source: "رواه البخاري ومسلم"
-    },
-    {
-        title: "دعاء الاستغفار",
-        text: "أَسْتَغْفِرُ اللَّهَ الْعَظِيمَ الَّذِي لاَ إِلَـهَ إِلاَّ هُوَ الْحَيُّ الْقَيُّومُ وَأَتُوبُ إِلَيْهِ",
-        source: "رواه أبو داود"
-    }
+    { title: "دعاء الاستفتاح", text: "اللَّهُمَّ بَاعِدْ بَيْنِي وَبَيْنَ خَطَايَايَ كَمَا بَاعَدْتَ بَيْنَ الْمَشْرِقِ وَالْمَغْرِبِ، اللَّهُمَّ نَقِّنِي مِنْ خَطَايَايَ كَمَا يُنَقَّى الثَّوْبُ الأَبْيَضُ مِنَ الدَّنَسِ، اللَّهُمَّ اغْسِلْنِي مِنْ خَطَايَايَ بِالثَّلْجِ وَالْمَاءِ وَالْبَرَدِ", source: "رواه البخاري ومسلم" },
+    { title: "دعاء السفر", text: "سُبْحَانَ الَّذِي سَخَّرَ لَنَا هَذَا وَمَا كُنَّا لَهُ مُقْرِنِينَ، وَإِنَّا إِلَى رَبِّنَا لَمُنقَلِبُونَ، اللَّهُمَّ إِنَّا نَسْأَلُكَ فِي سَفَرِنَا هَذَا الْبِرَّ وَالتَّقْوَى، وَمِنَ الْعَمَلِ مَا تَرْضَى، اللَّهُمَّ هَوِّنْ عَلَيْنَا سَفَرَنَا هَذَا وَاطْوِ عَنَّا بُعْدَهُ، اللَّهُمَّ أَنْتَ الصَّاحِبُ فِي السَّفَرِ، وَالْخَلِيفَةُ فِي الأَهْلِ، اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنْ وَعْثَاءِ السَّفَرِ، وَكَآبَةِ الْمَنْظَرِ، وَسُوءِ الْمُنْقَلَبِ فِي الْمَالِ وَالأَهْلِ", source: "رواه مسلم" },
+    { title: "دعاء دخول المنزل", text: "بِسْمِ اللَّهِ وَلَجْنَا، وَبِسْمِ اللَّهِ خَرَجْنَا، وَعَلَى اللَّهِ رَبِّنَا تَوَكَّلْنَا", source: "رواه أبو داود" },
+    { title: "دعاء الخروج من المنزل", text: "بِسْمِ اللَّهِ، تَوَكَّلْتُ عَلَى اللَّهِ، وَلاَ حَوْلَ وَلاَ قُوَّةَ إِلاَّ بِاللَّهِ", source: "رواه أبو داود والترمذي" },
+    { title: "دعاء لبس الثوب", text: "الْحَمْدُ لِلَّهِ الَّذِي كَسَانِي هَذَا وَرَزَقَنِيهِ مِنْ غَيْرِ حَوْلٍ مِنِّي وَلاَ قُوَّةٍ", source: "رواه أبو داود والترمذي" },
+    { title: "دعاء الاستيقاظ من النوم", text: "الْحَمْدُ لِلَّهِ الَّذِي أَحْيَانَا بَعْدَ مَا أَمَاتَنَا وَإِلَيْهِ النُّشُورُ", source: "رواه البخاري" },
+    { title: "دعاء النوم", text: "بِاسْمِكَ اللَّهُمَّ أَمُوتُ وَأَحْيَا", source: "رواه البخاري" },
+    { title: "دعاء الهم والحزن", text: "اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنَ الْهَمِّ وَالْحَزَنِ، وَأَعُوذُ بِكَ مِنَ الْعَجْزِ وَالْكَسَلِ، وَأَعُوذُ بِكَ مِنَ الْجُبْنِ وَالْبُخْلِ، وَأَعُوذُ بِكَ مِنْ غَلَبَةِ الدَّيْنِ وَقَهْرِ الرِّجَالِ", source: "رواه أبو داود" },
+    { title: "دعاء الكرب", text: "لاَ إِلَـهَ إِلاَّ اللَّهُ الْعَظِيمُ الْحَلِيمُ، لاَ إِلَـهَ إِلاَّ اللَّهُ رَبُّ الْعَرْشِ الْعَظِيمِ، لاَ إِلَـهَ إِلاَّ اللَّهُ رَبُّ السَّمَوَاتِ وَرَبُّ الأَرْضِ وَرَبُّ الْعَرْشِ الْكَرِيمِ", source: "رواه البخاري ومسلم" },
+    { title: "دعاء الاستغفار", text: "أَسْتَغْفِرُ اللَّهَ الْعَظِيمَ الَّذِي لاَ إِلَـهَ إِلاَّ هُوَ الْحَيُّ الْقَيُّومُ وَأَتُوبُ إِلَيْهِ", source: "رواه أبو داود" },
+    { title: "دعاء دخول المسجد", text: "اللَّهُمَّ افْتَحْ لِي أَبْوَابَ رَحْمَتِكَ، اللَّهُمَّ إِنِّي أَسْأَلُكَ مِنْ فَضْلِكَ", source: "رواه مسلم" },
+    { title: "دعاء الخروج من المسجد", text: "اللَّهُمَّ إِنِّي أَسْأَلُكَ مِنْ فَضْلِكَ", source: "رواه مسلم" }
 ];
 
-// ==================== MUSHAF NATIQ STATE ====================
-let mushafCurrentReciter = 'ar.alafasy';
-let mushafCurrentSurah = null;
-let mushafIsPlaying = false;
-let mushafAyahs = [];
-let mushafCurrentAyahIndex = 0;
-const mushafAudio = document.getElementById('mushafAudio');
+// ==================== STATE ====================
+var mushafCurrentReciter = 'ar.alafasy';
+var mushafCurrentSurah = null;
+var mushafIsPlaying = false;
+var mushafAyahs = [];
+var mushafCurrentAyahIndex = 0;
+var mushafAudio = document.getElementById('mushafAudio');
 
-// ==================== AUDIO PLAYER STATE ====================
-let currentReciter = 'abdulbasit';
-let currentSurah = null;
-let isPlaying = false;
-const audio = document.getElementById('mainAudio');
+var currentReciter = 'ar.alafasy';
+var currentSurah = null;
+var isPlaying = false;
+var audio = document.getElementById('mainAudio');
 
-// ==================== INITIALIZATION ====================
+var pdfCurrentReciter = 'ar.alafasy';
+var pdfCurrentSurah = null;
+var pdfIsPlaying = false;
+var pdfAyahs = [];
+var pdfCurrentAyahIndex = 0;
+var pdfAudio = document.getElementById('pdfAudio');
+
+// ==================== INIT ====================
 function init() {
     populateSurahSelects();
+    renderSurahList();
     renderAzkar();
     renderRuqyah();
     renderDua();
     initPrayerTimes();
-    initNavigation();
+    initSidebar();
     initScrollTop();
     updateClock();
     setInterval(updateClock, 1000);
     setInterval(checkPrayerTime, 60000);
+    if (typeof pdfjsLib !== 'undefined') {
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    }
 }
 
-// ==================== UTILITY FUNCTIONS ====================
+// ==================== SIDEBAR ====================
+function initSidebar() {
+    var links = document.querySelectorAll('.sidebar-link');
+    window.addEventListener('scroll', function() {
+        var sections = document.querySelectorAll('section[id]');
+        var current = '';
+        sections.forEach(function(section) {
+            var top = section.offsetTop - 200;
+            if (window.scrollY >= top) {
+                current = section.getAttribute('id');
+            }
+        });
+        links.forEach(function(link) {
+            link.classList.remove('active');
+            if (link.getAttribute('href') === '#' + current) {
+                link.classList.add('active');
+            }
+        });
+    });
+}
+
+// ==================== UTILITIES ====================
 function formatTime(sec) {
-    if (isNaN(sec) || sec === undefined || sec === null) return '0:00';
-    const m = Math.floor(sec / 60);
-    const s = Math.floor(sec % 60);
+    if (isNaN(sec) || !sec) return '0:00';
+    var m = Math.floor(sec / 60);
+    var s = Math.floor(sec % 60);
     return m + ':' + String(s).padStart(2, '0');
 }
 
 function populateSurahSelects() {
-    const mushafSelect = document.getElementById('mushafSurah');
-    const audioSelect = document.getElementById('audioSurah');
-    const pdfSelect = document.getElementById('surahSelect');
-    surahs.forEach(function(surah) {
-        if (mushafSelect) {
-            var opt1 = document.createElement('option');
-            opt1.value = surah.number;
-            opt1.textContent = surah.number + ' - ' + surah.name + ' (' + surah.englishName + ')';
-            mushafSelect.appendChild(opt1);
-        }
-        if (audioSelect) {
-            var opt2 = document.createElement('option');
-            opt2.value = surah.number;
-            opt2.textContent = surah.number + ' - ' + surah.name;
-            audioSelect.appendChild(opt2);
-        }
-        if (pdfSelect) {
-            var opt3 = document.createElement('option');
-            opt3.value = surah.number;
-            opt3.textContent = surah.number + ' - ' + surah.name;
-            pdfSelect.appendChild(opt3);
-        }
+    var selects = ['mushafSurah', 'pdfSurah'];
+    selects.forEach(function(id) {
+        var sel = document.getElementById(id);
+        if (!sel) return;
+        surahs.forEach(function(s) {
+            var opt = document.createElement('option');
+            opt.value = s.number;
+            opt.textContent = s.number + ' - ' + s.name;
+            sel.appendChild(opt);
+        });
+    });
+}
+
+function renderSurahList() {
+    var container = document.getElementById('surahList');
+    if (!container) return;
+    var html = '';
+    surahs.forEach(function(s) {
+        html += '<div class="surah-item" data-name="' + s.name + ' ' + s.englishName + '" data-number="' + s.number + '" onclick="playAudioSurahById(' + s.number + ')">';
+        html += '<span class="surah-num">' + s.number + '</span>';
+        html += '<span>' + s.name + '</span>';
+        html += '</div>';
+    });
+    container.innerHTML = html;
+}
+
+function filterSurahList() {
+    var val = document.getElementById('surahSearch').value.trim();
+    var items = document.querySelectorAll('.surah-item');
+    items.forEach(function(item) {
+        var name = item.dataset.name || '';
+        var num = item.dataset.number || '';
+        item.style.display = (name.includes(val) || num.includes(val)) ? 'flex' : 'none';
     });
 }
 
 // ==================== MUSHAF NATIQ (SPEAKING QURAN) ====================
 function onMushafReciterChange() {
+    mushafCurrentReciter = document.getElementById('mushafReciter').value;
     var sel = document.getElementById('mushafReciter');
-    mushafCurrentReciter = sel.value;
-    var label = document.getElementById('mushafReciterLabel');
-    if (label) label.textContent = sel.options[sel.selectedIndex].text;
+    document.getElementById('mushafReciterLabel').textContent = sel.options[sel.selectedIndex].text;
 }
 
 function loadMushafAyahs() {
     var sel = document.getElementById('mushafSurah');
     var surahNum = parseInt(sel.value);
     if (!surahNum) return;
-
     mushafCurrentSurah = surahNum;
     var surah = surahs.find(function(s) { return s.number === surahNum; });
     var container = document.getElementById('ayahsContainer');
@@ -398,35 +327,33 @@ function loadMushafAyahs() {
 
     var url = 'https://api.alquran.cloud/v1/surah/' + surahNum + '/' + mushafCurrentReciter;
     fetch(url)
-        .then(function(res) { return res.json(); })
+        .then(function(r) { return r.json(); })
         .then(function(data) {
             if (data.code !== 200) throw new Error('API Error');
             mushafAyahs = data.data.ayahs;
             mushafCurrentAyahIndex = 0;
             renderAyahs(mushafAyahs, surah);
             document.getElementById('mushafNowPlaying').textContent = surah.number + ' - ' + surah.name;
-            var reciterName = document.getElementById('mushafReciter').options[document.getElementById('mushafReciter').selectedIndex].text;
-            document.getElementById('mushafReciterLabel').textContent = reciterName;
-            document.getElementById('mushafPlayer').classList.add('active');
-
+            var rName = document.getElementById('mushafReciter');
+            document.getElementById('mushafReciterLabel').textContent = rName.options[rName.selectedIndex].text;
+            document.getElementById('mushafPlayer').style.display = 'block';
             mushafAudio.src = mushafAyahs[0].audio;
             mushafAudio.load();
         })
-        .catch(function(err) {
-            console.error('Mushaf fetch error:', err);
-            container.innerHTML = '<div class="ayahs-loading"><i class="fas fa-exclamation-triangle"></i> <span>حدث خطأ أثناء تحميل الآيات. حاول مرة أخرى.</span></div>';
+        .catch(function() {
+            container.innerHTML = '<div class="ayahs-loading"><i class="fas fa-exclamation-triangle"></i> <span>حدث خطأ. تأكد من اتصالك بالإنترنت وحاول مرة أخرى.</span></div>';
         });
 }
 
 function renderAyahs(ayahs, surah) {
     var container = document.getElementById('ayahsContainer');
     var html = '<div class="surah-header-bismillah">';
-    if (mushafCurrentSurah !== 1 && mushafCurrentSurah !== 9) {
+    if (surah.number !== 1 && surah.number !== 9) {
         html += '<div class="bismillah-ayah">بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ</div>';
     }
     html += '</div>';
-    ayahs.forEach(function(ayah, index) {
-        html += '<div class="ayah-item" id="ayah-' + index + '" data-index="' + index + '">';
+    ayahs.forEach(function(ayah, i) {
+        html += '<div class="ayah-item" id="ayah-' + i + '" data-index="' + i + '">';
         html += '<span class="ayah-number-circle">' + ayah.numberInSurah + '</span>';
         html += '<span class="ayah-text">' + ayah.text + '</span>';
         html += '</div>';
@@ -436,17 +363,14 @@ function renderAyahs(ayahs, surah) {
 
 function toggleMushafPlay() {
     if (mushafAyahs.length === 0) return;
-
     if (mushafIsPlaying) {
         mushafAudio.pause();
         mushafIsPlaying = false;
     } else {
-        if (mushafCurrentAyahIndex >= mushafAyahs.length) {
-            mushafCurrentAyahIndex = 0;
-        }
+        if (mushafCurrentAyahIndex >= mushafAyahs.length) mushafCurrentAyahIndex = 0;
         mushafAudio.src = mushafAyahs[mushafCurrentAyahIndex].audio;
         mushafAudio.load();
-        mushafAudio.play().catch(function(e) { console.log('Mushaf play error:', e); });
+        mushafAudio.play().catch(function(e) { console.log(e); });
         mushafIsPlaying = true;
     }
     updateMushafPlayBtn();
@@ -454,27 +378,22 @@ function toggleMushafPlay() {
 
 function updateMushafPlayBtn() {
     var icon = document.getElementById('mushafPlayIcon');
-    if (icon) {
-        icon.className = mushafIsPlaying ? 'fas fa-pause' : 'fas fa-play';
-    }
+    if (icon) icon.className = mushafIsPlaying ? 'fas fa-pause' : 'fas fa-play';
 }
 
 function seekMushaf(e) {
     if (mushafAudio.duration) {
         var rect = e.currentTarget.getBoundingClientRect();
         var pct = (e.clientX - rect.left) / rect.width;
-        if (pct < 0) pct = 0;
-        if (pct > 1) pct = 1;
+        pct = Math.max(0, Math.min(1, pct));
         mushafAudio.currentTime = pct * mushafAudio.duration;
     }
 }
 
 function changeMushafVolume() {
-    var vol = document.getElementById('mushafVolume').value;
-    mushafAudio.volume = vol / 100;
+    mushafAudio.volume = document.getElementById('mushafVolume').value / 100;
 }
 
-// Mushaf audio events
 mushafAudio.addEventListener('timeupdate', function() {
     if (mushafAudio.duration) {
         var pct = (mushafAudio.currentTime / mushafAudio.duration) * 100;
@@ -485,29 +404,18 @@ mushafAudio.addEventListener('timeupdate', function() {
 });
 
 mushafAudio.addEventListener('ended', function() {
-    // Highlight current ayah briefly before moving on
-    var currentEl = document.getElementById('ayah-' + mushafCurrentAyahIndex);
-    if (currentEl) {
-        currentEl.classList.remove('active');
-        currentEl.classList.add('completed');
-    }
-
+    var cur = document.getElementById('ayah-' + mushafCurrentAyahIndex);
+    if (cur) { cur.classList.remove('active'); cur.classList.add('completed'); }
     mushafCurrentAyahIndex++;
-
     if (mushafCurrentAyahIndex < mushafAyahs.length) {
-        // Play next ayah
         mushafAudio.src = mushafAyahs[mushafCurrentAyahIndex].audio;
         mushafAudio.load();
-        mushafAudio.play().catch(function(e) { console.log('Mushaf ayah play error:', e); });
+        mushafAudio.play().catch(function() {});
         scrollToAyah(mushafCurrentAyahIndex);
     } else {
-        // Surah finished
         mushafIsPlaying = false;
         mushafCurrentAyahIndex = 0;
         updateMushafPlayBtn();
-        document.getElementById('mushafCurrentTime').textContent = '0:00';
-        document.getElementById('mushafDuration').textContent = '0:00';
-        document.getElementById('mushafProgressBar').style.width = '0%';
     }
 });
 
@@ -523,114 +431,65 @@ mushafAudio.addEventListener('pause', function() {
 });
 
 function highlightCurrentAyah() {
-    // Remove all active states
-    document.querySelectorAll('.ayah-item.active').forEach(function(el) {
-        el.classList.remove('active');
-    });
-    var currentEl = document.getElementById('ayah-' + mushafCurrentAyahIndex);
-    if (currentEl) {
-        currentEl.classList.add('active');
-    }
+    document.querySelectorAll('.ayah-item.active').forEach(function(el) { el.classList.remove('active'); });
+    var el = document.getElementById('ayah-' + mushafCurrentAyahIndex);
+    if (el) el.classList.add('active');
 }
 
 function scrollToAyah(index) {
     highlightCurrentAyah();
-    var ayahEl = document.getElementById('ayah-' + index);
-    if (ayahEl) {
-        ayahEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }
+    var el = document.getElementById('ayah-' + index);
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
 
-// ==================== AUDIO PLAYER ====================
+// ==================== QURAN AUDIO PLAYER ====================
 function onAudioReciterChange() {
-    var sel = document.getElementById('audioReciter');
-    currentReciter = sel.value;
-    document.getElementById('currentReciterName').textContent = reciters[currentReciter].name;
+    currentReciter = document.getElementById('audioReciter').value;
+    document.getElementById('currentReciterName').textContent = recitersCDN[currentReciter].name;
 }
 
-function playAudioSurah() {
-    var sel = document.getElementById('audioSurah');
-    var surahNum = parseInt(sel.value);
-    if (!surahNum) return;
-
-    currentSurah = surahNum;
-    var surah = surahs.find(function(s) { return s.number === surahNum; });
-    var padded = String(surahNum).padStart(3, '0');
-    var url = reciters[currentReciter].base + padded + '.mp3';
-
+function playAudioSurahById(num) {
+    document.querySelectorAll('.surah-item').forEach(function(i) { i.classList.remove('active'); });
+    var items = document.querySelectorAll('.surah-item');
+    items.forEach(function(item) {
+        if (parseInt(item.dataset.number) === num) item.classList.add('active');
+    });
+    currentSurah = num;
+    var surah = surahs.find(function(s) { return s.number === num; });
+    var url = getCdnUrl(currentReciter, num, 128);
     document.getElementById('nowPlaying').textContent = surah.number + ' - ' + surah.name;
     audio.src = url;
     audio.load();
     audio.play().then(function() {
         isPlaying = true;
         updatePlayBtn();
-    }).catch(function(e) { console.log('Audio play error:', e); });
-
-    audio.onloadedmetadata = function() {
-        document.getElementById('audioDuration').textContent = formatTime(audio.duration);
-    };
+    }).catch(function(e) { console.log('Play error:', e); });
 }
 
 function togglePlay() {
-    if (!audio.src || audio.src === window.location.href) {
-        // No audio loaded, play first surah
-        var sel = document.getElementById('audioSurah');
-        if (sel && sel.value) {
-            playAudioSurah();
-        } else {
-            playAudioSurahById(1);
-        }
-        return;
-    }
-    if (isPlaying) {
-        audio.pause();
-    } else {
-        audio.play().catch(function(e) { console.log('Audio play error:', e); });
-    }
+    if (!audio.src || audio.src === window.location.href) return;
+    if (isPlaying) { audio.pause(); } else { audio.play().catch(function() {}); }
     isPlaying = !isPlaying;
     updatePlayBtn();
 }
 
-function playAudioSurahById(num) {
-    var sel = document.getElementById('audioSurah');
-    if (sel) sel.value = num;
-    currentSurah = num;
-    var surah = surahs.find(function(s) { return s.number === num; });
-    var padded = String(num).padStart(3, '0');
-    var url = reciters[currentReciter].base + padded + '.mp3';
-
-    document.getElementById('nowPlaying').textContent = surah.number + ' - ' + surah.name;
-    audio.src = url;
-    audio.load();
-    audio.play().then(function() {
-        isPlaying = true;
-        updatePlayBtn();
-    }).catch(function(e) { console.log('Audio play error:', e); });
-}
-
 function updatePlayBtn() {
     var icon = document.getElementById('playIcon');
-    if (icon) {
-        icon.className = isPlaying ? 'fas fa-pause' : 'fas fa-play';
-    }
+    if (icon) icon.className = isPlaying ? 'fas fa-pause' : 'fas fa-play';
 }
 
 function seekAudio(e) {
     if (audio.duration) {
         var rect = e.currentTarget.getBoundingClientRect();
-        var pct = (e.clientX - rect.left) / rect.width;
-        if (pct < 0) pct = 0;
-        if (pct > 1) pct = 1;
+        var pct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
         audio.currentTime = pct * audio.duration;
     }
 }
 
 function changeVolume() {
-    var vol = document.getElementById('volumeSlider').value;
-    audio.volume = vol / 100;
+    audio.volume = document.getElementById('volumeSlider').value / 100;
 }
 
-// Audio events
 audio.addEventListener('timeupdate', function() {
     if (audio.duration) {
         var pct = (audio.currentTime / audio.duration) * 100;
@@ -644,27 +503,140 @@ audio.addEventListener('loadedmetadata', function() {
 });
 
 audio.addEventListener('ended', function() {
-    // Auto-advance to next surah
-    var nextNum = currentSurah + 1;
-    if (nextNum <= 114) {
-        playAudioSurahById(nextNum);
-        var audioSel = document.getElementById('audioSurah');
-        if (audioSel) audioSel.value = nextNum;
+    var next = currentSurah + 1;
+    if (next <= 114) playAudioSurahById(next);
+    else { isPlaying = false; updatePlayBtn(); }
+});
+
+audio.addEventListener('play', function() { isPlaying = true; updatePlayBtn(); });
+audio.addEventListener('pause', function() { isPlaying = false; updatePlayBtn(); });
+
+// ==================== PDF MUSHAF ====================
+function loadPdfMushaf() {
+    var sel = document.getElementById('pdfSurah');
+    var surahNum = parseInt(sel.value);
+    if (!surahNum) return;
+    pdfCurrentSurah = surahNum;
+    pdfCurrentReciter = document.getElementById('pdfReciter').value;
+    var surah = surahs.find(function(s) { return s.number === surahNum; });
+    document.getElementById('pdfNowPlaying').textContent = surah.number + ' - ' + surah.name;
+    document.getElementById('pdfPlayer').style.display = 'block';
+
+    // Fetch ayahs for audio sync
+    var url = 'https://api.alquran.cloud/v1/surah/' + surahNum + '/' + pdfCurrentReciter;
+    fetch(url)
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+            if (data.code !== 200) throw new Error('API Error');
+            pdfAyahs = data.data.ayahs;
+            pdfCurrentAyahIndex = 0;
+            renderPdfAyahs(pdfAyahs, surah);
+            pdfAudio.src = pdfAyahs[0].audio;
+            pdfAudio.load();
+        })
+        .catch(function() {
+            document.getElementById('pdfPagesContainer').innerHTML = '<div class="pdf-loading"><i class="fas fa-exclamation-triangle"></i> <span>حدث خطأ. حاول مرة أخرى.</span></div>';
+        });
+}
+
+function renderPdfAyahs(ayahs, surah) {
+    var container = document.getElementById('pdfPagesContainer');
+    var html = '<div class="surah-header-bismillah">';
+    if (surah.number !== 1 && surah.number !== 9) {
+        html += '<div class="bismillah-ayah" style="font-size:2rem;margin-bottom:20px;color:#1a6b3c;">بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ</div>';
+    }
+    html += '</div>';
+    ayahs.forEach(function(ayah, i) {
+        html += '<div class="ayah-item" id="pdf-ayah-' + i + '">';
+        html += '<span class="ayah-number-circle">' + ayah.numberInSurah + '</span>';
+        html += '<span class="ayah-text">' + ayah.text + '</span>';
+        html += '</div>';
+    });
+    container.innerHTML = html;
+}
+
+function togglePdfPlay() {
+    if (pdfAyahs.length === 0) return;
+    if (pdfIsPlaying) {
+        pdfAudio.pause();
+        pdfIsPlaying = false;
     } else {
-        isPlaying = false;
-        updatePlayBtn();
+        if (pdfCurrentAyahIndex >= pdfAyahs.length) pdfCurrentAyahIndex = 0;
+        pdfAudio.src = pdfAyahs[pdfCurrentAyahIndex].audio;
+        pdfAudio.load();
+        pdfAudio.play().catch(function() {});
+        pdfIsPlaying = true;
+    }
+    updatePdfPlayBtn();
+}
+
+function updatePdfPlayBtn() {
+    var icon = document.getElementById('pdfPlayIcon');
+    if (icon) icon.className = pdfIsPlaying ? 'fas fa-pause' : 'fas fa-play';
+}
+
+function seekPdf(e) {
+    if (pdfAudio.duration) {
+        var rect = e.currentTarget.getBoundingClientRect();
+        var pct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+        pdfAudio.currentTime = pct * pdfAudio.duration;
+    }
+}
+
+function changePdfVolume() {
+    pdfAudio.volume = document.getElementById('pdfVolume').value / 100;
+}
+
+pdfAudio.addEventListener('timeupdate', function() {
+    if (pdfAudio.duration) {
+        var pct = (pdfAudio.currentTime / pdfAudio.duration) * 100;
+        document.getElementById('pdfProgressBar').style.width = pct + '%';
+        document.getElementById('pdfCurrentTime').textContent = formatTime(pdfAudio.currentTime);
+        document.getElementById('pdfDuration').textContent = formatTime(pdfAudio.duration);
     }
 });
 
-audio.addEventListener('play', function() {
-    isPlaying = true;
-    updatePlayBtn();
+pdfAudio.addEventListener('ended', function() {
+    var cur = document.getElementById('pdf-ayah-' + pdfCurrentAyahIndex);
+    if (cur) { cur.classList.remove('active'); cur.classList.add('completed'); }
+    pdfCurrentAyahIndex++;
+    if (pdfCurrentAyahIndex < pdfAyahs.length) {
+        pdfAudio.src = pdfAyahs[pdfCurrentAyahIndex].audio;
+        pdfAudio.load();
+        pdfAudio.play().catch(function() {});
+        scrollPdfToAyah(pdfCurrentAyahIndex);
+    } else {
+        pdfIsPlaying = false;
+        pdfCurrentAyahIndex = 0;
+        updatePdfPlayBtn();
+    }
 });
 
-audio.addEventListener('pause', function() {
-    isPlaying = false;
-    updatePlayBtn();
+pdfAudio.addEventListener('play', function() {
+    pdfIsPlaying = true;
+    updatePdfPlayBtn();
+    highlightPdfAyah();
 });
+
+pdfAudio.addEventListener('pause', function() {
+    pdfIsPlaying = false;
+    updatePdfPlayBtn();
+});
+
+function highlightPdfAyah() {
+    document.querySelectorAll('#pdfPagesContainer .ayah-item.active').forEach(function(el) { el.classList.remove('active'); });
+    var el = document.getElementById('pdf-ayah-' + pdfCurrentAyahIndex);
+    if (el) {
+        el.classList.add('active');
+        document.getElementById('ayahText').textContent = el.querySelector('.ayah-text').textContent;
+    }
+}
+
+function scrollPdfToAyah(index) {
+    highlightPdfAyah();
+    var el = document.getElementById('pdf-ayah-' + index);
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
 
 // ==================== AZKAR ====================
 function renderAzkar() {
@@ -677,48 +649,38 @@ function renderAzkarList(containerId, data) {
     var container = document.getElementById(containerId);
     if (!container) return;
     var html = '';
-    data.forEach(function(z, i) {
+    data.forEach(function(z) {
         html += '<div class="zikr-card">';
         html += '<div class="zikr-text">' + z.text + '</div>';
         html += '<div class="zikr-meta"><span class="zikr-source"><i class="fas fa-bookmark"></i> ' + z.source + '</span>';
         html += '<span class="zikr-count-label">التكرار: ' + z.count + '</span></div>';
         html += '<div class="zikr-action">';
-        html += '<button class="zikr-count-btn" data-max="' + z.count + '" onclick="countZikr(this, ' + z.count + ')">' + z.count + '</button>';
-        html += '</div>';
-        html += '</div>';
+        html += '<button class="zikr-count-btn" onclick="countZikr(this,' + z.count + ')">' + z.count + '</button>';
+        html += '</div></div>';
     });
     container.innerHTML = html;
 }
 
 function countZikr(btn, max) {
-    var current = parseInt(btn.textContent);
-    if (current > 1) {
-        btn.textContent = current - 1;
+    var cur = parseInt(btn.textContent);
+    if (cur > 1) {
+        btn.textContent = cur - 1;
         btn.style.transform = 'scale(1.2)';
         setTimeout(function() { btn.style.transform = ''; }, 200);
     } else {
-        btn.textContent = '✓';
+        btn.textContent = '\u2713';
         btn.classList.add('completed');
-        btn.style.transform = 'scale(1.3)';
-        setTimeout(function() { btn.style.transform = ''; }, 200);
     }
 }
 
 function showAzkarTab(tab, el) {
     document.querySelectorAll('.azkar-tab').forEach(function(t) { t.classList.remove('active'); });
     el.classList.add('active');
-
-    document.getElementById('azkarMorning').classList.add('hidden');
-    document.getElementById('azkarEvening').classList.add('hidden');
-    document.getElementById('azkarLeaving').classList.add('hidden');
-
-    if (tab === 'morning') {
-        document.getElementById('azkarMorning').classList.remove('hidden');
-    } else if (tab === 'evening') {
-        document.getElementById('azkarEvening').classList.remove('hidden');
-    } else if (tab === 'leaving') {
-        document.getElementById('azkarLeaving').classList.remove('hidden');
-    }
+    ['azkarMorning', 'azkarEvening', 'azkarLeaving'].forEach(function(id) {
+        document.getElementById(id).classList.add('hidden');
+    });
+    var map = { morning: 'azkarMorning', evening: 'azkarEvening', leaving: 'azkarLeaving' };
+    document.getElementById(map[tab]).classList.remove('hidden');
 }
 
 // ==================== RUQYAH ====================
@@ -731,9 +693,7 @@ function renderRuqyah() {
         html += '<h3>' + r.title + '</h3>';
         html += '<div class="verse-text">' + r.text.replace(/\n/g, '<br>') + '</div>';
         html += '<div class="verse-source"><i class="fas fa-bookmark"></i> ' + r.source + '</div>';
-        if (r.benefit) {
-            html += '<div class="ruqyah-benefit"><i class="fas fa-star"></i> ' + r.benefit + '</div>';
-        }
+        if (r.benefit) html += '<div class="ruqyah-benefit"><i class="fas fa-star"></i> ' + r.benefit + '</div>';
         html += '</div>';
     });
     container.innerHTML = html;
@@ -758,17 +718,8 @@ function renderDua() {
 function initPrayerTimes() {
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
-            function(pos) {
-                var lat = pos.coords.latitude;
-                var lon = pos.coords.longitude;
-                fetchPrayerTimes(lat, lon);
-                getLocationName(lat, lon);
-            },
-            function(err) {
-                // Default to Cairo
-                fetchPrayerTimes(30.0444, 31.2357);
-                document.getElementById('locationText').textContent = 'القاهرة، مصر (افتراضي)';
-            },
+            function(pos) { fetchPrayerTimes(pos.coords.latitude, pos.coords.longitude); getLocationName(pos.coords.latitude, pos.coords.longitude); },
+            function() { fetchPrayerTimes(30.0444, 31.2357); document.getElementById('locationText').textContent = 'القاهرة، مصر (افتراضي)'; },
             { timeout: 10000 }
         );
     } else {
@@ -779,21 +730,11 @@ function initPrayerTimes() {
 
 function fetchPrayerTimes(lat, lon) {
     var today = new Date();
-    var dd = String(today.getDate()).padStart(2, '0');
-    var mm = String(today.getMonth() + 1).padStart(2, '0');
-    var yyyy = today.getFullYear();
-    var dateStr = dd + '-' + mm + '-' + yyyy;
-
-    var url = 'https://api.aladhan.com/v1/timings/' + dateStr + '?latitude=' + lat + '&longitude=' + lon + '&method=5&shafpiaq=1';
-
-    fetch(url)
-        .then(function(res) { return res.json(); })
-        .then(function(data) {
-            displayPrayerTimes(data.data);
-        })
-        .catch(function(err) {
-            console.error('Prayer times error:', err);
-        });
+    var dateStr = String(today.getDate()).padStart(2, '0') + '-' + String(today.getMonth() + 1).padStart(2, '0') + '-' + today.getFullYear();
+    fetch('https://api.aladhan.com/v1/timings/' + dateStr + '?latitude=' + lat + '&longitude=' + lon + '&method=5&shafpiaq=1')
+        .then(function(r) { return r.json(); })
+        .then(function(data) { displayPrayerTimes(data.data); })
+        .catch(function() {});
 }
 
 function displayPrayerTimes(data) {
@@ -805,7 +746,6 @@ function displayPrayerTimes(data) {
         { name: 'المغرب', time: data.timings.Maghrib, icon: 'fa-moon' },
         { name: 'العشاء', time: data.timings.Isha, icon: 'fa-star' }
     ];
-
     var grid = document.getElementById('prayerGrid');
     var html = '';
     prayers.forEach(function(p) {
@@ -816,7 +756,6 @@ function displayPrayerTimes(data) {
         html += '</div>';
     });
     grid.innerHTML = html;
-
     checkPrayerTime();
 }
 
@@ -836,15 +775,12 @@ function checkPrayerTime() {
     var nowMinutes = now.getHours() * 60 + now.getMinutes();
     var cards = document.querySelectorAll('.prayer-card');
     var nextFound = false;
-
     cards.forEach(function(card) {
         card.classList.remove('active');
         var time = card.dataset.time;
         if (!time) return;
-
         var parts = time.split(':').map(Number);
         var prayerMinutes = parts[0] * 60 + parts[1];
-
         if (!nextFound && prayerMinutes > nowMinutes) {
             card.classList.add('active');
             nextFound = true;
@@ -853,7 +789,6 @@ function checkPrayerTime() {
             document.getElementById('nextPrayer').innerHTML = '<i class="fas fa-hourglass-half"></i> التالية: ' + prayerName + ' بعد ' + diff + ' دقيقة';
         }
     });
-
     if (!nextFound) {
         document.getElementById('nextPrayer').innerHTML = '<i class="fas fa-check-circle"></i> مرت على جميع الصلوات اليومية';
     }
@@ -861,18 +796,12 @@ function checkPrayerTime() {
 
 function getLocationName(lat, lon) {
     fetch('https://api.aladhan.com/v1/timings/19-07-2026?latitude=' + lat + '&longitude=' + lon + '&method=5')
-        .then(function(res) { return res.json(); })
+        .then(function(r) { return r.json(); })
         .then(function(data) {
-            var meta = data.data && data.data.meta;
-            if (meta && meta.timezone) {
-                document.getElementById('locationText').textContent = meta.timezone;
-            } else {
-                document.getElementById('locationText').textContent = 'موقعك الحالي';
-            }
+            var tz = data.data && data.data.meta && data.data.meta.timezone;
+            document.getElementById('locationText').textContent = tz || 'موقعك الحالي';
         })
-        .catch(function() {
-            document.getElementById('locationText').textContent = 'موقعك الحالي';
-        });
+        .catch(function() { document.getElementById('locationText').textContent = 'موقعك الحالي'; });
 }
 
 // ==================== CLOCK ====================
@@ -882,91 +811,21 @@ function updateClock() {
     var ampm = h >= 12 ? 'م' : 'ص';
     h = h % 12;
     if (h === 0) h = 12;
-    var hStr = String(h).padStart(2, '0');
-    var m = String(now.getMinutes()).padStart(2, '0');
-    var s = String(now.getSeconds()).padStart(2, '0');
-    var currentTimeEl = document.getElementById('currentTime');
-    if (currentTimeEl) {
-        currentTimeEl.innerHTML = '<i class="fas fa-clock"></i> ' + hStr + ':' + m + ':' + s + ' ' + ampm;
-    }
+    var el = document.getElementById('currentTime');
+    if (el) el.innerHTML = '<i class="fas fa-clock"></i> ' + String(h).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0') + ':' + String(now.getSeconds()).padStart(2, '0') + ' ' + ampm;
 }
 
-// ==================== NAVIGATION ====================
-function initNavigation() {
-    var toggle = document.getElementById('navToggle');
-    var links = document.getElementById('navLinks');
-
-    if (toggle && links) {
-        toggle.addEventListener('click', function() {
-            links.classList.toggle('active');
-        });
-    }
-
-    document.querySelectorAll('.nav-links a').forEach(function(link) {
-        link.addEventListener('click', function() {
-            document.querySelectorAll('.nav-links a').forEach(function(l) { l.classList.remove('active'); });
-            link.classList.add('active');
-            if (links) links.classList.remove('active');
-        });
-    });
-
-    window.addEventListener('scroll', function() {
-        var sections = document.querySelectorAll('section[id]');
-        var current = '';
-        sections.forEach(function(section) {
-            var top = section.offsetTop - 120;
-            if (window.scrollY >= top) {
-                current = section.getAttribute('id');
-            }
-        });
-        document.querySelectorAll('.nav-links a').forEach(function(link) {
-            link.classList.remove('active');
-            if (link.getAttribute('href') === '#' + current) {
-                link.classList.add('active');
-            }
-        });
-    });
-}
-
-// ==================== SCROLL TO TOP ====================
+// ==================== SCROLL TOP ====================
 function initScrollTop() {
     var btn = document.getElementById('scrollTop');
     if (!btn) return;
     window.addEventListener('scroll', function() {
-        if (window.scrollY > 300) {
-            btn.classList.add('visible');
-        } else {
-            btn.classList.remove('visible');
-        }
+        btn.classList.toggle('visible', window.scrollY > 300);
     });
 }
 
 function scrollToTop() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-
-// ==================== PDF ====================
-function openMushafPdf() {
-    var sel = document.getElementById('surahSelect');
-    var surahNum = parseInt(sel.value);
-    if (!surahNum) surahNum = 1;
-    var padded = String(surahNum).padStart(3, '0');
-    var pdfUrl = 'https://www.mp3quran.net/api3/files/mp3/mini_mushaf/' + padded + '.pdf';
-    document.getElementById('quranPdfFrame').src = pdfUrl;
-}
-
-// ==================== SEARCH ====================
-function filterSurahs() {
-    var query = document.getElementById('surahSearch');
-    if (!query) return;
-    var val = query.value.trim();
-    var items = document.querySelectorAll('.surah-item');
-    items.forEach(function(item) {
-        var name = item.dataset.name || '';
-        var num = item.dataset.number || '';
-        var match = name.includes(val) || num.includes(val);
-        item.style.display = match ? 'flex' : 'none';
-    });
 }
 
 // ==================== START ====================
