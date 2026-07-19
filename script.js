@@ -120,14 +120,9 @@ const surahs = [
 const recitersCDN = {
     'ar.alafasy': { name: 'مشاري العفاسي' },
     'ar.husary': { name: 'محمود خليل الحصري' },
-    'ar.abdulbasit': { name: 'عبد الباسط عبد الصمد' },
     'ar.minshawi': { name: 'محمد صديق المنشاوي' },
-    'ar.sudais': { name: 'عبد الرحمن السديس' },
-    'ar.shuraim': { name: 'سعود الشريم' },
     'ar.muhammadjibreel': { name: 'محمد جبريل' },
-    'ar.muhammadayoub': { name: 'محمد أيوب' },
-    'ar.hudhaify': { name: 'علي الحذيفي' },
-    'ar.ajamy': { name: 'أحمد العجمي' }
+    'ar.hudhaify': { name: 'علي الحذيفي' }
 };
 
 function getCdnSurahUrl(edition, surahNum, bitrate) {
